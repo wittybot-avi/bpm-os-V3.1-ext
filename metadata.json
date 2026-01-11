@@ -1,0 +1,5 @@
+{
+  "name": "bpm-os-V3.1-ext",
+  "description": "Battery Pack Manufacturing Operating System - Frontend Baseline (BP-000). A greenfield start for V3.1 establishing the app shell and safety protocols.",
+  "requestFramePermissions": []
+}
