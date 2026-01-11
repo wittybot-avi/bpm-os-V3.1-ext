@@ -41,3 +41,4 @@
 | **EXT-BP-000** | Bridge Patch | EXT Phase Initialization | **STABLE** | Established V3.1-EXT governance, documentation view, and rulebook. | 2026-01-12 01:35 (IST) |
 | **EXT-BP-001** | Bridge Patch | Sidebar UX & Scalability | **STABLE** | Added collapsible sidebar sections and improved scroll behavior. | 2026-01-12 01:40 (IST) |
 | **EXT-BP-002** | Bridge Patch | System Section Handover | **STABLE** | Populated Live Status, Inventory, Line, Logs, and Reports screens. | 2026-01-12 01:55 (IST) |
+| **EXT-BP-003** | Bridge Patch | Control Tower Shell | **STABLE** | Added Control Tower operation spine and runbook visualization. | 2026-01-12 02:05 (IST) |

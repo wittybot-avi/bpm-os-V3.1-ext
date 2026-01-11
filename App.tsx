@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import ErrorBoundary from './components/ErrorBoundary';
 import { Layout } from './components/Layout';
 import { Dashboard } from './components/Dashboard';
+import { ControlTower } from './components/ControlTower';
 import { SystemSetup } from './components/SystemSetup';
 import { SKUBlueprint } from './components/SKUBlueprint';
 import { Procurement } from './components/Procurement';
@@ -53,6 +54,7 @@ const App: React.FC = () => {
       <UserContext.Provider value={userContextValue}>
         <Layout currentView={currentView} onNavigate={setCurrentView}>
           {currentView === 'dashboard' && <Dashboard />}
+          {currentView === 'control_tower' && <ControlTower />}
           {currentView === 'system_setup' && <SystemSetup />}
           {currentView === 'sku_blueprint' && <SKUBlueprint />}
           {currentView === 'procurement' && <Procurement />}

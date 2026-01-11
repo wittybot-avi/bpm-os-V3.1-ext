@@ -26,7 +26,8 @@ import {
   Recycle,
   ShieldCheck,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  Radar
 } from 'lucide-react';
 
 interface NavItemProps {
@@ -201,7 +202,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate }) => 
   const showTraceability = canSeeRegistry || canSeeBMSProvisioning;
   const showLogistics = canSeeFinishedGoods || canSeePackaging || canSeeDispatchAuth || canSeeDispatchExec;
   const showLifecycle = canSeeService || canSeeRecycling;
-  const showGovernance = canSeeCompliance;
+  const showGovernance = canSeeCompliance; // Always true if Control Tower is available to anyone, but let's stick to existing pattern
 
   // Active Group Checks
   const activeSystemSetup = ['system_setup', 'sku_blueprint'].includes(currentView);
@@ -210,7 +211,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate }) => 
   const activeTraceability = ['battery_registry', 'bms_provisioning'].includes(currentView);
   const activeLogistics = ['finished_goods', 'packaging_aggregation', 'dispatch_authorization', 'dispatch_execution'].includes(currentView);
   const activeLifecycle = ['service_warranty', 'recycling_recovery'].includes(currentView);
-  const activeGovernance = ['compliance_audit'].includes(currentView);
+  const activeGovernance = ['compliance_audit', 'control_tower'].includes(currentView);
   const activeSystem = ['documentation', 'live_status', 'system_inventory', 'production_line', 'system_logs', 'system_reports'].includes(currentView);
 
   return (
@@ -402,18 +403,22 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate }) => 
         )}
 
         {/* Group G: Governance */}
-        {showGovernance && (
-          <SidebarGroup title="Governance" isActiveGroup={activeGovernance}>
-              {canSeeCompliance && (
-                <NavItem 
-                  icon={ShieldCheck} 
-                  label="Compliance & Audit (S17)" 
-                  active={currentView === 'compliance_audit'} 
-                  onClick={() => onNavigate('compliance_audit')} 
-                />
-              )}
-          </SidebarGroup>
-        )}
+        <SidebarGroup title="Govern" isActiveGroup={activeGovernance}>
+            <NavItem 
+              icon={Radar} 
+              label="Control Tower" 
+              active={currentView === 'control_tower'} 
+              onClick={() => onNavigate('control_tower')} 
+            />
+            {canSeeCompliance && (
+              <NavItem 
+                icon={ShieldCheck} 
+                label="Compliance & Audit (S17)" 
+                active={currentView === 'compliance_audit'} 
+                onClick={() => onNavigate('compliance_audit')} 
+              />
+            )}
+        </SidebarGroup>
 
         {/* Group H: System */}
         <SidebarGroup title="System" isActiveGroup={activeSystem}>
