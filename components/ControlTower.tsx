@@ -18,16 +18,18 @@ import {
 } from 'lucide-react';
 
 interface RunbookProps {
+  id: string;
   title: string;
   range: string;
   purpose: string;
   roles: string[];
   status: 'Healthy' | 'Degraded' | 'Blocked' | 'Idle';
+  onNavigate: (id: string) => void;
   children: React.ReactNode;
 }
 
-const RunbookCard: React.FC<RunbookProps> = ({ title, range, purpose, roles, status, children }) => (
-  <div className="bg-white rounded-lg shadow-sm border border-industrial-border overflow-hidden flex flex-col">
+const RunbookCard: React.FC<RunbookProps> = ({ id, title, range, purpose, roles, status, onNavigate, children }) => (
+  <div className="bg-white rounded-lg shadow-sm border border-industrial-border overflow-hidden flex flex-col hover:shadow-md transition-shadow">
     <div className="p-4 border-b border-slate-100 bg-slate-50 flex justify-between items-start">
       <div>
         <h3 className="font-bold text-slate-800 text-lg">{title}</h3>
@@ -44,9 +46,9 @@ const RunbookCard: React.FC<RunbookProps> = ({ title, range, purpose, roles, sta
         </div>
       </div>
       <button 
-        className="text-slate-400 hover:text-brand-600 transition-colors"
-        title="View Runbook (Navigation Only)"
-        disabled
+        onClick={() => onNavigate(id)}
+        className="text-brand-600 hover:text-brand-800 transition-colors p-1 bg-brand-50 rounded border border-brand-100"
+        title="View Runbook Detail"
       >
         <ArrowRight size={20} />
       </button>
@@ -56,7 +58,7 @@ const RunbookCard: React.FC<RunbookProps> = ({ title, range, purpose, roles, sta
       <p className="text-xs text-slate-500">{purpose}</p>
     </div>
 
-    <div className="flex-1 p-6 flex flex-col justify-center">
+    <div className="flex-1 p-6 flex flex-col justify-center cursor-pointer" onClick={() => onNavigate(id)}>
         {/* Visualization Spine */}
         {children}
     </div>
@@ -103,7 +105,11 @@ const GateNode: React.FC<{ status: 'Open' | 'Closed' | 'Locked' }> = ({ status }
   </div>
 );
 
-export const ControlTower: React.FC = () => {
+interface ControlTowerProps {
+  onNavigate: (runbookId: string) => void;
+}
+
+export const ControlTower: React.FC<ControlTowerProps> = ({ onNavigate }) => {
   return (
     <div className="space-y-6 h-full flex flex-col animate-in fade-in duration-300">
       
@@ -162,11 +168,13 @@ export const ControlTower: React.FC = () => {
         
         {/* A) Material Receipt & Serialization */}
         <RunbookCard 
+          id="material"
           title="Material Receipt & Serialization" 
           range="S2 → S4" 
           purpose="Inbound verification, QC, identity generation, and ledger binding."
           roles={['Stores', 'QC Engineer', 'System']}
           status="Healthy"
+          onNavigate={onNavigate}
         >
            <div className="flex items-center justify-between px-4 relative">
               <div className="absolute top-1/2 left-0 w-full h-0.5 bg-slate-100 -z-0"></div>
@@ -182,11 +190,13 @@ export const ControlTower: React.FC = () => {
 
         {/* B) Manufacturing Execution */}
         <RunbookCard 
+          id="manufacturing"
           title="Manufacturing Execution Run" 
           range="S4 → S8" 
           purpose="Batch planning, assembly execution, QA validation, and release."
           roles={['Planner', 'Operator', 'QA Lead']}
           status="Blocked"
+          onNavigate={onNavigate}
         >
            <div className="flex items-center justify-between px-4 relative">
               <div className="absolute top-1/2 left-0 w-full h-0.5 bg-slate-100 -z-0"></div>
@@ -202,11 +212,13 @@ export const ControlTower: React.FC = () => {
 
         {/* C) Dispatch & Custody Chain */}
         <RunbookCard 
+          id="dispatch"
           title="Dispatch & Custody Chain" 
           range="S11 → S14" 
           purpose="Packing, gate pass generation, custody transfer, and logistics handover."
           roles={['Logistics', 'Security', 'Transporter']}
           status="Healthy"
+          onNavigate={onNavigate}
         >
            <div className="flex items-center justify-between px-4 relative">
               <div className="absolute top-1/2 left-0 w-full h-0.5 bg-slate-100 -z-0"></div>
@@ -222,11 +234,13 @@ export const ControlTower: React.FC = () => {
 
         {/* D) Warranty Lifecycle Management */}
         <RunbookCard 
+          id="warranty"
           title="Warranty Lifecycle Management" 
           range="S15 → S16" 
           purpose="Service intake, RCA, warranty adjudication, and recovery routing."
           roles={['Service Eng', 'Sustainability', 'Customer']}
           status="Idle"
+          onNavigate={onNavigate}
         >
            <div className="flex items-center justify-between px-4 relative">
               <div className="absolute top-1/2 left-0 w-full h-0.5 bg-slate-100 -z-0"></div>

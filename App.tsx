@@ -3,6 +3,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 import { Layout } from './components/Layout';
 import { Dashboard } from './components/Dashboard';
 import { ControlTower } from './components/ControlTower';
+import { RunbookDetail } from './components/RunbookDetail';
 import { SystemSetup } from './components/SystemSetup';
 import { SKUBlueprint } from './components/SKUBlueprint';
 import { Procurement } from './components/Procurement';
@@ -34,6 +35,9 @@ const App: React.FC = () => {
   // PP-010: View State
   const [currentView, setCurrentView] = useState<NavView>('dashboard');
   
+  // EXT-BP-004: Runbook Context State
+  const [activeRunbookId, setActiveRunbookId] = useState<string | null>(null);
+  
   // BP-002: Dynamic Role State
   const [currentRole, setCurrentRole] = useState<UserRole>(UserRole.SYSTEM_ADMIN);
 
@@ -49,12 +53,20 @@ const App: React.FC = () => {
     };
   }, [currentRole]);
 
+  // Handler for deep linking to runbooks
+  const handleRunbookNavigation = (runbookId: string) => {
+    setActiveRunbookId(runbookId);
+    setCurrentView('runbook_detail');
+  };
+
   return (
     <ErrorBoundary>
       <UserContext.Provider value={userContextValue}>
         <Layout currentView={currentView} onNavigate={setCurrentView}>
           {currentView === 'dashboard' && <Dashboard />}
-          {currentView === 'control_tower' && <ControlTower />}
+          {currentView === 'control_tower' && <ControlTower onNavigate={handleRunbookNavigation} />}
+          {currentView === 'runbook_detail' && <RunbookDetail runbookId={activeRunbookId} onNavigate={setCurrentView} />}
+          
           {currentView === 'system_setup' && <SystemSetup />}
           {currentView === 'sku_blueprint' && <SKUBlueprint />}
           {currentView === 'procurement' && <Procurement />}
