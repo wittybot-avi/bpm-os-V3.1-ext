@@ -16,7 +16,8 @@ import {
   Zap,
   RotateCcw,
   BarChart,
-  TrendingUp
+  TrendingUp,
+  BarChart3
 } from 'lucide-react';
 
 interface RunbookProps {
@@ -128,9 +129,15 @@ export const ControlTower: React.FC<ControlTowerProps> = ({ onNavigate, onViewEx
            </h1>
            <p className="text-slate-500 text-sm mt-1">Operational visibility and orchestration across plant workflows.</p>
         </div>
-        <div className="bg-slate-900 text-white px-3 py-1.5 rounded text-xs font-bold border border-slate-700 uppercase flex items-center gap-2 shadow-sm">
-          <Activity size={14} className="text-green-400" />
-          <span>Operational Spine Active</span>
+        <div className="flex gap-4 items-center">
+            <div className="text-xs text-slate-500 flex items-center gap-1 bg-slate-50 px-2 py-1 rounded border border-slate-100">
+                <BarChart3 size={14} />
+                <span>OEE Metrics available in Production Line View</span>
+            </div>
+            <div className="bg-slate-900 text-white px-3 py-1.5 rounded text-xs font-bold border border-slate-700 uppercase flex items-center gap-2 shadow-sm">
+                <Activity size={14} className="text-green-400" />
+                <span>Operational Spine Active</span>
+            </div>
         </div>
       </div>
 
