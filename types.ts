@@ -40,13 +40,14 @@ export const UserContext = createContext<UserContextType>({
 // App Constants
 export const APP_VERSION = 'V3.1-EXT';
 export const APP_NAME = 'BPM-OS';
-export const PATCH_ID = 'EXT-BP-004';
+export const PATCH_ID = 'EXT-BP-005';
 
 // Navigation Views
 export type NavView = 
   | 'dashboard' 
   | 'control_tower'
   | 'runbook_detail'
+  | 'exceptions_view'
   | 'system_setup' 
   | 'sku_blueprint' 
   | 'procurement' 

@@ -14,7 +14,9 @@ import {
   Box,
   Layers,
   Zap,
-  RotateCcw
+  RotateCcw,
+  BarChart,
+  TrendingUp
 } from 'lucide-react';
 
 interface RunbookProps {
@@ -107,9 +109,10 @@ const GateNode: React.FC<{ status: 'Open' | 'Closed' | 'Locked' }> = ({ status }
 
 interface ControlTowerProps {
   onNavigate: (runbookId: string) => void;
+  onViewExceptions?: () => void;
 }
 
-export const ControlTower: React.FC<ControlTowerProps> = ({ onNavigate }) => {
+export const ControlTower: React.FC<ControlTowerProps> = ({ onNavigate, onViewExceptions }) => {
   return (
     <div className="space-y-6 h-full flex flex-col animate-in fade-in duration-300">
       
@@ -131,35 +134,63 @@ export const ControlTower: React.FC<ControlTowerProps> = ({ onNavigate }) => {
         </div>
       </div>
 
-      {/* Metadata Strip */}
+      {/* Global Attention Strip */}
       <div className="grid grid-cols-4 gap-4">
-        <div className="bg-white p-3 rounded-lg border border-industrial-border shadow-sm flex items-center justify-between">
+        
+        {/* Blocked Gates - Critical */}
+        <div 
+          onClick={onViewExceptions}
+          className="bg-white p-3 rounded-lg border-l-4 border-l-red-500 border-y border-r border-slate-200 shadow-sm flex items-center justify-between cursor-pointer hover:bg-slate-50 transition-colors group"
+        >
            <div>
-              <div className="text-xs text-slate-500 uppercase font-bold">Active Runs</div>
-              <div className="text-2xl font-bold text-slate-800">8</div>
-           </div>
-           <PlayCircle className="text-green-500" size={24} />
-        </div>
-        <div className="bg-white p-3 rounded-lg border border-industrial-border shadow-sm flex items-center justify-between">
-           <div>
-              <div className="text-xs text-slate-500 uppercase font-bold">Blocked Gates</div>
+              <div className="text-xs text-red-600 uppercase font-bold flex items-center gap-1">
+                Blocked Gates
+                <ArrowRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+              </div>
               <div className="text-2xl font-bold text-slate-800">2</div>
            </div>
-           <AlertOctagon className="text-red-500" size={24} />
+           <div className="p-2 bg-red-50 rounded-full text-red-500">
+              <AlertOctagon size={24} />
+           </div>
         </div>
-        <div className="bg-white p-3 rounded-lg border border-industrial-border shadow-sm flex items-center justify-between">
+
+        {/* Exceptions - Warning */}
+        <div 
+          onClick={onViewExceptions}
+          className="bg-white p-3 rounded-lg border-l-4 border-l-amber-500 border-y border-r border-slate-200 shadow-sm flex items-center justify-between cursor-pointer hover:bg-slate-50 transition-colors group"
+        >
            <div>
-              <div className="text-xs text-slate-500 uppercase font-bold">Exceptions</div>
+              <div className="text-xs text-amber-600 uppercase font-bold flex items-center gap-1">
+                Exceptions Open
+                <ArrowRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+              </div>
               <div className="text-2xl font-bold text-slate-800">5</div>
            </div>
-           <AlertTriangle className="text-amber-500" size={24} />
-        </div>
-        <div className="bg-white p-3 rounded-lg border border-industrial-border shadow-sm flex items-center justify-between">
-           <div>
-              <div className="text-xs text-slate-500 uppercase font-bold">System Health</div>
-              <div className="text-2xl font-bold text-slate-800">99.9%</div>
+           <div className="p-2 bg-amber-50 rounded-full text-amber-500">
+              <AlertTriangle size={24} />
            </div>
-           <Activity className="text-blue-500" size={24} />
+        </div>
+
+        {/* SLA Risk - Info */}
+        <div className="bg-white p-3 rounded-lg border-l-4 border-l-blue-500 border-y border-r border-slate-200 shadow-sm flex items-center justify-between">
+           <div>
+              <div className="text-xs text-blue-600 uppercase font-bold">SLA Risk</div>
+              <div className="text-2xl font-bold text-slate-800">1</div>
+           </div>
+           <div className="p-2 bg-blue-50 rounded-full text-blue-500">
+              <TrendingUp size={24} />
+           </div>
+        </div>
+
+        {/* Escalations - Info */}
+        <div className="bg-white p-3 rounded-lg border-l-4 border-l-purple-500 border-y border-r border-slate-200 shadow-sm flex items-center justify-between">
+           <div>
+              <div className="text-xs text-purple-600 uppercase font-bold">Escalations</div>
+              <div className="text-2xl font-bold text-slate-800">0</div>
+           </div>
+           <div className="p-2 bg-purple-50 rounded-full text-purple-500">
+              <BarChart size={24} />
+           </div>
         </div>
       </div>
 

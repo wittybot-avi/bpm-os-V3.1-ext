@@ -43,3 +43,4 @@
 | **EXT-BP-002** | Bridge Patch | System Section Handover | **STABLE** | Populated Live Status, Inventory, Line, Logs, and Reports screens. | 2026-01-12 01:55 (IST) |
 | **EXT-BP-003** | Bridge Patch | Control Tower Shell | **STABLE** | Added Control Tower operation spine and runbook visualization. | 2026-01-12 02:05 (IST) |
 | **EXT-BP-004** | Bridge Patch | Runbook Detail Views | **STABLE** | Added detailed runbook navigation, stage spines, and gate context panels. | 2026-01-12 02:15 (IST) |
+| **EXT-BP-005** | Bridge Patch | Exception Visibility Layer | **STABLE** | Added Global Attention Strip, Exceptions View, and Runbook Annotations. | 2026-01-12 02:25 (IST) |

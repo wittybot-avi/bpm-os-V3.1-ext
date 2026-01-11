@@ -17,7 +17,8 @@ import {
   ShieldCheck,
   User,
   Info,
-  ExternalLink
+  ExternalLink,
+  AlertTriangle
 } from 'lucide-react';
 
 interface RunbookDetailProps {
@@ -33,6 +34,10 @@ interface StageDefinition {
   status: 'Completed' | 'In Progress' | 'Pending' | 'Hold';
   roles: string[];
   gate?: GateDefinition;
+  exception?: {
+    type: string;
+    description: string;
+  };
 }
 
 interface GateDefinition {
@@ -92,6 +97,10 @@ const RUNBOOKS: Record<string, RunbookData> = {
           owner: 'Quality Lead',
           status: 'Closed',
           impact: 'Batch remains quarantined.'
+        },
+        exception: {
+          type: 'Quality Deviation',
+          description: 'AQL 2.5 Failure on Sample #4'
         }
       },
       {
@@ -165,6 +174,10 @@ const RUNBOOKS: Record<string, RunbookData> = {
           owner: 'Supervisor',
           status: 'Locked',
           impact: 'Modules blocked from QA.'
+        },
+        exception: {
+          type: 'Gate Block',
+          description: 'Enclosure Seal Check Failed (Interlock)'
         }
       },
       {
@@ -286,6 +299,10 @@ const RUNBOOKS: Record<string, RunbookData> = {
           owner: 'Security Officer',
           status: 'Locked',
           impact: 'Custody transfer fails.'
+        },
+        exception: {
+          type: 'Custody Mismatch',
+          description: 'Driver ID Check Failed'
         }
       }
     ]
@@ -433,15 +450,17 @@ export const RunbookDetail: React.FC<RunbookDetailProps> = ({ runbookId, onNavig
                         (activeStage?.id === stage.id) 
                           ? 'bg-white border-brand-500 shadow-md translate-x-1' 
                           : 'bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50'
-                      }`}
+                      } ${stage.exception ? 'border-red-300 bg-red-50 hover:bg-red-100' : ''}`}
                    >
                       {/* Connector Dot */}
                       <div className={`absolute -left-[23px] w-6 h-6 rounded-full border-4 border-slate-50 flex items-center justify-center ${
                          stage.status === 'Completed' ? 'bg-green-500' :
                          stage.status === 'In Progress' ? 'bg-blue-500' :
+                         stage.exception ? 'bg-red-500' :
                          'bg-slate-300'
                       }`}>
                          {stage.status === 'Completed' && <CheckCircle2 size={12} className="text-white" />}
+                         {stage.exception && <AlertTriangle size={12} className="text-white" />}
                       </div>
 
                       <div className="flex-1">
@@ -449,14 +468,21 @@ export const RunbookDetail: React.FC<RunbookDetailProps> = ({ runbookId, onNavig
                             <h3 className={`font-bold ${activeStage?.id === stage.id ? 'text-brand-700' : 'text-slate-700'}`}>
                               {stage.name}
                             </h3>
-                            <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded ${
-                               stage.status === 'Completed' ? 'bg-green-50 text-green-700' :
-                               stage.status === 'In Progress' ? 'bg-blue-50 text-blue-700' :
-                               stage.status === 'Hold' ? 'bg-red-50 text-red-700' :
-                               'bg-slate-100 text-slate-500'
-                            }`}>
-                               {stage.status}
-                            </span>
+                            <div className="flex gap-2">
+                                {stage.exception && (
+                                    <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-red-100 text-red-700 border border-red-200 flex items-center gap-1">
+                                        <AlertOctagon size={10} /> Exception
+                                    </span>
+                                )}
+                                <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded ${
+                                   stage.status === 'Completed' ? 'bg-green-50 text-green-700' :
+                                   stage.status === 'In Progress' ? 'bg-blue-50 text-blue-700' :
+                                   stage.status === 'Hold' ? 'bg-red-50 text-red-700' :
+                                   'bg-slate-100 text-slate-500'
+                                }`}>
+                                   {stage.status}
+                                </span>
+                            </div>
                          </div>
                          <div className="text-xs text-slate-500 flex gap-2">
                             <span>{stage.sopRef}</span>
@@ -502,6 +528,18 @@ export const RunbookDetail: React.FC<RunbookDetailProps> = ({ runbookId, onNavig
                   <h2 className="text-xl font-bold text-slate-800 mb-1">{activeStage.name}</h2>
                   <p className="text-sm text-slate-500 font-mono">{activeStage.sopRef}</p>
                </div>
+
+               {/* Exception Context if present */}
+               {activeStage.exception && (
+                   <div className="bg-red-50 rounded-lg border border-red-200 p-4 mb-6 shadow-sm">
+                       <div className="flex items-center gap-2 mb-2 text-red-700">
+                           <AlertOctagon size={18} />
+                           <h3 className="font-bold text-sm">Active Exception</h3>
+                       </div>
+                       <p className="text-sm text-red-800 font-medium mb-1">{activeStage.exception.type}</p>
+                       <p className="text-xs text-red-600">{activeStage.exception.description}</p>
+                   </div>
+               )}
 
                {/* Gate Details */}
                {activeStage.gate && (

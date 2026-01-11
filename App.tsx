@@ -4,6 +4,7 @@ import { Layout } from './components/Layout';
 import { Dashboard } from './components/Dashboard';
 import { ControlTower } from './components/ControlTower';
 import { RunbookDetail } from './components/RunbookDetail';
+import { ExceptionsView } from './components/ExceptionsView';
 import { SystemSetup } from './components/SystemSetup';
 import { SKUBlueprint } from './components/SKUBlueprint';
 import { Procurement } from './components/Procurement';
@@ -64,8 +65,9 @@ const App: React.FC = () => {
       <UserContext.Provider value={userContextValue}>
         <Layout currentView={currentView} onNavigate={setCurrentView}>
           {currentView === 'dashboard' && <Dashboard />}
-          {currentView === 'control_tower' && <ControlTower onNavigate={handleRunbookNavigation} />}
+          {currentView === 'control_tower' && <ControlTower onNavigate={handleRunbookNavigation} onViewExceptions={() => setCurrentView('exceptions_view')} />}
           {currentView === 'runbook_detail' && <RunbookDetail runbookId={activeRunbookId} onNavigate={setCurrentView} />}
+          {currentView === 'exceptions_view' && <ExceptionsView onNavigate={setCurrentView} />}
           
           {currentView === 'system_setup' && <SystemSetup />}
           {currentView === 'sku_blueprint' && <SKUBlueprint />}
