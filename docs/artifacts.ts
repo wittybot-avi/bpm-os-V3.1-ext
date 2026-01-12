@@ -25,24 +25,15 @@ The "EXT" (Operations, Control & Dashboards) extension adds:
 - Separation of concerns between Frontend (Visual) and Backend (Logic).
 - Strict "Trace" vs "Track" semantic enforcement.
 
-## 4. Current UI Capabilities (as of EXT-HO-093)
-The frontend baseline is feature-complete with a consolidated Dashboard Foundation and Role-Specific views:
-- **Executive Snapshot:** High-level KPI cards for Manufacturing, Assets, Custody, and Material.
-- **Operational Trends:** Time-series graphs for output, throughput, and exceptions.
-- **Lifecycle Distribution:** Visualization of asset states and custody splits.
-- **Operator Dashboard (EXT-PP-030):** Focused view for operators reusing the foundation with emphasis on active shift, blocks, and relevant trends.
-- **Supervisor/QA Dashboard (EXT-PP-031):** Oversight view with focus on blocks, holds, approvals, and quality risks.
-- **Plant Head Dashboard (EXT-PP-032):** Executive view with Plant Health Strip, Bottleneck Analysis, and OEE Reference.
-- **Admin Dashboard (EXT-PP-033):** Governance view with System Health Strip, Integrity Signals, and Integration Readiness.
-- **Auditor Dashboard (EXT-PP-034):** Strict Read-Only view with Evidence Pointers, Audit Strips, and Custody focus.
-
-**Last updated via patch:** EXT-HO-093 (Integration Hooks Map Added)
+## 4. Current UI Capabilities (as of EXT-HO-094)
+The frontend baseline is feature-complete with a consolidated Dashboard Foundation and Role-Specific views.
+**Last updated via patch:** EXT-HO-094 (Consistency Validation Pass)
 
 ## 5. Dashboard Foundation (EXT-PP-025)
 The System Dashboard is a **TRACK** surface. It shows the current operational state of the plant and fleet.
 - **Purpose:** Real-time visibility, trend analysis, and exception spotting.
 - **Non-Purpose:** It is NOT the system of record for lineage (use Registry) and NOT an action surface (use Control Tower).
-- **Structure:** The 4-section layout (Snapshot, Trends, Distribution, Risk) is frozen and serves as the template for all role-specific views.
+- **Structure:** The 4-section layout (Snapshot, Trends, Distribution, Risk) is frozen.
 
 ## 6. Handover Notes
 This frontend is a **state-driven visual shell**. 
@@ -67,67 +58,102 @@ All such logic must be implemented in the backend microservices.
 
 ---
 
-# HANDOVER APPENDIX II: UI STATE MACHINE GLOSSARY (EXT-HO-092)
+# HANDOVER APPENDIX II: UI STATE MACHINE GLOSSARY (EXT-HO-094 VALIDATED)
 
-*(Refer to previous patch documentation for full glossary tables)*
+**Status:** AUTHORITATIVE (Validated against Frontend Code)
+**Scope:** Defines the shared vocabulary for Backend implementation. Backend APIs must map their internal states to these enums to ensure correct UI rendering.
+
+## A. Status Enums (Validated)
+
+| Enum Type | Allowed Values (Strings) | UI Context |
+|:---|:---|:---|
+| **StageStatus** | \`Pending\`<br>\`In Progress\`<br>\`Hold\`<br>\`Completed\` | Used in Runbook Detail spines. Determines connector color and node state. |
+| **GateStatus** | \`Open\`<br>\`Closed\`<br>\`Locked\` | Used in Runbook Detail gates. *Note: Closed = Pending Decision, Locked = Blocked/Fail.* |
+| **ExceptionSeverity** | \`Low\`<br>\`Medium\`<br>\`High\`<br>\`Critical\` | Used in Exceptions View & Alerts. Determines badge color (Blue/Amber/Orange/Red). |
+| **RunbookStatus** | \`Healthy\`<br>\`Degraded\`<br>\`Blocked\`<br>\`Idle\`<br>\`Running\` | Used in Control Tower Cards. Maps to card border color and status badge. |
+| **LineMode** | \`Running\`<br>\`Idle\`<br>\`Blocked\`<br>\`Maintenance\` | Used in Production Line & Live Status. |
+| **CustodyType** | \`Manufacturer\`<br>\`Logistics\`<br>\`Customer\`<br>\`Recycler\` | Used in Battery Registry & Dashboards. |
+
+## B. State Transition Descriptions (Intent)
+
+### 1. Stage Transitions
+*   **Pending → In Progress:** Triggered when the first task in a stage is initiated.
+*   **In Progress → Completed:** Triggered when all tasks are done and exit gate is cleared.
+*   **In Progress → Hold:** Triggered by an active Exception (e.g., Gate Interlock, Quality Failure).
+*   **Hold → In Progress:** Triggered when blocking Exception is Resolved.
+
+### 2. Gate Semantics
+*   **Open:** Validated and passable. Displayed as Green.
+*   **Closed:** Pending approval or action. Displayed as Grey/Blue.
+*   **Locked:** System-enforced lock due to failure or missing prerequisite. Displayed as Red.
+
+## C. Exception Lifecycle (Read-Only)
+The UI displays exceptions as a read-only feed. The backend state machine controls the lifecycle:
+1.  **Raised:** Event detected (e.g., Sensor out of range).
+2.  **Triaged:** Assigned to an owner (L1).
+3.  **In Review:** Investigation in progress.
+4.  **Resolved:** Fix applied, but verification pending.
+5.  **Closed:** Verified and archived.
+
+## D. Custodian-of-Record Semantics
+*   **Definition:** The legal entity possessing the physical asset.
+*   **Handover Event:** A "Dispatch Execution" (S14) event triggers a custody change from *Manufacturer* to *Logistics*.
+*   **Trace Reflection:** The Battery Registry (S9) must update its "Custodian" field immediately upon handover confirmation.
 
 ---
 
 # HANDOVER APPENDIX III: INTEGRATION HOOKS MAP (EXT-HO-093)
 
 **Status:** HANDOVER READY
-**Objective:** Define exact plug points for Backend API integration. Frontend components are "Vibe Coded" to consume data shapes defined in EXT-HO-090.
+**Objective:** Define exact plug points for Backend API integration.
 
-## A. Purpose & Rules
-1.  **Frontend-Only Shell:** The current UI uses static mock data. Integration must replace these mocks with real API calls.
-2.  **No Re-Interpretation:** The backend MUST return data that satisfies the existing UI semantics (e.g., if the UI expects 'Blocked', the backend must map its internal state to 'Blocked').
-3.  **Hook Pattern:** Implement data fetching using a standard hook pattern (e.g., React Query / SWR / Custom Hooks) that returns:
-    *   \`data\`: The payload (matching contract shapes).
-    *   \`isLoading\`: Boolean for loading skeletons.
-    *   \`error\`: Error object for error boundaries.
+## A. Hook Pattern
+Implement data fetching using a standard hook pattern (e.g., React Query) returning \`{ data, isLoading, error }\`.
 
 ## B. Screen-by-Screen Hook Table
 
-| Screen / Component | UI Section | Hook Name (Proposed) | Backend Endpoint | Data Shape (Glossary Ref) |
-|:---|:---|:---|:---|:---|
-| **Control Tower** | Runbook Cards | \`useRunbooks()\` | \`GET /control-tower/runbooks\` | \`RunbookSummary[]\` |
-| **Runbook Detail** | Stage Spine | \`useRunbookDetails(id)\` | \`GET /runbooks/{id}/stages\` | \`StageDetail[]\` |
-| **Runbook Detail** | Gate Context | \`useGateStatus(id, stage)\` | \`GET /runbooks/{id}/gates\` | \`GateStatus\` |
-| **Live Status** | Metrics Strip | \`useSystemMetrics()\` | \`GET /live-status/summary\` | \`Metric[]\` |
-| **Live Status** | Operations | \`useRunningOperations()\` | \`GET /live-status/operations\` | \`RunbookSnapshot[]\` |
-| **Live Status** | Line Status | \`useLineStatus()\` | \`GET /live-status/lines\` | \`LineSnapshot[]\` |
-| **Inventory** | Categories | \`useInventoryCategories()\` | \`GET /inventory/categories\` | \`CategorySummary[]\` |
-| **Inventory** | Item List | \`useInventoryItems(cat)\` | \`GET /inventory/items\` | \`InventoryItem[]\` |
-| **Production Line** | Line List | \`useLineDetails(id)\` | \`GET /lines/{id}\` | \`LineData\` |
-| **Production Line** | Stations | \`useStationStatus(lineId)\` | \`GET /lines/{id}/stations\` | \`StationStatus[]\` |
-| **Logs** | Log Table | \`useSystemLogs(filters)\` | \`GET /logs\` | \`LogEntry[]\` |
-| **Reports** | Report Grid | \`useReports()\` | \`GET /reports\` | \`ReportMeta[]\` |
-| **Dashboards** | KPI Cards | \`useDashboardSummary(role)\` | \`GET /dashboard/{role}/summary\` | \`KPISet\` |
-| **Dashboards** | Trends | \`useDashboardTrends()\` | \`GET /dashboard/trends\` | \`TrendSeries[]\` |
-| **Dashboards** | Attention | \`useAttentionItems(role)\` | \`GET /dashboard/{role}/attention\` | \`AttentionItem[]\` |
-
-## C. "Do Not Break" Notes
-**1. Deterministic Ordering:**
-*   Runbook stages must always return in SOP order (S0 -> S17). Do not rely on frontend sorting.
-*   Log entries must be reverse-chronological (newest first).
-
-**2. Null Safety:**
-*   If a field is optional (e.g., \`blockedReason\`), the backend must send \`null\` or omit it. The UI handles empty states gracefully.
-*   Do NOT send empty strings \`""\` for missing enums; use \`null\`.
-
-**3. Read-Only Discipline:**
-*   For Auditor/Regulator roles, the backend must enforce read-only at the API level (reject POST/PUT), even if the UI hides the buttons.
-
-**4. Loading States:**
-*   The UI has built-in skeletons. Ensure \`isLoading\` is accurate to prevent layout shifts.
-
-## D. Future Integration Phasing
-*   **Phase 1 (Data Binding):** Replace \`MOCK_DATA\` constants with \`useQuery\` hooks hitting the defined endpoints.
-*   **Phase 2 (Auth Context):** Replace the mocked \`UserContext\` with a real JWT/OIDC provider affecting \`roleContext\`.
-*   **Phase 3 (Action Wiring):** Connect buttons (Approve, Block, Dispatch) to mutation endpoints (POST/PUT).
+| Screen / Component | Hook Name | Backend Endpoint | Data Shape Ref |
+|:---|:---|:---|:---|
+| **Control Tower** | \`useRunbooks()\` | \`GET /control-tower/runbooks\` | \`RunbookSummary[]\` |
+| **Runbook Detail** | \`useRunbookDetails(id)\` | \`GET /runbooks/{id}/stages\` | \`StageDetail[]\` |
+| **Runbook Detail** | \`useGateStatus(id, stage)\` | \`GET /runbooks/{id}/gates\` | \`GateStatus\` |
+| **Live Status** | \`useSystemMetrics()\` | \`GET /live-status/summary\` | \`Metric[]\` |
+| **Live Status** | \`useRunningOperations()\` | \`GET /live-status/operations\` | \`RunbookSnapshot[]\` |
+| **Live Status** | \`useLineStatus()\` | \`GET /live-status/lines\` | \`LineSnapshot[]\` |
+| **Inventory** | \`useInventoryCategories()\` | \`GET /inventory/categories\` | \`CategorySummary[]\` |
+| **Inventory** | \`useInventoryItems(cat)\` | \`GET /inventory/items\` | \`InventoryItem[]\` |
+| **Production Line** | \`useLineDetails(id)\` | \`GET /lines/{id}\` | \`LineData\` |
+| **Production Line** | \`useStationStatus(lineId)\` | \`GET /lines/{id}/stations\` | \`StationStatus[]\` |
+| **Logs** | \`useSystemLogs(filters)\` | \`GET /logs\` | \`LogEntry[]\` |
+| **Reports** | \`useReports()\` | \`GET /reports\` | \`ReportMeta[]\` |
+| **Dashboards** | \`useDashboardSummary(role)\` | \`GET /dashboard/{role}/summary\` | \`KPISet\` |
+| **Dashboards** | \`useDashboardTrends()\` | \`GET /dashboard/trends\` | \`TrendSeries[]\` |
+| **Dashboards** | \`useAttentionItems(role)\` | \`GET /dashboard/{role}/attention\` | \`AttentionItem[]\` |
 
 ---
-**END OF MAP**
+
+# HANDOVER APPENDIX IV: HANDOVER VALIDATION NOTES (EXT-HO-094)
+
+**Status:** VALIDATED
+**Date:** 2026-01-15 22:00 (IST)
+
+## 1. Validation Summary
+A final consistency check has been performed across UI code, Glossary, and Contract.
+*   **Resolved:** Discrepancy between Glossary 'Blocked' vs Code 'Hold' for StageStatus. Code 'Hold' is authoritative.
+*   **Resolved:** Discrepancy between Glossary 'PendingApproval' vs Code 'Closed' for GateStatus. Code 'Closed' is authoritative.
+*   **Resolved:** Exception Severity levels aligned to 4-tier system (Critical/High/Medium/Low).
+
+## 2. Non-Goals & Assumptions
+*   **No Auth Logic:** The frontend assumes a valid session is provided by a parent shell or proxy. Auth logic is out of scope.
+*   **No Hardware Integration:** Frontend does not connect to CAN-BUS/PLC directly. It expects a backend gateway to mirror hardware state.
+*   **Happy Path Bias:** While exceptions are visualized, the complex recovery workflows (e.g., partial batch scrapping) are backend state machine responsibilities.
+
+## 3. Do Not Reinterpret
+*   **Status Colors:** The semantic colors (Green=Good, Red=Bad, Amber=Warning) are fixed in the UI. Backend status mapping must align to these expectations to avoid operator confusion.
+*   **Track vs Trace:** Do not mix operational state (Track) with identity ledger (Trace) in the same API response unless explicitly aggregated (e.g., Dashboard).
+
+---
+**END OF APPENDICES**
 `;
 
 export const RULEBOOK_CONTENT = `
@@ -189,11 +215,11 @@ This semantic distinction must be strictly enforced across all EXT screens:
 1.  **Backend must match UI semantics; UI must not be reinterpreted.**
 2.  **No backend logic shall be inferred from mock values; only structure.**
 
-## J. Handover Authority (EXT-HO-091 - 093)
+## J. Handover Authority (EXT-HO-091 - 094)
 1.  **SCREEN_INDEX.md, ROUTE_MAP.md, RBAC_MATRIX.md are handover-authoritative.**
 2.  **UI_STATE_MACHINE_GLOSSARY.md is authoritative.**
-3.  **INTEGRATION_HOOKS_MAP.md (EXT-HO-093) defines the API wiring contract.**
-4.  **Integration must replace mock data providers, not change UI composition.**
+3.  **INTEGRATION_HOOKS_MAP.md defines the API wiring contract.**
+4.  **EXT-HO-094 must be completed before EXT Design Freeze declaration.**
 
 ## K. RULEBOOK Precedence Clause
 **THIS FILE IS SUPREME.**
@@ -236,12 +262,6 @@ export const PATCHLOG_CONTENT = `
 | **PP-063** | UX Patch | Empty State & Zero-Data Patterns | **STABLE** | Standardized messaging for empty states and demo modes. | 2026-01-11 23:30 (IST) |
 | **PP-064** | UX Patch | Status Severity & Visual Normalization | **STABLE** | Enforced canonical status colors (Green/Amber/Red/Slate) across all screens. | 2026-01-11 23:45 (IST) |
 | **PP-065** | UX Patch | Table Readability & Density | **STABLE** | Standardized table headers, spacing, and column alignment. | 2026-01-12 00:00 (IST) |
-| **PP-090** | Hardening Patch | System Dashboard & Narrative Framing | **STABLE** | Introduced read-only System Dashboard and aligned lifecycle terminology. | 2026-01-12 00:15 (IST) |
-| **PP-091** | Hardening Patch | Custody & Asset Tracking Clarity | **STABLE** | Separated Asset vs Material tracking, added Custodian of Record view. | 2026-01-12 00:30 (IST) |
-| **PP-092** | Hardening Patch | Semantic Hardening (Track vs Trace) | **STABLE** | Enforced Trace (Lineage) vs Track (State) terminology across screens. | 2026-01-12 00:45 (IST) |
-| **PP-093** | Hardening Patch | RBAC Hardening & Safety UX | **STABLE** | Enforced strict read-only views for Auditors, hid restricted actions. | 2026-01-12 01:05 (IST) |
-| **PP-094** | Handover Patch | Design Freeze / Backend Handover | **STABLE** | Frontend Design Frozen — Backend Handover Ready. | 2026-01-12 01:25 (IST) |
-| | | | | | |
 | **EXT-BP-000** | Bridge Patch | EXT Phase Initialization | **STABLE** | Established V3.1-EXT governance, documentation view, and rulebook. | 2026-01-12 01:35 (IST) |
 | **EXT-BP-001** | Bridge Patch | Sidebar UX & Scalability | **STABLE** | Added collapsible sidebar sections and improved scroll behavior. | 2026-01-12 01:40 (IST) |
 | **EXT-BP-002** | Bridge Patch | System Section Handover | **STABLE** | Populated Live Status, Inventory, Line, Logs, and Reports screens. | 2026-01-12 01:55 (IST) |
@@ -276,14 +296,15 @@ export const PATCHLOG_CONTENT = `
 | **EXT-HO-091** | Handover Patch | UI Inventory (Screen Index + Route Map) | **STABLE** | Generated authoritative Screen Index, Route Map, and RBAC Matrix. | 2026-01-15 19:00 (IST) |
 | **EXT-HO-092** | Handover Patch | UI State Machine Glossary | **STABLE** | Created authoritative glossary for status enums and transition logic. | 2026-01-15 20:00 (IST) |
 | **EXT-HO-093** | Handover Patch | Integration Hooks Map | **STABLE** | Defined UI plug points and integration constraints for backend teams. | 2026-01-15 21:00 (IST) |
+| **EXT-HO-094** | Handover Patch | Consistency & Validation Pass | **STABLE** | Aligned Glossary and Contract enums with Frontend Implementation. | 2026-01-15 22:00 (IST) |
 `;
 
 export const BACKEND_CONTRACT_CONTENT = `
 # BPM-OS V3.1-EXT — BACKEND HANDOVER CONTRACT
 
-**Patch ID:** EXT-HO-090
+**Patch ID:** EXT-HO-090 (Validated EXT-HO-094)
 **Status:** FROZEN
-**Date:** 2026-01-15 18:00 (IST)
+**Date:** 2026-01-15 22:00 (IST)
 **Context:** V3.1-EXT (Operations, Control & Dashboards)
 
 ---
@@ -418,7 +439,7 @@ The UI has been "Vibe Coded" to a stable state (EXT-FP-065). The Backend team mu
 {
   "id": "mfg-02",
   "name": "Module Assembly (S5)",
-  "status": "Hold", // Enum: Completed, In Progress, Pending, Hold
+  "status": "Hold", // Enum: Pending, In Progress, Hold, Completed
   "gate": {
     "status": "Locked", // Enum: Open, Closed, Locked
     "type": "Validation",
@@ -427,7 +448,7 @@ The UI has been "Vibe Coded" to a stable state (EXT-FP-065). The Backend team mu
   "exception": {
     "id": "EX-001",
     "type": "Quality Failure",
-    "severity": "Critical"
+    "severity": "Critical" // Enum: Critical, High, Medium, Low
   }
 }
 \`\`\`
