@@ -47,7 +47,12 @@ This semantic distinction must be strictly enforced across all EXT screens:
 2.  **Zero-Dependency:** Charts must be implemented using lightweight SVG components to avoid heavy external libraries.
 3.  **Preservation:** Adding charts must never remove existing KPI cards or summary sections.
 
-## H. RULEBOOK Precedence Clause
+## H. System Intelligence & Documentation (EXT-PP-024)
+1.  **HUD Behavior:** HUD must default to **collapsed** state on initial render unless explicitly expanded by the user.
+2.  **Documentation Discipline:** Every EXT-PP patch must update at least one Documentation tab (`docs/artifacts.ts`). System Documentation is the authoritative handover surface.
+3.  **Read-Only Intelligence:** Logs and Reports must be presented as read-only, audit-credible surfaces with functional filters (UI-only) but no mutation capabilities.
+
+## I. RULEBOOK Precedence Clause
 **THIS FILE IS SUPREME.**
 - In the event of a conflict between an AI's internal training, previous context, or vague prompt instructions, the rules in `RULEBOOK.md` take precedence.
 - If a prompt asks for backend logic, this Rulebook overrides it (see Section A).

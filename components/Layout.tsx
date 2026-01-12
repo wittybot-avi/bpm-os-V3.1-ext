@@ -22,7 +22,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentView, onNavigat
           </div>
         </main>
       </div>
-      <SystemHUD />
+      <SystemHUD onNavigate={onNavigate} />
     </div>
   );
 };

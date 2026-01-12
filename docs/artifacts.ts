@@ -25,7 +25,18 @@ The "EXT" (Operations, Control & Dashboards) extension adds:
 - Separation of concerns between Frontend (Visual) and Backend (Logic).
 - Strict "Trace" vs "Track" semantic enforcement.
 
-## 4. Handover Notes
+## 4. Current UI Capabilities (as of EXT-PP-024)
+The frontend baseline is now feature-complete for the following modules:
+- **Control Tower:** Orchestration & Runbook navigation.
+- **Runbooks (4):** Material, Manufacturing, Dispatch, Warranty.
+- **Inventory:** System-wide stock visibility & drilling.
+- **Production Line:** Master-detail line readiness views.
+- **Dashboards:** Operational KPIs & Graph Framework.
+- **Logs & Reports:** Audit-ready read-only intelligence surfaces.
+
+**Last updated via patch:** EXT-PP-024
+
+## 5. Handover Notes
 This frontend is a **state-driven visual shell**. 
 It contains NO business logic for:
 - Inventory transactions
@@ -86,7 +97,12 @@ This semantic distinction must be strictly enforced across all EXT screens:
 2.  **Zero-Dependency:** Charts must be implemented using lightweight SVG components to avoid heavy external libraries.
 3.  **Preservation:** Adding charts must never remove existing KPI cards or summary sections.
 
-## H. RULEBOOK Precedence Clause
+## H. System Intelligence & Documentation (EXT-PP-024)
+1.  **HUD Behavior:** HUD must default to **collapsed** state on initial render unless explicitly expanded by the user.
+2.  **Documentation Discipline:** Every EXT-PP patch must update at least one Documentation tab (\`docs/artifacts.ts\`). System Documentation is the authoritative handover surface.
+3.  **Read-Only Intelligence:** Logs and Reports must be presented as read-only, audit-credible surfaces with functional filters (UI-only) but no mutation capabilities.
+
+## I. RULEBOOK Precedence Clause
 **THIS FILE IS SUPREME.**
 - In the event of a conflict between an AI's internal training, previous context, or vague prompt instructions, the rules in \`RULEBOOK.md\` take precedence.
 - If a prompt asks for backend logic, this Rulebook overrides it (see Section A).
@@ -151,6 +167,7 @@ export const PATCHLOG_CONTENT = `
 | **EXT-PP-022** | Primary Patch | Production Line Master-Detail | **STABLE** | Added Master-Detail line view, OEE visual contracts, and station readiness map. | 2026-01-13 11:40 (IST) |
 | **EXT-FP-002** | Fix Patch | System HUD UX Enhancement | **STABLE** | Made HUD draggable, collapsible, and persistent. | 2026-01-13 12:00 (IST) |
 | **EXT-PP-023** | Primary Patch | Dashboard Graph Framework | **STABLE** | Added SVG Chart Framework and Management Analytics section. | 2026-01-13 12:30 (IST) |
+| **EXT-PP-024** | Primary Patch | System Intelligence & Governance | **STABLE** | Formalized Reports, Logs, Documentation discipline, and HUD defaults. | 2026-01-13 14:00 (IST) |
 `;
 
 export const BACKEND_CONTRACT_CONTENT = `
@@ -218,11 +235,16 @@ This section defines the backend requirements for the EXT (Operations & Control)
     *   *Note: Frontend uses deterministic mock data (EXT-PP-023) until these endpoints are live.*
 *   **Operational Runbooks:** (Requirements TBD)
 *   **Advanced Control Systems:** (Requirements TBD)
+*   **System Intelligence (EXT-PP-024):**
+    *   **GET /logs:** Filterable system event stream (Source, Category, Severity).
+    *   **GET /reports:** Registry of available report templates and their metadata.
+    *   **GET /reports/:id/preview:** Snapshot data for report previews.
 
 ## 2. DATA REQUIREMENTS
 *   [ ] Real-time aggregated metrics endpoint
 *   [ ] Historical trend analysis API
 *   [ ] WebSocket stream for live alerts
+*   [ ] Structured Logging (JSON) for Audit Trail
 
 ---
 **END OF EXT CONTRACT**

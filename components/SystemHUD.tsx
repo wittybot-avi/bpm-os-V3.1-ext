@@ -1,17 +1,23 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
-import { UserContext, APP_VERSION, PATCH_ID } from '../types';
+import { UserContext, APP_VERSION, PATCH_ID, NavView } from '../types';
 import { 
   Activity, 
   Lock, 
   GripHorizontal, 
   Minimize2, 
   Maximize2,
-  ChevronDown,
-  ChevronUp
+  FileText,
+  ShieldCheck,
+  ClipboardList
 } from 'lucide-react';
 
-export const SystemHUD: React.FC = () => {
-  const [isExpanded, setIsExpanded] = useState(true);
+interface SystemHUDProps {
+  onNavigate?: (view: NavView) => void;
+}
+
+export const SystemHUD: React.FC<SystemHUDProps> = ({ onNavigate }) => {
+  // EXT-PP-024: HUD must be COLLAPSED by default
+  const [isExpanded, setIsExpanded] = useState(false);
   const [currentDate, setCurrentDate] = useState('');
   const [position, setPosition] = useState<{x: number, y: number} | null>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -24,13 +30,20 @@ export const SystemHUD: React.FC = () => {
   useEffect(() => {
     const updateDate = () => {
       const date = new Date();
-      const istDate = date.toLocaleDateString('en-CA', {
-        timeZone: 'Asia/Kolkata'
+      const istDate = date.toLocaleString('en-GB', {
+        timeZone: 'Asia/Kolkata',
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
       });
       setCurrentDate(`${istDate} (IST)`);
     };
     updateDate();
-    const timer = setInterval(updateDate, 60000);
+    const timer = setInterval(updateDate, 1000);
     return () => clearInterval(timer);
   }, []);
 
@@ -68,14 +81,12 @@ export const SystemHUD: React.FC = () => {
   }, [isDragging]);
 
   const startDrag = (e: React.MouseEvent) => {
-    // Only allow dragging from the handle
     if (hudRef.current) {
       const rect = hudRef.current.getBoundingClientRect();
       dragOffset.current = {
         x: e.clientX - rect.left,
         y: e.clientY - rect.top
       };
-      // If position is null (initial state), set it to current computed position to start dragging smoothly
       if (!position) {
         setPosition({ x: rect.left, y: rect.top });
       }
@@ -83,10 +94,16 @@ export const SystemHUD: React.FC = () => {
     }
   };
 
+  const handleNav = (view: NavView) => {
+    if (onNavigate) {
+      onNavigate(view);
+    }
+  };
+
   // Dynamic Styles
   const containerStyle: React.CSSProperties = position 
     ? { position: 'fixed', left: position.x, top: position.y } 
-    : { position: 'fixed', bottom: '1rem', right: '1rem' }; // Default position
+    : { position: 'fixed', bottom: '1rem', right: '1rem' }; 
 
   return (
     <div 
@@ -142,11 +159,26 @@ export const SystemHUD: React.FC = () => {
                       <span className="text-blue-300 font-medium text-right truncate ml-4">{user.role}</span>
                   </div>
                   <div className="flex justify-between text-xs">
-                      <span className="text-slate-500">Date</span>
-                      <span className="text-slate-300">{currentDate}</span>
+                      <span className="text-slate-500">Time</span>
+                      <span className="text-slate-300 font-mono text-[10px]">{currentDate}</span>
                   </div>
               </div>
               
+              {/* Quick Nav */}
+              {onNavigate && (
+                <div className="pt-3 flex justify-between gap-2 border-t border-slate-700">
+                   <button onClick={() => handleNav('documentation')} className="flex-1 bg-slate-800 hover:bg-slate-700 p-1.5 rounded text-[10px] text-center text-slate-300 flex flex-col items-center gap-1 transition-colors" title="Documentation">
+                      <FileText size={12} /> Docs
+                   </button>
+                   <button onClick={() => handleNav('system_logs')} className="flex-1 bg-slate-800 hover:bg-slate-700 p-1.5 rounded text-[10px] text-center text-slate-300 flex flex-col items-center gap-1 transition-colors" title="Logs">
+                      <ClipboardList size={12} /> Logs
+                   </button>
+                   <button onClick={() => handleNav('documentation')} className="flex-1 bg-slate-800 hover:bg-slate-700 p-1.5 rounded text-[10px] text-center text-slate-300 flex flex-col items-center gap-1 transition-colors" title="Rulebook">
+                      <ShieldCheck size={12} /> Rules
+                   </button>
+                </div>
+              )}
+
               {/* Design Freeze Indicator */}
               <div className="mt-2 pt-2 border-t border-slate-700">
                  <div className="bg-blue-950/50 text-blue-200 p-2 rounded text-[10px] text-center border border-blue-900/50 flex flex-col items-center gap-1">
