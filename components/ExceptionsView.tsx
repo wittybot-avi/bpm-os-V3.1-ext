@@ -92,6 +92,33 @@ const MOCK_EXCEPTIONS: Exception[] = [
   }
 ];
 
+// --- OPTIMIZED ROW COMPONENT ---
+const ExceptionRow = React.memo<{ ex: Exception; isSelected: boolean; onClick: (ex: Exception) => void }>(({ ex, isSelected, onClick }) => (
+  <tr 
+      onClick={() => onClick(ex)}
+      className={`cursor-pointer transition-colors ${isSelected ? 'bg-brand-50' : 'hover:bg-slate-50'}`}
+  >
+      <td className="px-4 py-3 align-top">
+          <div className="font-medium text-slate-800">{ex.type}</div>
+          <div className="text-[10px] text-slate-400 font-mono mt-1">{ex.id}</div>
+      </td>
+      <td className="px-4 py-3 align-top">
+          <div className="text-slate-600 text-xs">{ex.runbook}</div>
+          <div className="text-[10px] text-slate-400 mt-0.5">{ex.stage}</div>
+      </td>
+      <td className="px-4 py-3 align-top">
+          <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${
+            ex.severity === 'Critical' ? 'bg-red-100 text-red-700' :
+            ex.severity === 'High' ? 'bg-amber-100 text-amber-700' :
+            ex.severity === 'Medium' ? 'bg-blue-100 text-blue-700' :
+            'bg-slate-100 text-slate-600'
+          }`}>
+            {ex.severity}
+          </span>
+      </td>
+  </tr>
+));
+
 export const ExceptionsView: React.FC<ExceptionsViewProps> = ({ onNavigate }) => {
   const [selectedEx, setSelectedEx] = useState<Exception>(MOCK_EXCEPTIONS[0]);
 
@@ -139,30 +166,12 @@ export const ExceptionsView: React.FC<ExceptionsViewProps> = ({ onNavigate }) =>
                  </thead>
                  <tbody className="divide-y divide-slate-100">
                     {MOCK_EXCEPTIONS.map((ex) => (
-                       <tr 
-                          key={ex.id} 
-                          onClick={() => setSelectedEx(ex)}
-                          className={`cursor-pointer transition-colors ${selectedEx.id === ex.id ? 'bg-brand-50' : 'hover:bg-slate-50'}`}
-                       >
-                          <td className="px-4 py-3 align-top">
-                             <div className="font-medium text-slate-800">{ex.type}</div>
-                             <div className="text-[10px] text-slate-400 font-mono mt-1">{ex.id}</div>
-                          </td>
-                          <td className="px-4 py-3 align-top">
-                             <div className="text-slate-600 text-xs">{ex.runbook}</div>
-                             <div className="text-[10px] text-slate-400 mt-0.5">{ex.stage}</div>
-                          </td>
-                          <td className="px-4 py-3 align-top">
-                             <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${
-                                ex.severity === 'Critical' ? 'bg-red-100 text-red-700' :
-                                ex.severity === 'High' ? 'bg-amber-100 text-amber-700' :
-                                ex.severity === 'Medium' ? 'bg-blue-100 text-blue-700' :
-                                'bg-slate-100 text-slate-600'
-                             }`}>
-                                {ex.severity}
-                             </span>
-                          </td>
-                       </tr>
+                        <ExceptionRow 
+                            key={ex.id} 
+                            ex={ex} 
+                            isSelected={selectedEx.id === ex.id} 
+                            onClick={setSelectedEx} 
+                        />
                     ))}
                  </tbody>
               </table>

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useMemo } from 'react';
 import { UserContext, UserRole } from '../types';
 import { 
   ClipboardList, 
@@ -33,6 +33,48 @@ const MOCK_LOGS: LogEntry[] = [
   { id: 'log-007', timestamp: '2026-01-13 11:45', category: 'Workflow', severity: 'Warning', event: 'Line Blocked', entity: 'Station 03', actor: 'Operator (R. Singh)' },
 ];
 
+// Optimized Row Component
+const LogRow = React.memo<{ log: LogEntry }>(({ log }) => (
+  <tr className="hover:bg-slate-50 transition-colors">
+    <td className="px-6 py-3 font-mono text-slate-500 text-xs whitespace-nowrap">{log.timestamp}</td>
+    <td className="px-6 py-3 font-medium text-slate-700">
+      <span className="bg-slate-100 px-2 py-0.5 rounded text-xs border border-slate-200">
+        {log.category}
+      </span>
+    </td>
+    <td className="px-6 py-3">
+      <div className="flex items-center gap-2">
+        {log.severity === 'Info' && <Info size={16} className="text-blue-500" />}
+        {log.severity === 'Success' && <CheckCircle size={16} className="text-green-500" />}
+        {log.severity === 'Warning' && <AlertCircle size={16} className="text-amber-500" />}
+        {log.severity === 'Error' && <ShieldAlert size={16} className="text-red-500" />}
+        <span className={`text-xs font-bold ${
+          log.severity === 'Info' ? 'text-blue-700' :
+          log.severity === 'Success' ? 'text-green-700' :
+          log.severity === 'Warning' ? 'text-amber-700' :
+          'text-red-700'
+        }`}>{log.severity}</span>
+      </div>
+    </td>
+    <td className="px-6 py-3">
+      <div className="font-bold text-slate-800">{log.event}</div>
+      <div className="text-xs text-slate-500 mt-0.5">ID: {log.id}</div>
+    </td>
+    <td className="px-6 py-3">
+      <div className="flex items-center gap-1 text-slate-600">
+        <Box size={12} />
+        <span className="font-mono text-xs">{log.entity}</span>
+      </div>
+    </td>
+    <td className="px-6 py-3">
+      <div className="flex items-center gap-1 text-slate-600">
+        <User size={12} />
+        <span className="text-xs">{log.actor}</span>
+      </div>
+    </td>
+  </tr>
+));
+
 export const SystemLogs: React.FC = () => {
   const { role } = useContext(UserContext);
   const [filterCategory, setFilterCategory] = useState<string>('All');
@@ -41,17 +83,19 @@ export const SystemLogs: React.FC = () => {
   const isOperator = role === UserRole.OPERATOR;
   const isAuditor = role === UserRole.MANAGEMENT || role === UserRole.COMPLIANCE;
 
-  // RBAC Filtering Logic
-  const filteredLogs = MOCK_LOGS.filter(log => {
-    // Role-based visibility constraints
-    if (isOperator && (log.category === 'Security' || log.category === 'Compliance')) return false;
-    
-    // UI Filters
-    if (filterCategory !== 'All' && log.category !== filterCategory) return false;
-    if (filterSeverity !== 'All' && log.severity !== filterSeverity) return false;
-    
-    return true;
-  });
+  // Memoized Filter Logic (Optimized for large lists)
+  const filteredLogs = useMemo(() => {
+    return MOCK_LOGS.filter(log => {
+      // Role-based visibility constraints
+      if (isOperator && (log.category === 'Security' || log.category === 'Compliance')) return false;
+      
+      // UI Filters
+      if (filterCategory !== 'All' && log.category !== filterCategory) return false;
+      if (filterSeverity !== 'All' && log.severity !== filterSeverity) return false;
+      
+      return true;
+    });
+  }, [filterCategory, filterSeverity, isOperator]);
 
   return (
     <div className="space-y-6 h-full flex flex-col animate-in fade-in duration-300">
@@ -130,44 +174,7 @@ export const SystemLogs: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                 {filteredLogs.map(log => (
-                    <tr key={log.id} className="hover:bg-slate-50 transition-colors">
-                        <td className="px-6 py-3 font-mono text-slate-500 text-xs whitespace-nowrap">{log.timestamp}</td>
-                        <td className="px-6 py-3 font-medium text-slate-700">
-                            <span className="bg-slate-100 px-2 py-0.5 rounded text-xs border border-slate-200">
-                                {log.category}
-                            </span>
-                        </td>
-                        <td className="px-6 py-3">
-                            <div className="flex items-center gap-2">
-                            {log.severity === 'Info' && <Info size={16} className="text-blue-500" />}
-                            {log.severity === 'Success' && <CheckCircle size={16} className="text-green-500" />}
-                            {log.severity === 'Warning' && <AlertCircle size={16} className="text-amber-500" />}
-                            {log.severity === 'Error' && <ShieldAlert size={16} className="text-red-500" />}
-                            <span className={`text-xs font-bold ${
-                                log.severity === 'Info' ? 'text-blue-700' :
-                                log.severity === 'Success' ? 'text-green-700' :
-                                log.severity === 'Warning' ? 'text-amber-700' :
-                                'text-red-700'
-                            }`}>{log.severity}</span>
-                            </div>
-                        </td>
-                        <td className="px-6 py-3">
-                            <div className="font-bold text-slate-800">{log.event}</div>
-                            <div className="text-xs text-slate-500 mt-0.5">ID: {log.id}</div>
-                        </td>
-                        <td className="px-6 py-3">
-                            <div className="flex items-center gap-1 text-slate-600">
-                                <Box size={12} />
-                                <span className="font-mono text-xs">{log.entity}</span>
-                            </div>
-                        </td>
-                        <td className="px-6 py-3">
-                            <div className="flex items-center gap-1 text-slate-600">
-                                <User size={12} />
-                                <span className="text-xs">{log.actor}</span>
-                            </div>
-                        </td>
-                    </tr>
+                    <LogRow key={log.id} log={log} />
                 ))}
                 </tbody>
             </table>

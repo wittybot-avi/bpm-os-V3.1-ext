@@ -16,10 +16,10 @@ import {
   Info, 
   Eye, 
   ShieldCheck, 
-  TrendingUp,
-  MapPin,
-  Clock,
-  ArrowRight
+  TrendingUp, 
+  MapPin, 
+  Clock, 
+  ArrowRight 
 } from 'lucide-react';
 
 // --- MOCK DATA STRUCTURES ---
@@ -150,6 +150,41 @@ const MOCK_ITEMS: Record<string, InventoryItem[]> = {
   }))
 };
 
+// --- OPTIMIZED ROW COMPONENT ---
+const InventoryRow = React.memo<{ item: InventoryItem }>(({ item }) => (
+  <tr className="hover:bg-slate-50 transition-colors">
+    <td className="px-6 py-3 font-mono text-slate-700 font-medium">{item.id}</td>
+    <td className="px-6 py-3 text-slate-600">{item.sku}</td>
+    <td className="px-6 py-3 text-slate-500 flex items-center gap-1">
+        <MapPin size={12} /> {item.location}
+    </td>
+    <td className="px-6 py-3 font-mono text-xs text-slate-500">{item.batchRef}</td>
+    <td className="px-6 py-3 text-slate-500 flex items-center gap-1">
+        <Clock size={12} /> {item.age}
+    </td>
+    <td className="px-6 py-3">
+        <span className={`px-2 py-1 rounded text-xs font-bold uppercase border flex w-fit items-center gap-1 ${
+            item.status === 'Good' ? 'bg-green-50 text-green-700 border-green-200' :
+            item.status === 'Hold' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+            'bg-red-50 text-red-700 border-red-200'
+        }`}>
+            {item.status === 'Good' && <CheckCircle2 size={12} />}
+            {item.status === 'Hold' && <AlertTriangle size={12} />}
+            {item.status === 'Blocked' && <AlertOctagon size={12} />}
+            {item.status}
+        </span>
+    </td>
+    <td className="px-6 py-3">
+        {item.status !== 'Good' && item.exceptionRef && (
+            <button className="text-xs text-brand-600 hover:text-brand-800 hover:underline flex items-center gap-1">
+                View Exception <ArrowRight size={10} />
+            </button>
+        )}
+        {item.status === 'Good' && <span className="text-xs text-slate-300">--</span>}
+    </td>
+  </tr>
+));
+
 // --- COMPONENTS ---
 
 export const SystemInventory: React.FC = () => {
@@ -161,7 +196,7 @@ export const SystemInventory: React.FC = () => {
   const isAuditor = role === UserRole.MANAGEMENT || role === UserRole.COMPLIANCE;
   const isSupervisor = role === UserRole.SUPERVISOR || role === UserRole.QA_ENGINEER;
 
-  // Filter Logic
+  // Optimized Filter Logic using useMemo
   const activeItems = useMemo(() => {
     if (!selectedCategoryId) return [];
     const items = MOCK_ITEMS[selectedCategoryId] || [];
@@ -173,7 +208,9 @@ export const SystemInventory: React.FC = () => {
     );
   }, [selectedCategoryId, searchQuery]);
 
-  const selectedCategory = CATEGORIES.find(c => c.id === selectedCategoryId);
+  const selectedCategory = useMemo(() => 
+    CATEGORIES.find(c => c.id === selectedCategoryId), 
+  [selectedCategoryId]);
 
   const handleCardClick = (id: string) => {
     setSelectedCategoryId(id);
@@ -275,37 +312,7 @@ export const SystemInventory: React.FC = () => {
                     <tbody className="divide-y divide-slate-100">
                         {activeItems.length > 0 ? (
                             activeItems.map((item) => (
-                                <tr key={item.id} className="hover:bg-slate-50 transition-colors">
-                                    <td className="px-6 py-3 font-mono text-slate-700 font-medium">{item.id}</td>
-                                    <td className="px-6 py-3 text-slate-600">{item.sku}</td>
-                                    <td className="px-6 py-3 text-slate-500 flex items-center gap-1">
-                                        <MapPin size={12} /> {item.location}
-                                    </td>
-                                    <td className="px-6 py-3 font-mono text-xs text-slate-500">{item.batchRef}</td>
-                                    <td className="px-6 py-3 text-slate-500 flex items-center gap-1">
-                                        <Clock size={12} /> {item.age}
-                                    </td>
-                                    <td className="px-6 py-3">
-                                        <span className={`px-2 py-1 rounded text-xs font-bold uppercase border flex w-fit items-center gap-1 ${
-                                            item.status === 'Good' ? 'bg-green-50 text-green-700 border-green-200' :
-                                            item.status === 'Hold' ? 'bg-amber-50 text-amber-700 border-amber-200' :
-                                            'bg-red-50 text-red-700 border-red-200'
-                                        }`}>
-                                            {item.status === 'Good' && <CheckCircle2 size={12} />}
-                                            {item.status === 'Hold' && <AlertTriangle size={12} />}
-                                            {item.status === 'Blocked' && <AlertOctagon size={12} />}
-                                            {item.status}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-3">
-                                        {item.status !== 'Good' && item.exceptionRef && (
-                                            <button className="text-xs text-brand-600 hover:text-brand-800 hover:underline flex items-center gap-1">
-                                                View Exception <ArrowRight size={10} />
-                                            </button>
-                                        )}
-                                        {item.status === 'Good' && <span className="text-xs text-slate-300">--</span>}
-                                    </td>
-                                </tr>
+                                <InventoryRow key={item.id} item={item} />
                             ))
                         ) : (
                             <tr>

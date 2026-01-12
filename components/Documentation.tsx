@@ -26,10 +26,27 @@ const getLastUpdated = (patchlog: string) => {
   return 'Unknown';
 };
 
+// Memoized Content Viewer to prevent re-render of heavy text blocks
+const DocContent = React.memo<{ content: string }>(({ content }) => (
+    <div className="flex-1 overflow-y-auto p-6 font-mono text-sm text-slate-700 whitespace-pre-wrap leading-relaxed focus:outline-none" tabIndex={0}>
+        {content}
+    </div>
+));
+
 export const Documentation: React.FC = () => {
   const [activeTab, setActiveTab] = useState<DocTab>('context');
 
   const lastUpdated = useMemo(() => getLastUpdated(PATCHLOG_CONTENT), []);
+
+  const currentContent = useMemo(() => {
+      switch (activeTab) {
+          case 'context': return SYSTEM_CONTEXT_CONTENT;
+          case 'rulebook': return RULEBOOK_CONTENT;
+          case 'patchlog': return PATCHLOG_CONTENT;
+          case 'backend': return BACKEND_CONTRACT_CONTENT;
+          default: return '';
+      }
+  }, [activeTab]);
 
   return (
     <div className="space-y-6 h-full flex flex-col animate-in fade-in duration-300">
@@ -116,12 +133,8 @@ export const Documentation: React.FC = () => {
                 <div className="w-2 h-2 rounded-full bg-green-400"></div>
             </div>
          </div>
-         <div className="flex-1 overflow-y-auto p-6 font-mono text-sm text-slate-700 whitespace-pre-wrap leading-relaxed focus:outline-none" tabIndex={0}>
-            {activeTab === 'context' && SYSTEM_CONTEXT_CONTENT}
-            {activeTab === 'rulebook' && RULEBOOK_CONTENT}
-            {activeTab === 'patchlog' && PATCHLOG_CONTENT}
-            {activeTab === 'backend' && BACKEND_CONTRACT_CONTENT}
-         </div>
+         
+         <DocContent content={currentContent} />
       </div>
 
     </div>

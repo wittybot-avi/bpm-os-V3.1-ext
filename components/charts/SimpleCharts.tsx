@@ -31,7 +31,7 @@ export const ChartCard: React.FC<{ title: string; subtitle?: string; children: R
 );
 
 // --- Line Chart (Trend) ---
-export const SimpleLineChart: React.FC<BaseChartProps> = ({ data, height = 160, color = '#0ea5e9' }) => {
+export const SimpleLineChart = React.memo<BaseChartProps>(({ data, height = 160, color = '#0ea5e9' }) => {
   const maxVal = Math.max(...data.map(d => d.value)) * 1.1; // 10% buffer
   const points = data.map((d, i) => {
     const x = (i / (data.length - 1)) * 100;
@@ -76,10 +76,10 @@ export const SimpleLineChart: React.FC<BaseChartProps> = ({ data, height = 160, 
       </div>
     </div>
   );
-};
+});
 
 // --- Bar Chart (Vertical) ---
-export const SimpleBarChart: React.FC<BaseChartProps> = ({ data, height = 160, color = '#3b82f6' }) => {
+export const SimpleBarChart = React.memo<BaseChartProps>(({ data, height = 160, color = '#3b82f6' }) => {
   const maxVal = Math.max(...data.map(d => d.value)) * 1.1;
 
   return (
@@ -117,10 +117,10 @@ export const SimpleBarChart: React.FC<BaseChartProps> = ({ data, height = 160, c
       </div>
     </div>
   );
-};
+});
 
 // --- Donut Chart ---
-export const SimpleDonutChart: React.FC<BaseChartProps> = ({ data, height = 160 }) => {
+export const SimpleDonutChart = React.memo<BaseChartProps>(({ data, height = 160 }) => {
   const total = data.reduce((acc, curr) => acc + curr.value, 0);
   let cumulativePercent = 0;
 
@@ -175,10 +175,10 @@ export const SimpleDonutChart: React.FC<BaseChartProps> = ({ data, height = 160 
        </div>
     </div>
   );
-};
+});
 
 // --- Comparison Bar Chart (Planned vs Actual) ---
-export const GroupedBarChart: React.FC<BaseChartProps> = ({ data, height = 160 }) => {
+export const GroupedBarChart = React.memo<BaseChartProps>(({ data, height = 160 }) => {
   const maxVal = Math.max(...data.flatMap(d => [d.value, d.value2 || 0])) * 1.1;
 
   return (
@@ -227,4 +227,4 @@ export const GroupedBarChart: React.FC<BaseChartProps> = ({ data, height = 160 }
       </div>
     </div>
   );
-};
+});
