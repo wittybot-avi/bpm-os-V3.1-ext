@@ -1,98 +1,35 @@
-import React, { useState } from 'react';
-import { FileText, ScrollText, ShieldCheck, FileCode, Info } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { FileText, ScrollText, ShieldCheck, FileCode, Info, Clock } from 'lucide-react';
+import { 
+  SYSTEM_CONTEXT_CONTENT, 
+  RULEBOOK_CONTENT, 
+  PATCHLOG_CONTENT, 
+  BACKEND_CONTRACT_CONTENT 
+} from '../docs/artifacts';
 
 type DocTab = 'context' | 'rulebook' | 'patchlog' | 'backend';
 
-// Hardcoded content placeholders to simulate markdown rendering in this demo environment
-const CONTENT_CONTEXT = `
-# BPM-OS System Context (V3.1-EXT)
-
-## 1. Product Vision
-Battery Pack Manufacturing Operating System (BPM-OS) is a specialized MES designed for high-compliance battery assembly.
-It bridges the gap between physical manufacturing (OT) and digital traceability (IT).
-
-## 2. Operational Flow (SOP Map)
-The system follows a strict linear sequence defined by the SOP:
-
-- **S0-S1:** System Setup & Product Definition (Blueprint)
-- **S2-S3:** Inbound Logistics & Material Verification
-- **S4:** Production Planning & Batch Scheduling
-- **S5-S8:** Manufacturing Execution (Cell -> Module -> Pack -> QA)
-- **S9-S10:** Digital Identity & BMS Provisioning (Trace)
-- **S11-S14:** Outbound Logistics & Dispatch
-- **S15-S17:** Lifecycle Service & Compliance Governance
-
-## 3. V3.1-EXT Scope
-The "EXT" (Operations, Control & Dashboards) extension adds:
-- Enhanced sidebar navigation for scalability.
-- Consolidated system-level views (Inventory, Logs, Status).
-- Separation of concerns between Frontend (Visual) and Backend (Logic).
-- Strict "Trace" vs "Track" semantic enforcement.
-
-## 4. Handover Notes
-This frontend is a **state-driven visual shell**. 
-It contains NO business logic for:
-- Inventory transactions
-- Serial number generation
-- Regulatory validation checks
-- Hardware integration (CAN/Modbus)
-
-All such logic must be implemented in the backend microservices.
-`;
-
-const CONTENT_RULEBOOK = `
-# BPM-OS Frontend Vibe-Coding Rulebook (V3.1-EXT)
-
-A. Frontend-Only Scope
-   - NO Backend Logic
-   - NO Databases
-   - NO Persistent State
-
-B. Date Authority
-   - IST Human-Provided Timestamps ONLY.
-   - Do not invent dates.
-
-C. EXT Naming
-   - EXT-BP (Bridge)
-   - EXT-PP (Primary)
-   - EXT-FP (Fix)
-   - EXT-HO (Handover)
-
-D. Semantic Hardening
-   - TRACE = Past / Identity
-   - TRACK = Present / State
-`;
-
-const CONTENT_PATCHLOG = `
-# BPM-OS Frontend PATCHLOG
-
-... [Previous V3.1 Core Patches] ...
-
-| EXT-BP-000 | Bridge Patch | EXT Phase Initialization | 2026-01-12 01:35 (IST) |
-| EXT-BP-001 | Bridge Patch | Sidebar UX & Scalability | 2026-01-12 01:40 (IST) |
-| EXT-BP-002 | Bridge Patch | System Section Handover  | 2026-01-12 01:55 (IST) |
-`;
-
-const CONTENT_CONTRACT = `
-# BPM-OS V3.1 — BACKEND HANDOVER CONTRACT
-
-[FROZEN V3.1 CORE CONTRACT]
-
-# V3.1-EXT EXTENSION CONTRACT (SCAFFOLD)
-
-1. EXT MODULES (Planned)
-   - Dashboarding & Analytics
-   - Operational Runbooks
-   - Advanced Control Systems
-
-2. DATA REQUIREMENTS
-   - Real-time aggregated metrics endpoint
-   - Historical trend analysis API
-   - WebSocket stream for live alerts
-`;
+// Helper to extract last updated timestamp from patchlog
+const getLastUpdated = (patchlog: string) => {
+  // Try to find the last occurrence of the IST timestamp pattern in table rows
+  // Format: | ... | YYYY-MM-DD HH:MM (IST) |
+  const lines = patchlog.trim().split('\n');
+  for (let i = lines.length - 1; i >= 0; i--) {
+    const line = lines[i];
+    if (line.includes('|') && line.includes('(IST)')) {
+       const parts = line.split('|');
+       // Date is usually the last populated column
+       const dateStr = parts[parts.length - 2]?.trim(); 
+       if (dateStr) return dateStr;
+    }
+  }
+  return 'Unknown';
+};
 
 export const Documentation: React.FC = () => {
   const [activeTab, setActiveTab] = useState<DocTab>('context');
+
+  const lastUpdated = useMemo(() => getLastUpdated(PATCHLOG_CONTENT), []);
 
   return (
     <div className="space-y-6 h-full flex flex-col animate-in fade-in duration-300">
@@ -108,6 +45,10 @@ export const Documentation: React.FC = () => {
              System Documentation
            </h1>
            <p className="text-slate-500 text-sm mt-1">Governance artifacts, patch history, and integration contracts.</p>
+        </div>
+        <div className="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded text-xs font-medium text-slate-600 border border-slate-200">
+            <Clock size={12} />
+            <span>Last Updated: {lastUpdated}</span>
         </div>
       </div>
 
@@ -143,7 +84,7 @@ export const Documentation: React.FC = () => {
       <div className="flex-1 bg-slate-50 rounded-lg border border-industrial-border overflow-hidden flex flex-col">
          <div className="p-2 bg-white border-b border-slate-200 flex justify-between items-center px-4">
             <span className="text-xs font-mono text-slate-400">
-                {activeTab === 'context' && 'README_EXT.md'}
+                {activeTab === 'context' && 'SYSTEM_CONTEXT.md'}
                 {activeTab === 'rulebook' && 'RULEBOOK.md'}
                 {activeTab === 'patchlog' && 'PATCHLOG.md'}
                 {activeTab === 'backend' && 'BACKEND_CONTRACT.md'}
@@ -155,10 +96,10 @@ export const Documentation: React.FC = () => {
             </div>
          </div>
          <div className="flex-1 overflow-y-auto p-6 font-mono text-sm text-slate-700 whitespace-pre-wrap leading-relaxed">
-            {activeTab === 'context' && CONTENT_CONTEXT}
-            {activeTab === 'rulebook' && CONTENT_RULEBOOK}
-            {activeTab === 'patchlog' && CONTENT_PATCHLOG}
-            {activeTab === 'backend' && CONTENT_CONTRACT}
+            {activeTab === 'context' && SYSTEM_CONTEXT_CONTENT}
+            {activeTab === 'rulebook' && RULEBOOK_CONTENT}
+            {activeTab === 'patchlog' && PATCHLOG_CONTENT}
+            {activeTab === 'backend' && BACKEND_CONTRACT_CONTENT}
          </div>
       </div>
 
