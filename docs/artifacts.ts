@@ -25,14 +25,14 @@ The "EXT" (Operations, Control & Dashboards) extension adds:
 - Separation of concerns between Frontend (Visual) and Backend (Logic).
 - Strict "Trace" vs "Track" semantic enforcement.
 
-## 4. Current UI Capabilities (as of EXT-PP-025)
-The frontend baseline is feature-complete with a consolidated Dashboard Foundation:
+## 4. Current UI Capabilities (as of EXT-PP-030)
+The frontend baseline is feature-complete with a consolidated Dashboard Foundation and Role-Specific views:
 - **Executive Snapshot:** High-level KPI cards for Manufacturing, Assets, Custody, and Material.
 - **Operational Trends:** Time-series graphs for output, throughput, and exceptions.
 - **Lifecycle Distribution:** Visualization of asset states and custody splits.
-- **Compliance & Risk:** Rapid signal tiles for management attention.
+- **Operator Dashboard (EXT-PP-030):** Focused view for operators reusing the foundation with emphasis on active shift, blocks, and relevant trends.
 
-**Last updated via patch:** EXT-PP-025
+**Last updated via patch:** EXT-PP-030
 
 ## 5. Dashboard Foundation (EXT-PP-025)
 The System Dashboard is a **TRACK** surface. It shows the current operational state of the plant and fleet.
@@ -178,6 +178,7 @@ export const PATCHLOG_CONTENT = `
 | **EXT-PP-023** | Primary Patch | Dashboard Graph Framework | **STABLE** | Added SVG Chart Framework and Management Analytics section. | 2026-01-13 12:30 (IST) |
 | **EXT-PP-024** | Primary Patch | System Intelligence & Governance | **STABLE** | Formalized Reports, Logs, Documentation discipline, and HUD defaults. | 2026-01-13 14:00 (IST) |
 | **EXT-PP-025** | Primary Patch | Dashboard Foundation Consolidation | **STABLE** | Consolidated dashboard layout (Snapshot/Trends/Dist/Risk) and froze foundation. | 2026-01-13 16:30 (IST) |
+| **EXT-PP-030** | Primary Patch | Role Dashboard – Operator | **STABLE** | Implemented Operator view reusing foundation with progressive disclosure. | 2026-01-14 09:00 (IST) |
 `;
 
 export const BACKEND_CONTRACT_CONTENT = `
@@ -243,6 +244,8 @@ This section defines the backend requirements for the EXT (Operations & Control)
     *   **GET /dashboard/summary:** Aggregated KPI counts (Manufactured, Approved, Hold).
     *   **GET /dashboard/trends:** Time-series data for Production Trend, Stage Distribution, and Exceptions.
     *   **GET /dashboard/distributions:** Composition data for Assets and Custody.
+    *   **GET /dashboard/operator/summary (EXT-PP-030):** Shift specific focus metrics.
+    *   **GET /dashboard/operator/attention (EXT-PP-030):** List of blocked tasks/stages for current user.
 *   **Operational Runbooks:** (Requirements TBD)
 *   **Advanced Control Systems:** (Requirements TBD)
 *   **System Intelligence (EXT-PP-024):**
