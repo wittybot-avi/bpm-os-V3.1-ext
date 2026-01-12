@@ -20,7 +20,9 @@ import {
   Info,
   ExternalLink,
   AlertTriangle,
-  Users
+  Users,
+  Link,
+  ClipboardList
 } from 'lucide-react';
 
 interface RunbookDetailProps {
@@ -35,6 +37,7 @@ interface StageDefinition {
   navTarget: NavView;
   status: 'Completed' | 'In Progress' | 'Pending' | 'Hold';
   roles: string[];
+  isTraceHandoff?: boolean;
   gate?: GateDefinition;
   exception?: {
     type: string;
@@ -58,6 +61,11 @@ interface RunbookData {
   purpose: string;
   status: 'Running' | 'Blocked' | 'Idle' | 'Healthy';
   stages: StageDefinition[];
+  custody?: {
+    custodian: string;
+    responsibilities: string[];
+    since: string;
+  };
 }
 
 // MOCK DATA DEFINITIONS
@@ -68,73 +76,59 @@ const RUNBOOKS: Record<string, RunbookData> = {
     range: 'S2 → S4',
     purpose: 'Inbound verification, QC, identity generation, and ledger binding.',
     status: 'Healthy',
+    custody: {
+        custodian: 'Warehouse / Stores',
+        responsibilities: ['Inbound QC', 'EPR Reporting', 'Warranty Risk'],
+        since: '2026-01-13 08:30'
+    },
     stages: [
       {
-        id: 'stg-01',
+        id: 'mat-01',
+        name: 'Procurement / ASN Intake (S2)',
+        sopRef: 'SOP-02-01',
+        navTarget: 'procurement',
+        status: 'Completed',
+        roles: ['Procurement', 'Supervisor'],
+        gate: {
+          type: 'Validation',
+          condition: 'Supplier shipment acknowledged & ASN validated.',
+          evidence: 'ASN Digital Signature',
+          owner: 'Procurement / Supervisor',
+          status: 'Open',
+          impact: 'Cannot receive goods without ASN.'
+        }
+      },
+      {
+        id: 'mat-02',
         name: 'Inbound Receipt (S3)',
         sopRef: 'SOP-03-01',
         navTarget: 'inbound_receipt',
-        status: 'Completed',
-        roles: ['Stores', 'Logistics'],
+        status: 'In Progress',
+        roles: ['Stores', 'Inbound QC'],
         gate: {
           type: 'Validation',
-          condition: 'Material count matches PO + No visual damage.',
-          evidence: 'Digital Receipt Note (DRN)',
-          owner: 'Stores Supervisor',
+          condition: 'Physical receipt verified; quantity/COC checked.',
+          evidence: 'GRN Token',
+          owner: 'Stores / Inbound QC',
           status: 'Open',
-          impact: 'Inventory cannot be serialized.'
+          impact: 'Inventory remains in quarantine.'
         }
       },
       {
-        id: 'stg-02',
-        name: 'QC Inspection',
-        sopRef: 'SOP-03-02',
-        navTarget: 'inbound_receipt',
-        status: 'In Progress',
-        roles: ['QC Engineer'],
-        gate: {
-          type: 'Approval',
-          condition: 'Sampling Plan AQL 2.5 Pass.',
-          evidence: 'QC Report Signed',
-          owner: 'Quality Lead',
-          status: 'Closed',
-          impact: 'Batch remains quarantined.'
-        },
-        exception: {
-          type: 'Quality Deviation',
-          description: 'AQL 2.5 Failure on Sample #4'
-        }
-      },
-      {
-        id: 'stg-03',
-        name: 'Serialization',
-        sopRef: 'SOP-03-03',
+        id: 'mat-03',
+        name: 'Serialization & Ledger Bind (S4)',
+        sopRef: 'SOP-04-01',
         navTarget: 'inbound_receipt',
         status: 'Pending',
-        roles: ['System'],
+        roles: ['Operator', 'QA', 'System'],
+        isTraceHandoff: true,
         gate: {
-          type: 'Interlock',
-          condition: 'QC Approval + UID Generation.',
-          evidence: 'System Log',
+          type: 'Handoff',
+          condition: 'Serialization complete; preliminary ledger bind ready.',
+          evidence: 'Trace ID Generation',
           owner: 'System (Auto)',
           status: 'Locked',
-          impact: 'Production allocation disabled.'
-        }
-      },
-      {
-        id: 'stg-04',
-        name: 'Ledger Binding',
-        sopRef: 'SOP-09-01',
-        navTarget: 'battery_registry',
-        status: 'Pending',
-        roles: ['Compliance'],
-        gate: {
-          type: 'Validation',
-          condition: 'Battery Aadhaar Pre-Allocated.',
-          evidence: 'Registry ACK',
-          owner: 'Compliance Officer',
-          status: 'Locked',
-          impact: 'Cannot move to manufacturing.'
+          impact: 'Cannot allocate to batches.'
         }
       }
     ]
@@ -487,6 +481,11 @@ export const RunbookDetail: React.FC<RunbookDetailProps> = ({ runbookId, onNavig
                               {stage.name}
                             </h3>
                             <div className="flex gap-2">
+                                {stage.isTraceHandoff && (
+                                    <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-purple-50 text-purple-700 border border-purple-200 flex items-center gap-1">
+                                        <Link size={10} /> Trace Handoff
+                                    </span>
+                                )}
                                 {stage.exception && (
                                     <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-red-100 text-red-700 border border-red-200 flex items-center gap-1">
                                         <AlertOctagon size={10} /> Exception
@@ -565,6 +564,20 @@ export const RunbookDetail: React.FC<RunbookDetailProps> = ({ runbookId, onNavig
                    </div>
                )}
 
+               {/* Trace Handoff Context */}
+               {activeStage.isTraceHandoff && (
+                   <div className="bg-purple-50 rounded-lg border border-purple-200 p-4 mb-6 shadow-sm">
+                       <div className="flex items-center gap-2 mb-2 text-purple-700">
+                           <Link size={18} />
+                           <h3 className="font-bold text-sm">Trace Handoff Point</h3>
+                       </div>
+                       <p className="text-xs text-purple-800 mb-2">IDs prepared for registry binding. Immutable lineage record creation.</p>
+                       <div className="text-[10px] text-purple-600 bg-purple-100 p-2 rounded italic">
+                          Frontend demo: actual ledger binding is backend-driven.
+                       </div>
+                   </div>
+               )}
+
                {/* Gate Details */}
                {activeStage.gate && (
                  <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4 mb-6">
@@ -597,6 +610,35 @@ export const RunbookDetail: React.FC<RunbookDetailProps> = ({ runbookId, onNavig
                        Gate enforcement logic is handled by the backend BPM engine. Frontend reflects state only.
                     </div>
                  </div>
+               )}
+
+               {/* Custody Summary (if available on runbook) */}
+               {runbook.custody && (
+                  <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4 mb-6">
+                      <div className="flex items-center gap-2 mb-3 border-b border-slate-100 pb-2">
+                         <ClipboardList size={16} className="text-slate-500" />
+                         <h3 className="font-bold text-sm text-slate-700">Custody & Responsibility</h3>
+                      </div>
+                      <div className="space-y-3 text-sm">
+                          <div>
+                             <div className="text-xs text-slate-400 mb-0.5">Current Custodian</div>
+                             <div className="font-bold text-slate-800">{runbook.custody.custodian}</div>
+                          </div>
+                          <div>
+                             <div className="text-xs text-slate-400 mb-0.5">Active Responsibilities</div>
+                             <div className="flex flex-wrap gap-1">
+                                {runbook.custody.responsibilities.map(resp => (
+                                    <span key={resp} className="px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-100 rounded text-[10px] font-bold">
+                                        {resp}
+                                    </span>
+                                ))}
+                             </div>
+                          </div>
+                          <div className="text-[10px] text-slate-400 text-right mt-1">
+                             Since: {runbook.custody.since}
+                          </div>
+                      </div>
+                  </div>
                )}
 
                {/* Roles Panel */}

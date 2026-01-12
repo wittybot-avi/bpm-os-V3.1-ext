@@ -19,7 +19,8 @@ import {
   TrendingUp,
   BarChart3,
   ShieldCheck,
-  Eye
+  Eye,
+  Link
 } from 'lucide-react';
 import { UserContext, UserRole } from '../types';
 
@@ -324,13 +325,21 @@ export const ControlTower: React.FC<ControlTowerProps> = ({ onNavigate, onViewEx
         >
            <div className="flex items-center justify-between px-4 relative">
               <div className="absolute top-1/2 left-0 w-full h-0.5 bg-slate-100 -z-0"></div>
-              <StageNode label="Inbound" icon={Truck} status="Done" />
+              <StageNode label="ASN Intake" icon={Truck} status="Done" />
               <GateNode status="Open" />
-              <StageNode label="QC Check" icon={CheckCircle2} status="Active" />
-              <GateNode status="Closed" />
-              <StageNode label="Serialize" icon={Layers} status="Pending" />
-              <GateNode status="Locked" />
-              <StageNode label="Bind" icon={Lock} status="Pending" />
+              <StageNode label="Receipt" icon={CheckCircle2} status="Active" />
+              <GateNode status="Open" />
+              <div className="relative">
+                  <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-purple-100 text-purple-700 text-[10px] font-bold px-2 py-0.5 rounded border border-purple-200 whitespace-nowrap z-20 shadow-sm flex items-center gap-1">
+                      <Link size={8} /> Trace Handoff
+                  </div>
+                  <StageNode label="Serialize" icon={Layers} status="Pending" />
+              </div>
+           </div>
+           {/* Summary Enrichment */}
+           <div className="mt-4 px-4 py-2 bg-slate-50 border border-slate-100 rounded flex justify-between items-center text-xs">
+                <div className="text-slate-500">Current Stage: <span className="font-bold text-slate-700">S3 Inbound Receipt</span></div>
+                <div className="text-slate-500">Gate Owner: <span className="font-bold text-slate-700">Stores Supervisor</span></div>
            </div>
         </RunbookCard>
 
