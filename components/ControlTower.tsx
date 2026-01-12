@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext, useMemo } from 'react';
 import { 
   Radar, 
   PlayCircle, 
@@ -17,8 +17,11 @@ import {
   RotateCcw,
   BarChart,
   TrendingUp,
-  BarChart3
+  BarChart3,
+  ShieldCheck,
+  Eye
 } from 'lucide-react';
+import { UserContext, UserRole } from '../types';
 
 interface RunbookProps {
   id: string;
@@ -29,13 +32,24 @@ interface RunbookProps {
   status: 'Healthy' | 'Degraded' | 'Blocked' | 'Idle';
   onNavigate: (id: string) => void;
   children: React.ReactNode;
+  isEmphasized?: boolean;
+  isDeemphasized?: boolean;
 }
 
-const RunbookCard: React.FC<RunbookProps> = ({ id, title, range, purpose, roles, status, onNavigate, children }) => (
-  <div className="bg-white rounded-lg shadow-sm border border-industrial-border overflow-hidden flex flex-col hover:shadow-md transition-shadow">
-    <div className="p-4 border-b border-slate-100 bg-slate-50 flex justify-between items-start">
+const RunbookCard: React.FC<RunbookProps> = ({ 
+  id, title, range, purpose, roles, status, onNavigate, children, isEmphasized, isDeemphasized 
+}) => (
+  <div 
+    onClick={() => onNavigate(id)}
+    className={`
+      bg-white rounded-lg overflow-hidden flex flex-col transition-all cursor-pointer group
+      ${isEmphasized ? 'ring-2 ring-brand-500 shadow-md scale-[1.01]' : 'border border-industrial-border shadow-sm hover:shadow-md'}
+      ${isDeemphasized ? 'opacity-60 grayscale-[0.5] hover:opacity-100 hover:grayscale-0' : ''}
+    `}
+  >
+    <div className={`p-4 border-b flex justify-between items-start ${isEmphasized ? 'bg-brand-50 border-brand-100' : 'bg-slate-50 border-slate-100'}`}>
       <div>
-        <h3 className="font-bold text-slate-800 text-lg">{title}</h3>
+        <h3 className={`font-bold text-lg ${isEmphasized ? 'text-brand-900' : 'text-slate-800'}`}>{title}</h3>
         <div className="flex items-center gap-2 mt-1">
           <span className="text-xs font-mono bg-white border border-slate-200 px-2 py-0.5 rounded text-slate-500">{range}</span>
           <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full ${
@@ -49,8 +63,7 @@ const RunbookCard: React.FC<RunbookProps> = ({ id, title, range, purpose, roles,
         </div>
       </div>
       <button 
-        onClick={() => onNavigate(id)}
-        className="text-brand-600 hover:text-brand-800 transition-colors p-1 bg-brand-50 rounded border border-brand-100"
+        className={`transition-colors p-1 rounded border ${isEmphasized ? 'bg-white text-brand-600 border-brand-200' : 'text-slate-400 bg-white border-slate-200 group-hover:text-brand-600'}`}
         title="View Runbook Detail"
       >
         <ArrowRight size={20} />
@@ -61,7 +74,7 @@ const RunbookCard: React.FC<RunbookProps> = ({ id, title, range, purpose, roles,
       <p className="text-xs text-slate-500">{purpose}</p>
     </div>
 
-    <div className="flex-1 p-6 flex flex-col justify-center cursor-pointer" onClick={() => onNavigate(id)}>
+    <div className="flex-1 p-6 flex flex-col justify-center">
         {/* Visualization Spine */}
         {children}
     </div>
@@ -114,6 +127,67 @@ interface ControlTowerProps {
 }
 
 export const ControlTower: React.FC<ControlTowerProps> = ({ onNavigate, onViewExceptions }) => {
+  const { role } = useContext(UserContext);
+
+  // Role Logic Configuration
+  const roleConfig = useMemo(() => {
+    switch (role) {
+      case UserRole.OPERATOR:
+        return {
+          viewName: 'Operator View',
+          label: 'Operator',
+          message: 'Your current operational focus',
+          highlightMetrics: ['blocked'],
+          highlightRunbooks: ['manufacturing'],
+          readOnly: false,
+          auditMode: false
+        };
+      case UserRole.SUPERVISOR:
+      case UserRole.QA_ENGINEER:
+        return {
+          viewName: 'Supervisor / QA View',
+          label: 'Supervisor',
+          message: 'Oversight & quality control focus',
+          highlightMetrics: ['exceptions', 'blocked'],
+          highlightRunbooks: ['material', 'manufacturing', 'dispatch'],
+          readOnly: false,
+          auditMode: false
+        };
+      case UserRole.MANAGEMENT: // Plant Head context
+        return {
+          viewName: 'Plant Head View',
+          label: 'Management',
+          message: 'Plant-level operational health',
+          highlightMetrics: ['sla', 'health'],
+          highlightRunbooks: [], // Balanced view
+          readOnly: true,
+          auditMode: false
+        };
+      case UserRole.COMPLIANCE: // Auditor context
+      case UserRole.SUSTAINABILITY:
+        return {
+          viewName: 'Auditor / Regulator View',
+          label: 'Auditor',
+          message: 'Read-only audit & compliance view',
+          highlightMetrics: ['compliance'],
+          highlightRunbooks: ['warranty', 'dispatch'],
+          readOnly: true,
+          auditMode: true
+        };
+      case UserRole.SYSTEM_ADMIN:
+      default:
+        return {
+          viewName: 'System Admin View',
+          label: 'Admin',
+          message: 'Full system visibility',
+          highlightMetrics: [],
+          highlightRunbooks: [],
+          readOnly: false,
+          auditMode: false
+        };
+    }
+  }, [role]);
+
   return (
     <div className="space-y-6 h-full flex flex-col animate-in fade-in duration-300">
       
@@ -129,16 +203,32 @@ export const ControlTower: React.FC<ControlTowerProps> = ({ onNavigate, onViewEx
            </h1>
            <p className="text-slate-500 text-sm mt-1">Operational visibility and orchestration across plant workflows.</p>
         </div>
-        <div className="flex gap-4 items-center">
-            <div className="text-xs text-slate-500 flex items-center gap-1 bg-slate-50 px-2 py-1 rounded border border-slate-100">
-                <BarChart3 size={14} />
-                <span>OEE Metrics available in Production Line View</span>
+        <div className="flex flex-col items-end gap-2">
+            <div className={`flex items-center gap-2 px-3 py-1.5 rounded text-xs font-bold border uppercase shadow-sm ${
+                roleConfig.auditMode 
+                ? 'bg-slate-800 text-slate-200 border-slate-700' 
+                : 'bg-white text-slate-600 border-slate-200'
+            }`}>
+                {roleConfig.auditMode ? <ShieldCheck size={14} className="text-emerald-400" /> : <Eye size={14} />}
+                <span>Viewing as: {roleConfig.label}</span>
             </div>
-            <div className="bg-slate-900 text-white px-3 py-1.5 rounded text-xs font-bold border border-slate-700 uppercase flex items-center gap-2 shadow-sm">
-                <Activity size={14} className="text-green-400" />
-                <span>Operational Spine Active</span>
-            </div>
+            {roleConfig.auditMode && (
+                <div className="text-[10px] text-red-500 font-bold uppercase tracking-wider">
+                    Read-Only Mode Active
+                </div>
+            )}
         </div>
+      </div>
+
+      {/* Role Context Banner */}
+      <div className={`px-4 py-3 rounded-md border flex justify-between items-center text-sm ${
+          roleConfig.auditMode ? 'bg-slate-100 border-slate-300 text-slate-600' : 'bg-brand-50 border-brand-100 text-brand-800'
+      }`}>
+          <div className="flex items-center gap-2 font-medium">
+              <Activity size={16} className={roleConfig.auditMode ? 'text-slate-500' : 'text-brand-600'} />
+              {roleConfig.message}
+          </div>
+          <span className="text-xs opacity-75">Visibility adjusted by role — no actions enabled</span>
       </div>
 
       {/* Global Attention Strip */}
@@ -147,7 +237,11 @@ export const ControlTower: React.FC<ControlTowerProps> = ({ onNavigate, onViewEx
         {/* Blocked Gates - Critical */}
         <div 
           onClick={onViewExceptions}
-          className="bg-white p-3 rounded-lg border-l-4 border-l-red-500 border-y border-r border-slate-200 shadow-sm flex items-center justify-between cursor-pointer hover:bg-slate-50 transition-colors group"
+          className={`p-3 rounded-lg border-l-4 border-y border-r shadow-sm flex items-center justify-between cursor-pointer hover:bg-slate-50 transition-colors group ${
+              roleConfig.highlightMetrics.includes('blocked') 
+              ? 'border-l-red-500 border-slate-300 ring-2 ring-red-100' 
+              : 'bg-white border-l-red-500 border-slate-200'
+          }`}
         >
            <div>
               <div className="text-xs text-red-600 uppercase font-bold flex items-center gap-1">
@@ -164,7 +258,11 @@ export const ControlTower: React.FC<ControlTowerProps> = ({ onNavigate, onViewEx
         {/* Exceptions - Warning */}
         <div 
           onClick={onViewExceptions}
-          className="bg-white p-3 rounded-lg border-l-4 border-l-amber-500 border-y border-r border-slate-200 shadow-sm flex items-center justify-between cursor-pointer hover:bg-slate-50 transition-colors group"
+          className={`p-3 rounded-lg border-l-4 border-y border-r shadow-sm flex items-center justify-between cursor-pointer hover:bg-slate-50 transition-colors group ${
+              roleConfig.highlightMetrics.includes('exceptions') 
+              ? 'border-l-amber-500 border-slate-300 ring-2 ring-amber-100' 
+              : 'bg-white border-l-amber-500 border-slate-200'
+          }`}
         >
            <div>
               <div className="text-xs text-amber-600 uppercase font-bold flex items-center gap-1">
@@ -179,7 +277,11 @@ export const ControlTower: React.FC<ControlTowerProps> = ({ onNavigate, onViewEx
         </div>
 
         {/* SLA Risk - Info */}
-        <div className="bg-white p-3 rounded-lg border-l-4 border-l-blue-500 border-y border-r border-slate-200 shadow-sm flex items-center justify-between">
+        <div className={`p-3 rounded-lg border-l-4 border-y border-r shadow-sm flex items-center justify-between ${
+             roleConfig.highlightMetrics.includes('sla') 
+             ? 'border-l-blue-500 border-slate-300 ring-2 ring-blue-100' 
+             : 'bg-white border-l-blue-500 border-slate-200'
+        }`}>
            <div>
               <div className="text-xs text-blue-600 uppercase font-bold">SLA Risk</div>
               <div className="text-2xl font-bold text-slate-800">1</div>
@@ -189,11 +291,15 @@ export const ControlTower: React.FC<ControlTowerProps> = ({ onNavigate, onViewEx
            </div>
         </div>
 
-        {/* Escalations - Info */}
-        <div className="bg-white p-3 rounded-lg border-l-4 border-l-purple-500 border-y border-r border-slate-200 shadow-sm flex items-center justify-between">
+        {/* System Health / OEE Reference */}
+        <div className={`p-3 rounded-lg border-l-4 border-y border-r shadow-sm flex items-center justify-between ${
+             roleConfig.highlightMetrics.includes('health') 
+             ? 'border-l-purple-500 border-slate-300 ring-2 ring-purple-100' 
+             : 'bg-white border-l-purple-500 border-slate-200'
+        }`}>
            <div>
-              <div className="text-xs text-purple-600 uppercase font-bold">Escalations</div>
-              <div className="text-2xl font-bold text-slate-800">0</div>
+              <div className="text-xs text-purple-600 uppercase font-bold">Plant Health</div>
+              <div className="text-2xl font-bold text-slate-800">98%</div>
            </div>
            <div className="p-2 bg-purple-50 rounded-full text-purple-500">
               <BarChart size={24} />
@@ -213,6 +319,8 @@ export const ControlTower: React.FC<ControlTowerProps> = ({ onNavigate, onViewEx
           roles={['Stores', 'QC Engineer', 'System']}
           status="Healthy"
           onNavigate={onNavigate}
+          isEmphasized={roleConfig.highlightRunbooks.includes('material')}
+          isDeemphasized={roleConfig.highlightRunbooks.length > 0 && !roleConfig.highlightRunbooks.includes('material')}
         >
            <div className="flex items-center justify-between px-4 relative">
               <div className="absolute top-1/2 left-0 w-full h-0.5 bg-slate-100 -z-0"></div>
@@ -235,6 +343,8 @@ export const ControlTower: React.FC<ControlTowerProps> = ({ onNavigate, onViewEx
           roles={['Planner', 'Operator', 'QA Lead']}
           status="Blocked"
           onNavigate={onNavigate}
+          isEmphasized={roleConfig.highlightRunbooks.includes('manufacturing')}
+          isDeemphasized={roleConfig.highlightRunbooks.length > 0 && !roleConfig.highlightRunbooks.includes('manufacturing')}
         >
            <div className="flex items-center justify-between px-4 relative">
               <div className="absolute top-1/2 left-0 w-full h-0.5 bg-slate-100 -z-0"></div>
@@ -257,6 +367,8 @@ export const ControlTower: React.FC<ControlTowerProps> = ({ onNavigate, onViewEx
           roles={['Logistics', 'Security', 'Transporter']}
           status="Healthy"
           onNavigate={onNavigate}
+          isEmphasized={roleConfig.highlightRunbooks.includes('dispatch')}
+          isDeemphasized={roleConfig.highlightRunbooks.length > 0 && !roleConfig.highlightRunbooks.includes('dispatch')}
         >
            <div className="flex items-center justify-between px-4 relative">
               <div className="absolute top-1/2 left-0 w-full h-0.5 bg-slate-100 -z-0"></div>
@@ -279,6 +391,8 @@ export const ControlTower: React.FC<ControlTowerProps> = ({ onNavigate, onViewEx
           roles={['Service Eng', 'Sustainability', 'Customer']}
           status="Idle"
           onNavigate={onNavigate}
+          isEmphasized={roleConfig.highlightRunbooks.includes('warranty')}
+          isDeemphasized={roleConfig.highlightRunbooks.length > 0 && !roleConfig.highlightRunbooks.includes('warranty')}
         >
            <div className="flex items-center justify-between px-4 relative">
               <div className="absolute top-1/2 left-0 w-full h-0.5 bg-slate-100 -z-0"></div>

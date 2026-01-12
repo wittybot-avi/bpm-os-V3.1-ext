@@ -45,3 +45,5 @@
 | **EXT-BP-004** | Bridge Patch | Runbook Detail Views | **STABLE** | Added detailed runbook navigation, stage spines, and gate context panels. | 2026-01-12 02:15 (IST) |
 | **EXT-BP-005** | Bridge Patch | Exception Visibility Layer | **STABLE** | Added Global Attention Strip, Exceptions View, and Runbook Annotations. | 2026-01-12 02:25 (IST) |
 | **EXT-BP-006** | Bridge Patch | OEE Visual Contract | **STABLE** | Added OEE zones, station readiness, and visual contracts for line performance. | 2026-01-12 02:35 (IST) |
+| **EXT-PP-010** | Primary Patch | Role-Contextual Control Tower | **STABLE** | Added role-based visual emphasis, adaptive ordering, and auditor modes. | 2026-01-13 09:30 (IST) |
+| **EXT-PP-020** | Primary Patch | Live Status Wallboard | **STABLE** | Transformed Live Status into a role-aware plant-wide snapshot. | 2026-01-13 09:45 (IST) |
