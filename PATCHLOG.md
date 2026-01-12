@@ -53,3 +53,5 @@
 | **EXT-PP-013** | Primary Patch | Dispatch Runbook Logic | **STABLE** | Defined S11-S14 custody semantics, gate logic, and trace context. | 2026-01-13 10:55 (IST) |
 | **EXT-PP-014** | Primary Patch | Warranty Runbook Logic | **STABLE** | Defined S15-S16 warranty responsibility, gate logic, and liability tracking. | 2026-01-13 11:10 (IST) |
 | **EXT-PP-021** | Primary Patch | System Inventory Dashboard | **STABLE** | Added Inventory Abstraction Cards, Drill-Down Panel, and RBAC filtering. | 2026-01-13 11:25 (IST) |
+| **EXT-PP-022** | Primary Patch | Production Line Master-Detail | **STABLE** | Added Master-Detail line view, OEE visual contracts, and station readiness map. | 2026-01-13 11:40 (IST) |
+| **EXT-FP-002** | Fix Patch | System HUD UX Enhancement | **STABLE** | Made HUD draggable, collapsible, and persistent. | 2026-01-13 12:00 (IST) |
