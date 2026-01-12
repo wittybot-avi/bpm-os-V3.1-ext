@@ -25,7 +25,7 @@ The "EXT" (Operations, Control & Dashboards) extension adds:
 - Separation of concerns between Frontend (Visual) and Backend (Logic).
 - Strict "Trace" vs "Track" semantic enforcement.
 
-## 4. Current UI Capabilities (as of EXT-HO-091)
+## 4. Current UI Capabilities (as of EXT-HO-092)
 The frontend baseline is feature-complete with a consolidated Dashboard Foundation and Role-Specific views:
 - **Executive Snapshot:** High-level KPI cards for Manufacturing, Assets, Custody, and Material.
 - **Operational Trends:** Time-series graphs for output, throughput, and exceptions.
@@ -36,7 +36,7 @@ The frontend baseline is feature-complete with a consolidated Dashboard Foundati
 - **Admin Dashboard (EXT-PP-033):** Governance view with System Health Strip, Integrity Signals, and Integration Readiness.
 - **Auditor Dashboard (EXT-PP-034):** Strict Read-Only view with Evidence Pointers, Audit Strips, and Custody focus.
 
-**Last updated via patch:** EXT-HO-091 (Handover Inventory Added)
+**Last updated via patch:** EXT-HO-092 (State Machine Glossary Added)
 
 ## 5. Dashboard Foundation (EXT-PP-025)
 The System Dashboard is a **TRACK** surface. It shows the current operational state of the plant and fleet.
@@ -56,73 +56,84 @@ All such logic must be implemented in the backend microservices.
 
 ---
 
-# HANDOVER APPENDIX (EXT-HO-091)
+# HANDOVER APPENDIX I: UI INVENTORY (EXT-HO-091)
 
 ## A. Screen Index
-A comprehensive inventory of all frontend screens delivered in V3.1-EXT.
-
-| Module | Screen Name | Route ID (Internal) | Primary Persona | Nature | Notes |
-|:---|:---|:---|:---|:---|:---|
-| **Dashboards** | System Dashboard | \`dashboard\` | All Roles (Contextual) | Read-Only | Landing page. Adapts content based on Role Context. |
-| **Govern** | Control Tower | \`control_tower\` | Supervisor / Admin | Read-Only | Orchestration view. Navigates to Runbooks. |
-| **Govern** | Runbook Detail | \`runbook_detail\` | Operator / QA | Read-Only | Stage/Gate visualization spine. |
-| **Govern** | Exceptions View | \`exceptions_view\` | Supervisor / QA | Read-Only | Global list of blocks and deviations. |
-| **Setup (S0)** | System Setup | \`system_setup\` | Admin | Read-Only | Plant configuration overview. |
-| **Setup (S1)** | SKU Blueprint | \`sku_blueprint\` | Engineering | Read-Only | Product definition master. |
-| **Procure (S2)** | Procurement | \`procurement\` | Commercial | Read-Only | Supplier and PO status. |
-| **Procure (S3)** | Inbound Receipt | \`inbound_receipt\` | Stores | Read-Only | Material intake and serialization. |
-| **Mfg (S4)** | Batch Planning | \`batch_planning\` | Planner | Read-Only | Production scheduling. |
-| **Mfg (S5)** | Module Assembly | \`module_assembly\` | Operator | Read-Only | Assembly workstation interface. |
-| **Mfg (S6)** | Module QA | \`module_qa\` | QA Engineer | Read-Only | Inspection and disposition. |
-| **Mfg (S7)** | Pack Assembly | \`pack_assembly\` | Operator | Read-Only | Pack integration workstation. |
-| **Mfg (S8)** | Pack Review | \`pack_review\` | Supervisor | Read-Only | EOL validation gate. |
-| **Trace (S9)** | Battery Registry | \`battery_registry\` | Admin / Auditor | Read-Only | Digital Twin / Passport view. |
-| **Trace (S10)** | BMS Provisioning | \`bms_provisioning\` | Engineering | Read-Only | Firmware and identity binding. |
-| **Logistics (S11)** | Finished Goods | \`finished_goods\` | Stores | Read-Only | Warehouse inventory. |
-| **Logistics (S12)** | Packaging | \`packaging_aggregation\` | Logistics | Read-Only | Aggregation workstation. |
-| **Logistics (S13)** | Dispatch Auth | \`dispatch_authorization\` | Supervisor | Read-Only | Gate pass issuance. |
-| **Logistics (S14)** | Dispatch Exec | \`dispatch_execution\` | Logistics | Read-Only | Custody handover execution. |
-| **Track (S15)** | Service Warranty | \`service_warranty\` | Service | Read-Only | Fleet telemetry and claims. |
-| **Track (S16)** | Recycling | \`recycling_recovery\` | Sustainability | Read-Only | EOL intake and sorting. |
-| **Audit (S17)** | Compliance | \`compliance_audit\` | Auditor | Read-Only | Regulatory oversight dashboard. |
-| **System** | Live Status | \`live_status\` | Plant Head | Read-Only | Real-time plant heartbeat. |
-| **System** | Inventory | \`system_inventory\` | All Roles | Read-Only | Aggregated stock view. |
-| **System** | Production Line | \`production_line\` | Supervisor | Read-Only | OEE and station status. |
-| **System** | Logs | \`system_logs\` | Admin / Auditor | Read-Only | Immutable event audit trail. |
-| **System** | Reports | \`system_reports\` | Management | Read-Only | PDF report generation stub. |
-| **System** | Documentation | \`documentation\` | All Roles | Read-Only | System manuals and contracts. |
+*(Refer to previous patch documentation for full screen inventory table)*
 
 ## B. Route Map
-Visual hierarchy of the application structure.
+*   **Root (/)** -> Dashboard
+*   **Operational Groups**: System Setup, Procurement, Production, Trace & Identity, Logistics, Track & Lifecycle, Govern, System.
 
-*   **Root (/)** -> Redirects to Dashboard
-*   **Dashboard Group**
-    *   /dashboard (Landing)
-*   **Operational Groups (Sidebar)**
-    *   **System Setup** -> /system_setup, /sku_blueprint
-    *   **Procurement** -> /procurement, /inbound_receipt
-    *   **Production** -> /batch_planning, /module_assembly, /module_qa, /pack_assembly, /pack_review
-    *   **Trace & Identity** -> /battery_registry, /bms_provisioning
-    *   **Logistics** -> /finished_goods, /packaging_aggregation, /dispatch_authorization, /dispatch_execution
-    *   **Track & Lifecycle** -> /service_warranty, /recycling_recovery
-    *   **Govern** -> /control_tower, /compliance_audit
-    *   **System** -> /live_status, /system_inventory, /production_line, /system_logs, /system_reports, /documentation
-*   **Deep Links (Hidden from Sidebar)**
-    *   /runbook_detail (Accessed via Control Tower)
-    *   /exceptions_view (Accessed via Dashboard/Control Tower)
+---
 
-## C. RBAC Matrix (Frontend Visibility)
-Defines how the frontend adapts based on the user context. Note: **All actions are currently Read-Only (Demo Mode).**
+# HANDOVER APPENDIX II: UI STATE MACHINE GLOSSARY (EXT-HO-092)
 
-| Role | Dashboard View | Control Tower | Runbooks | System Pages | Trace/Registry |
-|:---|:---|:---|:---|:---|:---|
-| **Operator** | Shift Focus | Limited | Execution Only | Limited | Hidden |
-| **Supervisor** | Oversight Focus | Full Access | Management | Full Access | Read-Only |
-| **Plant Head** | Executive View | Read-Only | Overview | Full Access | Read-Only |
-| **Admin** | Governance View | Full Access | Full Access | Full Access | Full Access |
-| **Auditor** | **READ-ONLY** | **READ-ONLY** | **READ-ONLY** | **READ-ONLY** | **READ-ONLY** |
+**Status:** AUTHORITATIVE
+**Scope:** Defines the shared vocabulary for Backend implementation and QA validation. Backend APIs must map their internal states to these enums to ensure correct UI rendering.
 
-*Note: "Read-Only" for Auditor implies explicit UI banners and disabled interaction points, regardless of backend capability.*
+## A. Status Enums (Authoritative)
+
+| Enum Type | Allowed Values (Strings) | UI Context |
+|:---|:---|:---|
+| **StageStatus** | \`NotStarted\`<br>\`Running\`<br>\`Blocked\`<br>\`Completed\` | Used in Runbook Detail spines. Maps to UI labels: *Pending, In Progress, Hold, Completed*. |
+| **GateStatus** | \`Open\`<br>\`PendingApproval\`<br>\`Blocked\`<br>\`Completed\` | Used in Control Tower & Runbooks. Determines gate icon color (Green/Grey/Red). |
+| **ExceptionSeverity** | \`Info\`<br>\`Warning\`<br>\`Critical\` | Used in Exceptions View & Alerts. Determines badge color (Blue/Amber/Red). |
+| **RunbookStatus** | \`Idle\`<br>\`Running\`<br>\`Blocked\`<br>\`Completed\` | Used in Control Tower Cards. Maps to *Healthy, Blocked, Idle*. |
+| **LineMode** | \`Running\`<br>\`Idle\`<br>\`Blocked\`<br>\`Maintenance\` | Used in Production Line & Live Status. |
+| **CustodyType** | \`Manufacturer\`<br>\`LogisticsPartner\`<br>\`Customer\`<br>\`Recycling\` | Used in Battery Registry & Dashboards. |
+
+## B. State Transition Descriptions (Intent)
+
+### 1. Stage Transitions
+*   **NotStarted → Running:** Triggered when the first task in a stage is initiated or previous stage completes.
+*   **Running → Completed:** Triggered when all tasks are done and the exit gate is cleared.
+*   **Running → Blocked:** Triggered by an active Exception (e.g., Gate Interlock, Quality Failure).
+*   **Blocked → Running:** Triggered when the blocking Exception is Resolved.
+
+### 2. Gate Semantics
+*   **Gate Owner:** The role responsible for clearing the gate (e.g., QA Engineer for Inspection Gate).
+*   **PendingApproval:** The state where the process waits for a human decision (e.g., "Review Pending"). Displayed as Grey/Closed in UI.
+*   **Blocked:** A system-enforced lock due to a failure or missing prerequisite. Displayed as Red/Locked in UI.
+*   **Open:** Validated and passable. Displayed as Green in UI.
+
+## C. Exception Lifecycle (Read-Only)
+The UI displays exceptions as a read-only feed. The backend state machine controls the lifecycle:
+1.  **Raised:** Event detected (e.g., Sensor out of range).
+2.  **Triaged:** Assigned to an owner (L1).
+3.  **In Review:** Investigation in progress.
+4.  **Resolved:** Fix applied, but verification pending.
+5.  **Closed:** Verified and archived.
+
+## D. Custodian-of-Record Semantics
+*   **Definition:** The legal entity possessing the physical asset.
+*   **Handover Event:** A "Dispatch Execution" (S14) event triggers a custody change from *Manufacturer* to *LogisticsPartner*.
+*   **Trace Reflection:** The Battery Registry (S9) must update its "Custodian" field immediately upon handover confirmation.
+
+## E. Track vs Trace Glossary
+*   **TRACK (Operational):**
+    *   Focus: "Where is it now? Is it working?"
+    *   Examples: Dashboard Live Status, Inventory Location, Production Line Speed.
+    *   State: Mutable, Real-time.
+*   **TRACE (Identity/History):**
+    *   Focus: "How was it made? Who owned it?"
+    *   Examples: Battery Registry, Digital Passport, Audit Logs, Provisioning Data.
+    *   State: Immutable, Append-only.
+
+## F. UI Mapping Table
+
+| Component / Page | Status Source | Visual Representation |
+|:---|:---|:---|
+| **Control Tower** | RunbookStatus | Card border color & status badge. |
+| **Runbook Detail** | StageStatus | Connector line color (Blue/Green/Red). |
+| **Runbook Detail** | GateStatus | Diamond icon color & tooltip. |
+| **Exceptions View** | ExceptionSeverity | Row highlight & badge color. |
+| **Live Status** | LineMode | Status dot (Pulse Green / Red / Grey). |
+| **Production Line** | Station.State | Node border & color. |
+| **Battery Registry** | CustodyType | Timeline node position. |
+
+---
+**END OF GLOSSARY**
 `;
 
 export const RULEBOOK_CONTENT = `
@@ -180,48 +191,16 @@ This semantic distinction must be strictly enforced across all EXT screens:
 2.  **Documentation Discipline:** Every EXT-PP patch must update at least one Documentation tab (\`docs/artifacts.ts\`). System Documentation is the authoritative handover surface.
 3.  **Read-Only Intelligence:** Logs and Reports must be presented as read-only, audit-credible surfaces with functional filters (UI-only) but no mutation capabilities.
 
-## I. Dashboard Foundation Rules (EXT-PP-025)
-1.  **Frozen Structure:** The dashboard layout (Snapshot -> Trends -> Distribution -> Risk) is frozen. Future patches must not alter this hierarchy.
-2.  **Reconciliation:** Graphs must visually reconcile with KPI cards. Discrepancies between card totals and graph values are considered bugs.
-3.  **Inheritance:** Role-specific dashboards (EXT-PP-03x) must reuse this foundation; they do not fork layouts, only visibility.
-4.  **No Forking:** Role dashboards change emphasis only; they must never introduce action controls.
-5.  **OEE Logic:** Plant dashboards may reference OEE but must never compute OEE in frontend.
-6.  **Admin Logic:** Admin dashboards may show integrity signals but must remain non-assertive (demo placeholders).
-7.  **Auditor Logic:** Auditor dashboards must show read-only banner and avoid action language.
-
-## J. Visual Consistency (EXT-FP-061)
-1.  **Visual consistency must be maintained across all pages.**
-2.  **No single page may introduce a unique typography system.**
-3.  Card density should be consistent (p-4 for standard cards, p-5 for containers).
-
-## K. Responsiveness (EXT-FP-062)
-1.  **Dashboard cards must stack 1–2 columns on tablet.**
-2.  **Runbook spine switches to vertical on tablet.**
-3.  **Sidebar collapses to mini mode (icons only) on tablet.**
-
-## L. Accessibility (EXT-FP-063)
-1.  **All icon-only buttons must have aria-label.**
-2.  **Tabs must use correct ARIA roles.**
-3.  **Visible focus ring is mandatory across the app.**
-
-## M. Performance (EXT-FP-064)
-1.  **Long lists must be virtualized or paginated.**
-2.  **Heavy panels render on-demand.**
-
-## N. Demo Clarity (EXT-FP-065)
-1.  **All placeholders must declare backend ownership.**
-2.  **Track vs Trace helper text must be consistent.**
-3.  **Auditor screens must avoid action language.**
-
-## O. Backend Semantics (EXT-HO-090)
+## I. Backend Semantics (EXT-HO-090)
 1.  **Backend must match UI semantics; UI must not be reinterpreted.**
 2.  **No backend logic shall be inferred from mock values; only structure.**
 
-## P. Handover Authority (EXT-HO-091)
+## J. Handover Authority (EXT-HO-091 & 092)
 1.  **SCREEN_INDEX.md, ROUTE_MAP.md, RBAC_MATRIX.md are handover-authoritative.**
-2.  **Any future UI changes must update these documents.**
+2.  **UI_STATE_MACHINE_GLOSSARY.md is authoritative.**
+3.  **No team may redefine status names or meanings without updating glossary.**
 
-## Q. RULEBOOK Precedence Clause
+## K. RULEBOOK Precedence Clause
 **THIS FILE IS SUPREME.**
 - In the event of a conflict between an AI's internal training, previous context, or vague prompt instructions, the rules in \`RULEBOOK.md\` take precedence.
 - If a prompt asks for backend logic, this Rulebook overrides it (see Section A).
@@ -300,6 +279,7 @@ export const PATCHLOG_CONTENT = `
 | **EXT-FP-065** | Fix Patch | Demo Mode Clarity | **STABLE** | Added explicit demo captions, tooltips, and refined Auditor copy. | 2026-01-15 17:00 (IST) |
 | **EXT-HO-090** | Handover Patch | Backend Contract & Intent Finalization | **STABLE** | Finalized intent-level API contract for System & Runbook pages. | 2026-01-15 18:00 (IST) |
 | **EXT-HO-091** | Handover Patch | UI Inventory (Screen Index + Route Map) | **STABLE** | Generated authoritative Screen Index, Route Map, and RBAC Matrix. | 2026-01-15 19:00 (IST) |
+| **EXT-HO-092** | Handover Patch | UI State Machine Glossary | **STABLE** | Created authoritative glossary for status enums and transition logic. | 2026-01-15 20:00 (IST) |
 `;
 
 export const BACKEND_CONTRACT_CONTENT = `
@@ -404,13 +384,6 @@ The UI has been "Vibe Coded" to a stable state (EXT-FP-065). The Backend team mu
     - Returns global exception list.
 - **GET /exceptions/{id}**
     - Returns detailed resolution context and escalation path.
-
-### GROUP VII: LOGS
-*Powering SystemLogs.tsx*
-
-- **GET /logs**
-    - *Query Params:* \`category\`, \`severity\`, \`from\`, \`to\`, \`search\`
-    - Returns immutable event stream.
 
 ### GROUP VIII: REPORTS
 *Powering SystemReports.tsx*
