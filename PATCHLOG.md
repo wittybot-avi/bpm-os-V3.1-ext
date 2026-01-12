@@ -50,3 +50,4 @@
 | **EXT-PP-011** | Primary Patch | Manufacturing Runbook Logic | **STABLE** | Defined S4-S9 gate semantics, blocked state visuals, and role ownership. | 2026-01-13 10:05 (IST) |
 | **EXT-FP-001** | Fix Patch | Documentation Sync | **STABLE** | Implemented artifacts registry for doc tabs. | 2026-01-13 10:20 (IST) |
 | **EXT-PP-012** | Primary Patch | Material Runbook Logic | **STABLE** | Defined S2-S4 gate semantics, Trace Handoff at S4, and custody panels. | 2026-01-13 10:35 (IST) |
+| **EXT-PP-013** | Primary Patch | Dispatch Runbook Logic | **STABLE** | Defined S11-S14 custody semantics, gate logic, and trace context. | 2026-01-13 10:55 (IST) |

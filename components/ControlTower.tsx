@@ -20,7 +20,8 @@ import {
   BarChart3,
   ShieldCheck,
   Eye,
-  Link
+  Link,
+  Stamp
 } from 'lucide-react';
 import { UserContext, UserRole } from '../types';
 
@@ -30,7 +31,7 @@ interface RunbookProps {
   range: string;
   purpose: string;
   roles: string[];
-  status: 'Healthy' | 'Degraded' | 'Blocked' | 'Idle';
+  status: 'Healthy' | 'Degraded' | 'Blocked' | 'Idle' | 'Running';
   onNavigate: (id: string) => void;
   children: React.ReactNode;
   isEmphasized?: boolean;
@@ -54,7 +55,7 @@ const RunbookCard: React.FC<RunbookProps> = ({
         <div className="flex items-center gap-2 mt-1">
           <span className="text-xs font-mono bg-white border border-slate-200 px-2 py-0.5 rounded text-slate-500">{range}</span>
           <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full ${
-            status === 'Healthy' ? 'bg-green-100 text-green-700' :
+            status === 'Healthy' || status === 'Running' ? 'bg-green-100 text-green-700' :
             status === 'Degraded' ? 'bg-amber-100 text-amber-700' :
             status === 'Blocked' ? 'bg-red-100 text-red-700' :
             'bg-slate-100 text-slate-500'
@@ -385,20 +386,24 @@ export const ControlTower: React.FC<ControlTowerProps> = ({ onNavigate, onViewEx
           range="S11 → S14" 
           purpose="Packing, gate pass generation, custody transfer, and logistics handover."
           roles={['Logistics', 'Security', 'Transporter']}
-          status="Healthy"
+          status="Running"
           onNavigate={onNavigate}
           isEmphasized={roleConfig.highlightRunbooks.includes('dispatch')}
           isDeemphasized={roleConfig.highlightRunbooks.length > 0 && !roleConfig.highlightRunbooks.includes('dispatch')}
         >
            <div className="flex items-center justify-between px-4 relative">
               <div className="absolute top-1/2 left-0 w-full h-0.5 bg-slate-100 -z-0"></div>
-              <StageNode label="Pick" icon={Box} status="Done" />
+              <StageNode label="Ready" icon={Box} status="Done" />
               <GateNode status="Open" />
-              <StageNode label="Pack" icon={Layers} status="Done" />
+              <StageNode label="Label" icon={Layers} status="Done" />
               <GateNode status="Open" />
               <StageNode label="Auth" icon={Lock} status="Active" />
               <GateNode status="Closed" />
               <StageNode label="Handover" icon={Truck} status="Pending" />
+           </div>
+           <div className="mt-4 px-4 py-2 bg-slate-50 border border-slate-100 rounded flex justify-between items-center text-xs">
+                <div className="text-slate-500">Current Custodian: <span className="font-bold text-slate-700">Factory Outbound</span></div>
+                <div className="text-slate-500">Stage: <span className="font-bold text-slate-700">S13 Auth</span></div>
            </div>
         </RunbookCard>
 

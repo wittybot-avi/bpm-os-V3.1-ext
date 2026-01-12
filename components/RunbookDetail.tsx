@@ -22,7 +22,9 @@ import {
   AlertTriangle,
   Users,
   Link,
-  ClipboardList
+  ClipboardList,
+  Container,
+  Stamp
 } from 'lucide-react';
 
 interface RunbookDetailProps {
@@ -38,6 +40,11 @@ interface StageDefinition {
   status: 'Completed' | 'In Progress' | 'Pending' | 'Hold';
   roles: string[];
   isTraceHandoff?: boolean;
+  traceActivity?: {
+    header: string;
+    description: string;
+    demoNote: string;
+  };
   gate?: GateDefinition;
   exception?: {
     type: string;
@@ -247,74 +254,80 @@ const RUNBOOKS: Record<string, RunbookData> = {
     title: 'Dispatch & Custody Chain',
     range: 'S11 → S14',
     purpose: 'Packing, gate pass generation, custody transfer, and logistics handover.',
-    status: 'Healthy',
+    status: 'Running',
+    custody: {
+        custodian: 'Factory Outbound Dock',
+        responsibilities: ['Safe Storage', 'Handover Verification'],
+        since: '2026-01-13 09:00'
+    },
     stages: [
       {
         id: 'dsp-01',
-        name: 'Finished Goods (S11)',
+        name: 'Finished Goods Ready (S11)',
         sopRef: 'SOP-11-01',
         navTarget: 'finished_goods',
         status: 'Completed',
-        roles: ['Stores'],
+        roles: ['QA', 'Supervisor'],
         gate: {
-          type: 'Interlock',
-          condition: 'Goods in "Available" State.',
-          evidence: 'Stock Status',
-          owner: 'System',
+          type: 'Validation',
+          condition: 'Pack cleared for outbound logistics.',
+          evidence: 'FG Release Note',
+          owner: 'QA / Supervisor',
           status: 'Open',
           impact: 'Cannot reserve for order.'
         }
       },
       {
         id: 'dsp-02',
-        name: 'Packaging (S12)',
+        name: 'Packaging & Label Verification (S12)',
         sopRef: 'SOP-12-01',
         navTarget: 'packaging_aggregation',
         status: 'Completed',
-        roles: ['Logistics'],
+        roles: ['Warehouse', 'QA'],
         gate: {
           type: 'Validation',
-          condition: 'Weight Check & Label Match.',
-          evidence: 'Manifest ID',
-          owner: 'Supervisor',
+          condition: 'Packaging integrity & label verification complete.',
+          evidence: 'Manifest ID & Photo Proof',
+          owner: 'Warehouse / QA',
           status: 'Open',
           impact: 'Cannot authorize dispatch.'
         }
       },
       {
         id: 'dsp-03',
-        name: 'Authorization (S13)',
+        name: 'Dispatch Authorization (S13)',
         sopRef: 'SOP-13-01',
         navTarget: 'dispatch_authorization',
         status: 'In Progress',
-        roles: ['Logistics Mgr'],
+        roles: ['Logistics', 'Supervisor'],
         gate: {
-          type: 'Approval',
-          condition: 'Credit Limit & Compliance Check.',
+          type: 'Authorization',
+          condition: 'Dispatch authorized with custodian assignment.',
           evidence: 'Gate Pass Token',
-          owner: 'Finance / Logistics',
+          owner: 'Logistics / Supervisor',
           status: 'Closed',
           impact: 'Security will deny exit.'
         }
       },
       {
         id: 'dsp-04',
-        name: 'Execution (S14)',
+        name: 'Dispatch Execution & Handover (S14)',
         sopRef: 'SOP-14-01',
         navTarget: 'dispatch_execution',
         status: 'Pending',
-        roles: ['Security', 'Transporter'],
+        roles: ['Logistics', 'Partner'],
+        traceActivity: {
+            header: "Custody Transfer Event",
+            description: "Custody transfer recorded here. Trace registry reflects custodian-of-record.",
+            demoNote: "Ledger update is backend-driven."
+        },
         gate: {
-          type: 'Validation',
-          condition: 'Driver ID & Vehicle Match.',
-          evidence: 'Digital Signature',
-          owner: 'Security Officer',
+          type: 'Handoff',
+          condition: 'Physical handover completed; custodian updated.',
+          evidence: 'Digital Signature (Driver)',
+          owner: 'Logistics / Partner',
           status: 'Locked',
           impact: 'Custody transfer fails.'
-        },
-        exception: {
-          type: 'Custody Mismatch',
-          description: 'Driver ID Check Failed'
         }
       }
     ]
@@ -430,7 +443,7 @@ export const RunbookDetail: React.FC<RunbookDetailProps> = ({ runbookId, onNavig
           </div>
           <div className="flex items-center gap-3">
              <div className={`px-3 py-1 rounded-full text-xs font-bold uppercase border ${
-                runbook.status === 'Healthy' ? 'bg-green-100 text-green-700 border-green-200' :
+                runbook.status === 'Healthy' || runbook.status === 'Running' ? 'bg-green-100 text-green-700 border-green-200' :
                 runbook.status === 'Blocked' ? 'bg-red-100 text-red-700 border-red-200' :
                 'bg-slate-100 text-slate-500 border-slate-200'
              }`}>
@@ -564,7 +577,7 @@ export const RunbookDetail: React.FC<RunbookDetailProps> = ({ runbookId, onNavig
                    </div>
                )}
 
-               {/* Trace Handoff Context */}
+               {/* Trace Handoff Context (Specific S4) */}
                {activeStage.isTraceHandoff && (
                    <div className="bg-purple-50 rounded-lg border border-purple-200 p-4 mb-6 shadow-sm">
                        <div className="flex items-center gap-2 mb-2 text-purple-700">
@@ -574,6 +587,20 @@ export const RunbookDetail: React.FC<RunbookDetailProps> = ({ runbookId, onNavig
                        <p className="text-xs text-purple-800 mb-2">IDs prepared for registry binding. Immutable lineage record creation.</p>
                        <div className="text-[10px] text-purple-600 bg-purple-100 p-2 rounded italic">
                           Frontend demo: actual ledger binding is backend-driven.
+                       </div>
+                   </div>
+               )}
+
+               {/* General Trace Activity (S14 etc) */}
+               {activeStage.traceActivity && (
+                   <div className="bg-blue-50 rounded-lg border border-blue-200 p-4 mb-6 shadow-sm">
+                       <div className="flex items-center gap-2 mb-2 text-blue-700">
+                           <Stamp size={18} />
+                           <h3 className="font-bold text-sm">{activeStage.traceActivity.header}</h3>
+                       </div>
+                       <p className="text-xs text-blue-800 mb-2">{activeStage.traceActivity.description}</p>
+                       <div className="text-[10px] text-blue-600 bg-blue-100 p-2 rounded italic">
+                          {activeStage.traceActivity.demoNote}
                        </div>
                    </div>
                )}
@@ -617,7 +644,7 @@ export const RunbookDetail: React.FC<RunbookDetailProps> = ({ runbookId, onNavig
                   <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4 mb-6">
                       <div className="flex items-center gap-2 mb-3 border-b border-slate-100 pb-2">
                          <ClipboardList size={16} className="text-slate-500" />
-                         <h3 className="font-bold text-sm text-slate-700">Custody & Responsibility</h3>
+                         <h3 className="font-bold text-sm text-slate-700">Custodian of Record</h3>
                       </div>
                       <div className="space-y-3 text-sm">
                           <div>
