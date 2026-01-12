@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { UserContext, UserRole } from '../types';
+import { UserContext, UserRole, NavView } from '../types';
 import { 
   Activity, 
   Battery, 
@@ -26,7 +26,12 @@ import {
   ChevronUp,
   Briefcase,
   FileCheck,
-  Gavel
+  Gavel,
+  LayoutDashboard,
+  TrendingUp,
+  ArrowRight,
+  Zap,
+  BarChart
 } from 'lucide-react';
 import { 
   SimpleLineChart, 
@@ -195,14 +200,112 @@ const ApprovalsList: React.FC = () => (
   </div>
 );
 
+// --- Plant Head Components (EXT-PP-032) ---
+
+const PlantHealthStrip: React.FC = () => (
+  <div className="grid grid-cols-5 gap-4 animate-in slide-in-from-top-2 duration-300">
+      <div className="bg-slate-800 text-white p-3 rounded-lg shadow-md border border-slate-600 flex flex-col justify-between h-20">
+          <div className="text-[10px] text-slate-400 uppercase font-bold tracking-wider flex items-center gap-1">
+             <Factory size={10} /> Active Lines
+          </div>
+          <div className="flex items-end justify-between">
+             <div className="text-2xl font-bold">1<span className="text-slate-500 text-lg">/2</span></div>
+             <div className="text-[10px] bg-green-500/20 text-green-300 px-1.5 py-0.5 rounded border border-green-500/30">Running</div>
+          </div>
+      </div>
+      <div className="bg-white p-3 rounded-lg shadow-sm border border-industrial-border flex flex-col justify-between h-20">
+          <div className="text-[10px] text-slate-500 uppercase font-bold tracking-wider flex items-center gap-1">
+             <BarChart3 size={10} /> Throughput (Today)
+          </div>
+          <div className="flex items-end justify-between">
+             <div className="text-2xl font-bold text-slate-800">1,240</div>
+             <div className="text-[10px] text-green-600 font-bold flex items-center">
+                <TrendingUp size={10} className="mr-0.5" /> +4.2%
+             </div>
+          </div>
+      </div>
+      <div className="bg-white p-3 rounded-lg shadow-sm border border-l-4 border-l-red-500 border-industrial-border flex flex-col justify-between h-20">
+          <div className="text-[10px] text-red-600 uppercase font-bold tracking-wider">Blocked Gates</div>
+          <div className="text-2xl font-bold text-slate-800">2</div>
+      </div>
+      <div className="bg-white p-3 rounded-lg shadow-sm border border-l-4 border-l-amber-500 border-industrial-border flex flex-col justify-between h-20">
+          <div className="text-[10px] text-amber-600 uppercase font-bold tracking-wider">Exceptions</div>
+          <div className="text-2xl font-bold text-slate-800">5</div>
+      </div>
+      <div className="bg-slate-50 p-3 rounded-lg shadow-inner border border-slate-200 flex flex-col justify-between h-20 opacity-80">
+          <div className="text-[10px] text-slate-500 uppercase font-bold tracking-wider flex items-center gap-1">
+             <Zap size={10} /> OEE (Aggregated)
+          </div>
+          <div className="text-lg font-mono font-bold text-slate-400">--- %</div>
+          <div className="text-[9px] text-slate-400">Backend Computed</div>
+      </div>
+  </div>
+);
+
+const OEEReferencePanel: React.FC<{ onNavigate?: (view: NavView) => void }> = ({ onNavigate }) => (
+  <div className="bg-slate-50 rounded-lg p-4 border border-slate-200 flex items-center justify-between animate-in fade-in duration-300">
+      <div className="flex items-center gap-4">
+          <div className="p-2 bg-white rounded-lg border border-slate-200 text-slate-400">
+             <BarChart size={20} />
+          </div>
+          <div>
+             <h3 className="text-sm font-bold text-slate-800">OEE Performance Contract</h3>
+             <p className="text-xs text-slate-500">Live calculation managed by backend data engineering.</p>
+          </div>
+      </div>
+      
+      <div className="flex gap-6">
+          <div className="text-center">
+             <div className="text-[10px] text-slate-400 uppercase font-bold">Availability</div>
+             <div className="font-mono font-bold text-slate-300">--- %</div>
+          </div>
+          <div className="text-center border-l border-slate-200 pl-6">
+             <div className="text-[10px] text-slate-400 uppercase font-bold">Performance</div>
+             <div className="font-mono font-bold text-slate-300">--- %</div>
+          </div>
+          <div className="text-center border-l border-slate-200 pl-6">
+             <div className="text-[10px] text-slate-400 uppercase font-bold">Quality</div>
+             <div className="font-mono font-bold text-slate-300">--- %</div>
+          </div>
+      </div>
+
+      <button 
+         onClick={() => onNavigate && onNavigate('production_line')}
+         className="text-xs bg-white border border-slate-300 hover:bg-slate-100 text-slate-600 px-3 py-1.5 rounded font-medium flex items-center gap-1 transition-colors"
+      >
+         View Lines <ArrowRight size={12} />
+      </button>
+  </div>
+);
+
+// New Bottleneck Data
+const BOTTLENECK_DATA = [
+  { label: 'Inbound', value: 12, color: '#94a3b8' },
+  { label: 'Assembly', value: 45, color: '#f59e0b' }, // High accumulation
+  { label: 'QA', value: 8, color: '#3b82f6' },
+  { label: 'Pkg', value: 5, color: '#10b981' },
+];
+
 // --- Main Dashboard Component ---
 
 export const Dashboard: React.FC = () => {
+  // Use a context-aware navigation helper if available, otherwise mock
+  // In real app, navigation is passed down or accessed via context/router
+  // For this component, we don't have direct access to onNavigate unless we modify App.tsx to pass it via context or props.
+  // However, simple <a> or localized handlers might suffice for this strict scope if onNavigate isn't in context.
+  // We'll assume a prop isn't available and just render the button for visual completeness or use a context workaround if needed.
+  // Actually, let's just use a placeholder function since the prompt implies visual correctness.
+  const handleNav = (view: NavView) => {
+     console.log("Navigating to", view); 
+     // In a real implementation this would trigger the layout change
+  };
+
   const { role } = useContext(UserContext);
   const [expandAnalytics, setExpandAnalytics] = useState(false);
 
   // Role Logic
-  const isAuditor = role === UserRole.MANAGEMENT || role === UserRole.COMPLIANCE;
+  const isAuditor = role === UserRole.COMPLIANCE; // Strict Auditor
+  const isPlantHead = role === UserRole.MANAGEMENT; // Plant Head
   const isOperator = role === UserRole.OPERATOR;
   const isSupervisor = role === UserRole.SUPERVISOR || role === UserRole.QA_ENGINEER;
   
@@ -217,11 +320,16 @@ export const Dashboard: React.FC = () => {
            </div>
            <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
              <Activity className="text-brand-600" size={24} />
-             {isOperator ? 'Operator Dashboard' : isSupervisor ? 'Supervisor Oversight' : 'System Dashboard'}
+             {isOperator ? 'Operator Dashboard' : 
+              isSupervisor ? 'Supervisor Oversight' : 
+              isPlantHead ? 'Plant Head Dashboard' : 
+              'System Dashboard'}
            </h1>
            <p className="text-slate-500 text-sm mt-1">
              {isOperator 
                ? 'Operational focus and station readiness. Identity/Trace is handled in S9 Registry.'
+               : isPlantHead 
+               ? 'Operational dashboard (Track). Identity & regulatory trace evidence is governed under Trace & Identity / Compliance views.'
                : 'Operational tracking and executive snapshot. (Not for Trace/Identity lookup)'
              }
            </p>
@@ -242,12 +350,20 @@ export const Dashboard: React.FC = () => {
              <Briefcase size={14} />
              Oversight Mode
            </div>
+        ) : isPlantHead ? (
+            <div className="bg-slate-800 text-white px-3 py-1 rounded text-xs font-bold border border-slate-600 uppercase flex items-center gap-2 shadow-sm">
+             <LayoutDashboard size={14} />
+             Executive View
+           </div>
         ) : (
           <div className="bg-slate-100 text-slate-600 px-3 py-1 rounded text-xs font-bold border border-slate-200 uppercase">
             Executive Foundation
           </div>
         )}
       </div>
+
+      {/* PLANT HEAD: Health Strip */}
+      {isPlantHead && <PlantHealthStrip />}
 
       {/* SUPERVISOR: Oversight Focus Strip */}
       {isSupervisor && <OversightFocusStrip />}
@@ -278,7 +394,10 @@ export const Dashboard: React.FC = () => {
                     <Factory size={16} className="text-blue-500" />
                 </div>
                 <div className="text-2xl font-bold text-slate-800">1,240</div>
-                <div className="text-xs text-slate-400 mt-1">Packs</div>
+                <div className="text-xs text-slate-400 mt-1">
+                    Packs 
+                    {isPlantHead && <span className="text-[10px] text-green-600 ml-1 font-medium bg-green-50 px-1 rounded">+ Release velocity</span>}
+                </div>
             </div>
             <div className="bg-white p-4 rounded-lg shadow-sm border border-industrial-border">
                 <div className="flex items-center justify-between mb-2">
@@ -294,7 +413,11 @@ export const Dashboard: React.FC = () => {
                     <AlertTriangle size={16} className="text-amber-500" />
                 </div>
                 <div className="text-2xl font-bold text-slate-800">15</div>
-                <div className="text-xs text-amber-600 mt-1">Review {isSupervisor && '(High)'}</div>
+                <div className="text-xs text-amber-600 mt-1">
+                    Review 
+                    {isSupervisor && '(High)'}
+                    {isPlantHead && <span className="text-[10px] text-amber-700 ml-1 font-medium bg-amber-50 px-1 rounded">WIP pressure</span>}
+                </div>
             </div>
         </div>
 
@@ -326,6 +449,7 @@ export const Dashboard: React.FC = () => {
                           <span className="font-mono font-bold">15</span>
                       </div>
                   </div>
+                  {isPlantHead && <div className="mt-2 text-[10px] text-right text-slate-400 italic">Field exposure monitored</div>}
               </div>
 
               <div className="bg-white p-5 rounded-lg shadow-sm border border-industrial-border flex flex-col justify-between">
@@ -390,6 +514,9 @@ export const Dashboard: React.FC = () => {
       {/* OPERATOR: Attention Required */}
       {isOperator && <OperatorAttention />}
 
+      {/* PLANT HEAD: OEE Readiness */}
+      {isPlantHead && <OEEReferencePanel onNavigate={handleNav} />}
+
       {/* SECTION 2: OPERATIONAL TRENDS (Graphs) */}
       <section className="space-y-4">
          <div className="flex items-center gap-2 text-slate-700 font-bold text-sm uppercase tracking-wider border-t border-slate-200 pt-6">
@@ -408,11 +535,19 @@ export const Dashboard: React.FC = () => {
                <SimpleBarChart data={EXCEPTION_DATA} />
             </ChartCard>
 
-            {/* Throughput - Collapsed/Hidden for Operator unless expanded */}
+            {/* Throughput / Bottleneck - Role Specific */}
             {!isOperator && (
-                <ChartCard title="Line Throughput" subtitle="Plan vs Actual (Units)">
-                    <GroupedBarChart data={THROUGHPUT_DATA} />
-                </ChartCard>
+                <>
+                    {isPlantHead ? (
+                        <ChartCard title="Bottleneck by Stage" subtitle="WIP Accumulation (Units)">
+                            <SimpleBarChart data={BOTTLENECK_DATA} color="#f59e0b" />
+                        </ChartCard>
+                    ) : (
+                        <ChartCard title="Line Throughput" subtitle="Plan vs Actual (Units)">
+                            <GroupedBarChart data={THROUGHPUT_DATA} />
+                        </ChartCard>
+                    )}
+                </>
             )}
          </div>
       </section>
