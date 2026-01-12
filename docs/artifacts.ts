@@ -25,14 +25,15 @@ The "EXT" (Operations, Control & Dashboards) extension adds:
 - Separation of concerns between Frontend (Visual) and Backend (Logic).
 - Strict "Trace" vs "Track" semantic enforcement.
 
-## 4. Current UI Capabilities (as of EXT-PP-030)
+## 4. Current UI Capabilities (as of EXT-PP-031)
 The frontend baseline is feature-complete with a consolidated Dashboard Foundation and Role-Specific views:
 - **Executive Snapshot:** High-level KPI cards for Manufacturing, Assets, Custody, and Material.
 - **Operational Trends:** Time-series graphs for output, throughput, and exceptions.
 - **Lifecycle Distribution:** Visualization of asset states and custody splits.
 - **Operator Dashboard (EXT-PP-030):** Focused view for operators reusing the foundation with emphasis on active shift, blocks, and relevant trends.
+- **Supervisor/QA Dashboard (EXT-PP-031):** Oversight view with focus on blocks, holds, approvals, and quality risks.
 
-**Last updated via patch:** EXT-PP-030
+**Last updated via patch:** EXT-PP-031
 
 ## 5. Dashboard Foundation (EXT-PP-025)
 The System Dashboard is a **TRACK** surface. It shows the current operational state of the plant and fleet.
@@ -110,6 +111,7 @@ This semantic distinction must be strictly enforced across all EXT screens:
 1.  **Frozen Structure:** The dashboard layout (Snapshot -> Trends -> Distribution -> Risk) is frozen. Future patches must not alter this hierarchy.
 2.  **Reconciliation:** Graphs must visually reconcile with KPI cards. Discrepancies between card totals and graph values are considered bugs.
 3.  **Inheritance:** Role-specific dashboards (EXT-PP-03x) must reuse this foundation; they do not fork layouts, only visibility.
+4.  **No Forking:** Role dashboards change emphasis only; they must never introduce action controls.
 
 ## J. RULEBOOK Precedence Clause
 **THIS FILE IS SUPREME.**
@@ -179,6 +181,7 @@ export const PATCHLOG_CONTENT = `
 | **EXT-PP-024** | Primary Patch | System Intelligence & Governance | **STABLE** | Formalized Reports, Logs, Documentation discipline, and HUD defaults. | 2026-01-13 14:00 (IST) |
 | **EXT-PP-025** | Primary Patch | Dashboard Foundation Consolidation | **STABLE** | Consolidated dashboard layout (Snapshot/Trends/Dist/Risk) and froze foundation. | 2026-01-13 16:30 (IST) |
 | **EXT-PP-030** | Primary Patch | Role Dashboard – Operator | **STABLE** | Implemented Operator view reusing foundation with progressive disclosure. | 2026-01-14 09:00 (IST) |
+| **EXT-PP-031** | Primary Patch | Role Dashboard – Supervisor | **STABLE** | Implemented Supervisor view reusing foundation with oversight focus strip. | 2026-01-14 11:30 (IST) |
 `;
 
 export const BACKEND_CONTRACT_CONTENT = `
@@ -246,6 +249,8 @@ This section defines the backend requirements for the EXT (Operations & Control)
     *   **GET /dashboard/distributions:** Composition data for Assets and Custody.
     *   **GET /dashboard/operator/summary (EXT-PP-030):** Shift specific focus metrics.
     *   **GET /dashboard/operator/attention (EXT-PP-030):** List of blocked tasks/stages for current user.
+    *   **GET /dashboard/supervisor/summary (EXT-PP-031):** Aggregated metrics for blocked gates and holds.
+    *   **GET /dashboard/supervisor/approvals (EXT-PP-031):** List of pending approvals and gates.
 *   **Operational Runbooks:** (Requirements TBD)
 *   **Advanced Control Systems:** (Requirements TBD)
 *   **System Intelligence (EXT-PP-024):**

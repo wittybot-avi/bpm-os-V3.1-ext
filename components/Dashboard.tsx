@@ -23,7 +23,10 @@ import {
   MapPin,
   PlayCircle,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Briefcase,
+  FileCheck,
+  Gavel
 } from 'lucide-react';
 import { 
   SimpleLineChart, 
@@ -106,6 +109,92 @@ const OperatorAttention: React.FC = () => (
   </div>
 );
 
+// --- Supervisor / QA Components (EXT-PP-031) ---
+
+const OversightFocusStrip: React.FC = () => (
+  <div className="grid grid-cols-4 gap-4 animate-in slide-in-from-top-2 duration-300">
+      <div className="bg-white p-3 rounded-lg shadow-sm border border-l-4 border-l-red-500 border-industrial-border flex items-center justify-between">
+          <div>
+              <div className="text-[10px] text-red-600 font-bold uppercase tracking-wider">Blocked Gates</div>
+              <div className="text-2xl font-bold text-slate-800">2 <span className="text-xs font-normal text-slate-400">Total</span></div>
+          </div>
+          <AlertOctagon size={24} className="text-red-200" />
+      </div>
+      <div className="bg-white p-3 rounded-lg shadow-sm border border-l-4 border-l-amber-500 border-industrial-border flex items-center justify-between">
+          <div>
+              <div className="text-[10px] text-amber-600 font-bold uppercase tracking-wider">On Hold</div>
+              <div className="text-2xl font-bold text-slate-800">15 <span className="text-xs font-normal text-slate-400">Items</span></div>
+          </div>
+          <AlertTriangle size={24} className="text-amber-200" />
+      </div>
+      <div className="bg-white p-3 rounded-lg shadow-sm border border-l-4 border-l-slate-500 border-industrial-border flex items-center justify-between">
+          <div>
+              <div className="text-[10px] text-slate-600 font-bold uppercase tracking-wider">Exceptions</div>
+              <div className="text-2xl font-bold text-slate-800">5 <span className="text-xs font-normal text-slate-400">Open</span></div>
+          </div>
+          <Activity size={24} className="text-slate-200" />
+      </div>
+      <div className="bg-white p-3 rounded-lg shadow-sm border border-l-4 border-l-blue-500 border-industrial-border flex items-center justify-between">
+          <div>
+              <div className="text-[10px] text-blue-600 font-bold uppercase tracking-wider">SLA Risk</div>
+              <div className="text-2xl font-bold text-slate-800">Low</div>
+          </div>
+          <Clock size={24} className="text-blue-200" />
+      </div>
+  </div>
+);
+
+const ApprovalsList: React.FC = () => (
+  <div className="bg-white rounded-lg shadow-sm border border-industrial-border overflow-hidden animate-in fade-in duration-300">
+      <div className="bg-slate-50 p-3 border-b border-slate-200 flex justify-between items-center">
+          <div className="flex items-center gap-2 text-sm font-bold text-slate-700 uppercase tracking-wider">
+              <Gavel size={16} className="text-brand-600" />
+              Approvals & Gating Attention
+          </div>
+          <span className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded font-bold">3 Pending</span>
+      </div>
+      <div className="p-0">
+          <table className="w-full text-sm text-left">
+              <thead className="bg-slate-50 text-slate-500 border-b border-slate-200">
+                  <tr>
+                      <th className="px-4 py-2 text-xs font-bold uppercase">Context</th>
+                      <th className="px-4 py-2 text-xs font-bold uppercase">Stage</th>
+                      <th className="px-4 py-2 text-xs font-bold uppercase">Reason / Block</th>
+                      <th className="px-4 py-2 text-xs font-bold uppercase">Age</th>
+                      <th className="px-4 py-2 text-xs font-bold uppercase">Owner</th>
+                  </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                  <tr className="hover:bg-slate-50">
+                      <td className="px-4 py-2 font-medium text-slate-700">Manufacturing Runbook</td>
+                      <td className="px-4 py-2">S5 Module Assembly</td>
+                      <td className="px-4 py-2 text-red-600 font-bold flex items-center gap-1"><AlertOctagon size={12}/> Seal Integrity Check</td>
+                      <td className="px-4 py-2 font-mono text-xs">2h 15m</td>
+                      <td className="px-4 py-2 text-xs bg-slate-100 rounded w-fit px-2">Supervisor</td>
+                  </tr>
+                  <tr className="hover:bg-slate-50">
+                      <td className="px-4 py-2 font-medium text-slate-700">Material Receipt</td>
+                      <td className="px-4 py-2">S3 QC Inspection</td>
+                      <td className="px-4 py-2 text-amber-600 font-bold flex items-center gap-1"><AlertTriangle size={12}/> Quality Deviation</td>
+                      <td className="px-4 py-2 font-mono text-xs">4h 30m</td>
+                      <td className="px-4 py-2 text-xs bg-slate-100 rounded w-fit px-2">QC Engineer</td>
+                  </tr>
+                  <tr className="hover:bg-slate-50">
+                      <td className="px-4 py-2 font-medium text-slate-700">Dispatch Chain</td>
+                      <td className="px-4 py-2">S13 Authorization</td>
+                      <td className="px-4 py-2 text-slate-600 font-medium flex items-center gap-1"><Clock size={12}/> Pending Gate Pass</td>
+                      <td className="px-4 py-2 font-mono text-xs">45m</td>
+                      <td className="px-4 py-2 text-xs bg-slate-100 rounded w-fit px-2">Supervisor</td>
+                  </tr>
+              </tbody>
+          </table>
+      </div>
+      <div className="p-2 bg-slate-50 border-t border-slate-200 text-center text-xs text-slate-400">
+          Read-only view. Use Control Tower to execute decisions.
+      </div>
+  </div>
+);
+
 // --- Main Dashboard Component ---
 
 export const Dashboard: React.FC = () => {
@@ -115,10 +204,7 @@ export const Dashboard: React.FC = () => {
   // Role Logic
   const isAuditor = role === UserRole.MANAGEMENT || role === UserRole.COMPLIANCE;
   const isOperator = role === UserRole.OPERATOR;
-  
-  // Logic to show simplified view for operators
-  // EXT-PP-030: We now allow showing full analytics but grouped under an accordion for Operators.
-  // Ideally, non-operators see everything. Operators see focused view.
+  const isSupervisor = role === UserRole.SUPERVISOR || role === UserRole.QA_ENGINEER;
   
   return (
     <div className="space-y-6 animate-in fade-in duration-300 pb-8">
@@ -131,7 +217,7 @@ export const Dashboard: React.FC = () => {
            </div>
            <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
              <Activity className="text-brand-600" size={24} />
-             {isOperator ? 'Operator Dashboard' : 'System Dashboard'}
+             {isOperator ? 'Operator Dashboard' : isSupervisor ? 'Supervisor Oversight' : 'System Dashboard'}
            </h1>
            <p className="text-slate-500 text-sm mt-1">
              {isOperator 
@@ -151,12 +237,20 @@ export const Dashboard: React.FC = () => {
              <PlayCircle size={14} />
              Execution Mode
            </div>
+        ) : isSupervisor ? (
+            <div className="bg-amber-50 text-amber-800 px-3 py-1 rounded text-xs font-bold border border-amber-200 uppercase flex items-center gap-2">
+             <Briefcase size={14} />
+             Oversight Mode
+           </div>
         ) : (
           <div className="bg-slate-100 text-slate-600 px-3 py-1 rounded text-xs font-bold border border-slate-200 uppercase">
             Executive Foundation
           </div>
         )}
       </div>
+
+      {/* SUPERVISOR: Oversight Focus Strip */}
+      {isSupervisor && <OversightFocusStrip />}
 
       {/* OPERATOR: Shift Focus Strip */}
       {isOperator && <ShiftFocusStrip />}
@@ -194,13 +288,13 @@ export const Dashboard: React.FC = () => {
                 <div className="text-2xl font-bold text-slate-800">95.1%</div>
                 <div className="text-xs text-green-600 mt-1">1,180 OK</div>
             </div>
-            <div className="bg-white p-4 rounded-lg shadow-sm border border-industrial-border">
+            <div className={`bg-white p-4 rounded-lg shadow-sm border border-industrial-border ${isSupervisor ? 'border-amber-300 bg-amber-50/30' : ''}`}>
                 <div className="flex items-center justify-between mb-2">
                     <span className="text-xs font-bold text-slate-500 uppercase">Hold</span>
                     <AlertTriangle size={16} className="text-amber-500" />
                 </div>
                 <div className="text-2xl font-bold text-slate-800">15</div>
-                <div className="text-xs text-amber-600 mt-1">Review</div>
+                <div className="text-xs text-amber-600 mt-1">Review {isSupervisor && '(High)'}</div>
             </div>
         </div>
 
@@ -289,6 +383,9 @@ export const Dashboard: React.FC = () => {
           </div>
         )}
       </section>
+
+      {/* SUPERVISOR: Approvals List */}
+      {isSupervisor && <ApprovalsList />}
 
       {/* OPERATOR: Attention Required */}
       {isOperator && <OperatorAttention />}
