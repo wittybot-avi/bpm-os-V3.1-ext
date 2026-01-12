@@ -485,15 +485,8 @@ const EVENT_VOLUME_DATA = [
 // --- Main Dashboard Component ---
 
 export const Dashboard: React.FC = () => {
-  // Use a context-aware navigation helper if available, otherwise mock
-  // In real app, navigation is passed down or accessed via context/router
-  // For this component, we don't have direct access to onNavigate unless we modify App.tsx to pass it via context or props.
-  // However, simple <a> or localized handlers might suffice for this strict scope if onNavigate isn't in context.
-  // We'll assume a prop isn't available and just render the button for visual completeness or use a context workaround if needed.
-  // Actually, let's just use a placeholder function since the prompt implies visual correctness.
   const handleNav = (view: NavView) => {
      console.log("Navigating to", view); 
-     // In a real implementation this would trigger the layout change
   };
 
   const { role } = useContext(UserContext);
@@ -654,8 +647,8 @@ export const Dashboard: React.FC = () => {
         {/* Row 2: Consolidated Summary - Simplified/Collapsed for Operator */}
         {!isOperator && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Cards from EXT-PP-025 Foundation */}
-              <div className="bg-white p-5 rounded-lg shadow-sm border border-industrial-border flex flex-col justify-between">
+              {/* Cards Normalized to p-4 padding for consistency */}
+              <div className="bg-white p-4 rounded-lg shadow-sm border border-industrial-border flex flex-col justify-between">
                   <div className="flex justify-between items-start mb-4">
                       <div>
                           <h3 className="font-bold text-slate-700 flex items-center gap-2">
@@ -682,7 +675,7 @@ export const Dashboard: React.FC = () => {
                   {isPlantHead && <div className="mt-2 text-[10px] text-right text-slate-400 italic">Field exposure monitored</div>}
               </div>
 
-              <div className="bg-white p-5 rounded-lg shadow-sm border border-industrial-border flex flex-col justify-between">
+              <div className="bg-white p-4 rounded-lg shadow-sm border border-industrial-border flex flex-col justify-between">
                   <div className="flex justify-between items-start mb-4">
                       <div>
                           <h3 className="font-bold text-slate-700 flex items-center gap-2">
@@ -713,7 +706,7 @@ export const Dashboard: React.FC = () => {
                   )}
               </div>
 
-              <div className="bg-white p-5 rounded-lg shadow-sm border border-industrial-border flex flex-col justify-between">
+              <div className="bg-white p-4 rounded-lg shadow-sm border border-industrial-border flex flex-col justify-between">
                   <div className="flex justify-between items-start mb-4">
                       <div>
                           <h3 className="font-bold text-slate-700 flex items-center gap-2">

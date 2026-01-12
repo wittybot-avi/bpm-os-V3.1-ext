@@ -77,7 +77,8 @@ const RunbookCard: React.FC<RunbookProps> = ({
       <p className="text-xs text-slate-500">{purpose}</p>
     </div>
 
-    <div className="flex-1 p-6 flex flex-col justify-center">
+    {/* Density Adjustment: p-6 -> p-5 */}
+    <div className="flex-1 p-5 flex flex-col justify-center">
         {/* Visualization Spine */}
         {children}
     </div>

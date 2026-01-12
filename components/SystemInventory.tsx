@@ -325,7 +325,8 @@ export const SystemInventory: React.FC = () => {
                 <div 
                     key={cat.id}
                     onClick={() => handleCardClick(cat.id)}
-                    className="bg-white rounded-lg shadow-sm border border-industrial-border p-6 cursor-pointer hover:shadow-md hover:border-brand-200 transition-all group flex flex-col"
+                    /* Density Adjustment: p-6 -> p-5 */
+                    className="bg-white rounded-lg shadow-sm border border-industrial-border p-5 cursor-pointer hover:shadow-md hover:border-brand-200 transition-all group flex flex-col"
                 >
                     <div className="flex justify-between items-start mb-4">
                         <div className={`p-3 rounded-lg bg-slate-50 ${cat.color} group-hover:bg-brand-50 transition-colors`}>
