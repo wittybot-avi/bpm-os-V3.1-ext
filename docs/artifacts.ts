@@ -25,18 +25,22 @@ The "EXT" (Operations, Control & Dashboards) extension adds:
 - Separation of concerns between Frontend (Visual) and Backend (Logic).
 - Strict "Trace" vs "Track" semantic enforcement.
 
-## 4. Current UI Capabilities (as of EXT-PP-024)
-The frontend baseline is now feature-complete for the following modules:
-- **Control Tower:** Orchestration & Runbook navigation.
-- **Runbooks (4):** Material, Manufacturing, Dispatch, Warranty.
-- **Inventory:** System-wide stock visibility & drilling.
-- **Production Line:** Master-detail line readiness views.
-- **Dashboards:** Operational KPIs & Graph Framework.
-- **Logs & Reports:** Audit-ready read-only intelligence surfaces.
+## 4. Current UI Capabilities (as of EXT-PP-025)
+The frontend baseline is feature-complete with a consolidated Dashboard Foundation:
+- **Executive Snapshot:** High-level KPI cards for Manufacturing, Assets, Custody, and Material.
+- **Operational Trends:** Time-series graphs for output, throughput, and exceptions.
+- **Lifecycle Distribution:** Visualization of asset states and custody splits.
+- **Compliance & Risk:** Rapid signal tiles for management attention.
 
-**Last updated via patch:** EXT-PP-024
+**Last updated via patch:** EXT-PP-025
 
-## 5. Handover Notes
+## 5. Dashboard Foundation (EXT-PP-025)
+The System Dashboard is a **TRACK** surface. It shows the current operational state of the plant and fleet.
+- **Purpose:** Real-time visibility, trend analysis, and exception spotting.
+- **Non-Purpose:** It is NOT the system of record for lineage (use Registry) and NOT an action surface (use Control Tower).
+- **Structure:** The 4-section layout (Snapshot, Trends, Distribution, Risk) is frozen and serves as the template for all role-specific views.
+
+## 6. Handover Notes
 This frontend is a **state-driven visual shell**. 
 It contains NO business logic for:
 - Inventory transactions
@@ -102,7 +106,12 @@ This semantic distinction must be strictly enforced across all EXT screens:
 2.  **Documentation Discipline:** Every EXT-PP patch must update at least one Documentation tab (\`docs/artifacts.ts\`). System Documentation is the authoritative handover surface.
 3.  **Read-Only Intelligence:** Logs and Reports must be presented as read-only, audit-credible surfaces with functional filters (UI-only) but no mutation capabilities.
 
-## I. RULEBOOK Precedence Clause
+## I. Dashboard Foundation Rules (EXT-PP-025)
+1.  **Frozen Structure:** The dashboard layout (Snapshot -> Trends -> Distribution -> Risk) is frozen. Future patches must not alter this hierarchy.
+2.  **Reconciliation:** Graphs must visually reconcile with KPI cards. Discrepancies between card totals and graph values are considered bugs.
+3.  **Inheritance:** Role-specific dashboards (EXT-PP-03x) must reuse this foundation; they do not fork layouts, only visibility.
+
+## J. RULEBOOK Precedence Clause
 **THIS FILE IS SUPREME.**
 - In the event of a conflict between an AI's internal training, previous context, or vague prompt instructions, the rules in \`RULEBOOK.md\` take precedence.
 - If a prompt asks for backend logic, this Rulebook overrides it (see Section A).
@@ -168,6 +177,7 @@ export const PATCHLOG_CONTENT = `
 | **EXT-FP-002** | Fix Patch | System HUD UX Enhancement | **STABLE** | Made HUD draggable, collapsible, and persistent. | 2026-01-13 12:00 (IST) |
 | **EXT-PP-023** | Primary Patch | Dashboard Graph Framework | **STABLE** | Added SVG Chart Framework and Management Analytics section. | 2026-01-13 12:30 (IST) |
 | **EXT-PP-024** | Primary Patch | System Intelligence & Governance | **STABLE** | Formalized Reports, Logs, Documentation discipline, and HUD defaults. | 2026-01-13 14:00 (IST) |
+| **EXT-PP-025** | Primary Patch | Dashboard Foundation Consolidation | **STABLE** | Consolidated dashboard layout (Snapshot/Trends/Dist/Risk) and froze foundation. | 2026-01-13 16:30 (IST) |
 `;
 
 export const BACKEND_CONTRACT_CONTENT = `
@@ -229,10 +239,10 @@ The current UI operates under the following conditions which must be replaced by
 This section defines the backend requirements for the EXT (Operations & Control) Phase.
 
 ## 1. EXT MODULES (Planned)
-*   **Dashboarding & Analytics:**
+*   **Dashboarding & Analytics (EXT-PP-025):**
     *   **GET /dashboard/summary:** Aggregated KPI counts (Manufactured, Approved, Hold).
-    *   **GET /dashboard/metrics:** Time-series data for Production Trend, Stage Distribution, and Exceptions.
-    *   *Note: Frontend uses deterministic mock data (EXT-PP-023) until these endpoints are live.*
+    *   **GET /dashboard/trends:** Time-series data for Production Trend, Stage Distribution, and Exceptions.
+    *   **GET /dashboard/distributions:** Composition data for Assets and Custody.
 *   **Operational Runbooks:** (Requirements TBD)
 *   **Advanced Control Systems:** (Requirements TBD)
 *   **System Intelligence (EXT-PP-024):**
