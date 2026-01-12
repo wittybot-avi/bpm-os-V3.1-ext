@@ -52,3 +52,4 @@
 | **EXT-PP-012** | Primary Patch | Material Runbook Logic | **STABLE** | Defined S2-S4 gate semantics, Trace Handoff at S4, and custody panels. | 2026-01-13 10:35 (IST) |
 | **EXT-PP-013** | Primary Patch | Dispatch Runbook Logic | **STABLE** | Defined S11-S14 custody semantics, gate logic, and trace context. | 2026-01-13 10:55 (IST) |
 | **EXT-PP-014** | Primary Patch | Warranty Runbook Logic | **STABLE** | Defined S15-S16 warranty responsibility, gate logic, and liability tracking. | 2026-01-13 11:10 (IST) |
+| **EXT-PP-021** | Primary Patch | System Inventory Dashboard | **STABLE** | Added Inventory Abstraction Cards, Drill-Down Panel, and RBAC filtering. | 2026-01-13 11:25 (IST) |
