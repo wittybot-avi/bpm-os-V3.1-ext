@@ -77,10 +77,12 @@ const RunbookCard: React.FC<RunbookProps> = ({
       <p className="text-xs text-slate-500">{purpose}</p>
     </div>
 
-    {/* Density Adjustment: p-6 -> p-5 */}
-    <div className="flex-1 p-5 flex flex-col justify-center">
+    {/* Density Adjustment: p-6 -> p-5, Added overflow-x-auto for tablet responsiveness */}
+    <div className="flex-1 p-5 flex flex-col justify-center overflow-x-auto custom-scrollbar">
         {/* Visualization Spine */}
-        {children}
+        <div className="min-w-[400px]">
+           {children}
+        </div>
     </div>
 
     <div className="p-3 bg-slate-50 border-t border-slate-100 flex flex-wrap gap-2">
@@ -94,7 +96,7 @@ const RunbookCard: React.FC<RunbookProps> = ({
 );
 
 const StageNode: React.FC<{ label: string; icon: React.ElementType; status: 'Done' | 'Active' | 'Pending' | 'Hold' }> = ({ label, icon: Icon, status }) => (
-  <div className="flex flex-col items-center gap-2 z-10 w-24">
+  <div className="flex flex-col items-center gap-2 z-10 w-24 shrink-0">
     <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 shadow-sm ${
       status === 'Done' ? 'bg-green-50 border-green-500 text-green-600' :
       status === 'Active' ? 'bg-blue-50 border-blue-500 text-blue-600' :
@@ -112,7 +114,7 @@ const StageNode: React.FC<{ label: string; icon: React.ElementType; status: 'Don
 );
 
 const GateNode: React.FC<{ status: 'Open' | 'Closed' | 'Locked' }> = ({ status }) => (
-  <div className="flex items-center justify-center w-8 -mx-2 z-0">
+  <div className="flex items-center justify-center w-8 -mx-2 z-0 shrink-0">
     <div className={`h-0.5 w-full ${status === 'Locked' ? 'bg-slate-200' : 'bg-slate-300'}`}></div>
     <div className={`absolute w-5 h-5 rotate-45 border-2 flex items-center justify-center bg-white ${
       status === 'Open' ? 'border-green-500' : 
@@ -236,7 +238,7 @@ export const ControlTower: React.FC<ControlTowerProps> = ({ onNavigate, onViewEx
       </div>
 
       {/* Global Attention Strip */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         
         {/* Blocked Gates - Critical */}
         <div 
@@ -312,7 +314,7 @@ export const ControlTower: React.FC<ControlTowerProps> = ({ onNavigate, onViewEx
       </div>
 
       {/* Operational Runbooks */}
-      <div className="grid grid-cols-2 gap-6 flex-1 min-h-0 overflow-y-auto pb-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 flex-1 min-h-0 overflow-y-auto pb-4">
         
         {/* A) Material Receipt & Serialization */}
         <RunbookCard 
@@ -326,7 +328,7 @@ export const ControlTower: React.FC<ControlTowerProps> = ({ onNavigate, onViewEx
           isEmphasized={roleConfig.highlightRunbooks.includes('material')}
           isDeemphasized={roleConfig.highlightRunbooks.length > 0 && !roleConfig.highlightRunbooks.includes('material')}
         >
-           <div className="flex items-center justify-between px-4 relative">
+           <div className="flex items-center justify-between px-4 relative min-w-max">
               <div className="absolute top-1/2 left-0 w-full h-0.5 bg-slate-100 -z-0"></div>
               <StageNode label="ASN Intake" icon={Truck} status="Done" />
               <GateNode status="Open" />
@@ -358,7 +360,7 @@ export const ControlTower: React.FC<ControlTowerProps> = ({ onNavigate, onViewEx
           isEmphasized={roleConfig.highlightRunbooks.includes('manufacturing')}
           isDeemphasized={roleConfig.highlightRunbooks.length > 0 && !roleConfig.highlightRunbooks.includes('manufacturing')}
         >
-           <div className="flex items-center justify-between px-4 relative">
+           <div className="flex items-center justify-between px-4 relative min-w-max">
               <div className="absolute top-1/2 left-0 w-full h-0.5 bg-slate-100 -z-0"></div>
               <StageNode label="Plan" icon={Layers} status="Done" />
               <GateNode status="Open" />
@@ -393,7 +395,7 @@ export const ControlTower: React.FC<ControlTowerProps> = ({ onNavigate, onViewEx
           isEmphasized={roleConfig.highlightRunbooks.includes('dispatch')}
           isDeemphasized={roleConfig.highlightRunbooks.length > 0 && !roleConfig.highlightRunbooks.includes('dispatch')}
         >
-           <div className="flex items-center justify-between px-4 relative">
+           <div className="flex items-center justify-between px-4 relative min-w-max">
               <div className="absolute top-1/2 left-0 w-full h-0.5 bg-slate-100 -z-0"></div>
               <StageNode label="Ready" icon={Box} status="Done" />
               <GateNode status="Open" />
@@ -421,7 +423,7 @@ export const ControlTower: React.FC<ControlTowerProps> = ({ onNavigate, onViewEx
           isEmphasized={roleConfig.highlightRunbooks.includes('warranty')}
           isDeemphasized={roleConfig.highlightRunbooks.length > 0 && !roleConfig.highlightRunbooks.includes('warranty')}
         >
-           <div className="flex items-center justify-between px-4 relative">
+           <div className="flex items-center justify-between px-4 relative min-w-max">
               <div className="absolute top-1/2 left-0 w-full h-0.5 bg-slate-100 -z-0"></div>
               <StageNode label="Intake" icon={RotateCcw} status="Done" />
               <GateNode status="Open" />

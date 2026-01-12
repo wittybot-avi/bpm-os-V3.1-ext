@@ -40,14 +40,15 @@ interface NavItemProps {
 const NavItem: React.FC<NavItemProps> = ({ icon: Icon, label, active, onClick }) => (
   <button 
     onClick={onClick}
-    className={`w-full flex items-center space-x-3 px-4 py-2 text-sm font-medium transition-colors ${
+    className={`w-full flex items-center gap-3 px-4 py-3 md:py-2 text-sm font-medium transition-colors justify-center lg:justify-start ${
       active 
         ? 'bg-brand-50 text-brand-700 border-r-4 border-brand-600' 
         : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700 border-r-4 border-transparent'
     }`}
+    title={label} // Tooltip for mini mode
   >
-    <Icon size={18} />
-    <span>{label}</span>
+    <Icon size={18} className="shrink-0" />
+    <span className="hidden lg:inline truncate">{label}</span>
   </button>
 );
 
@@ -69,11 +70,16 @@ const SidebarGroup: React.FC<SidebarGroupProps> = ({ title, children, isActiveGr
     <div className="border-b border-slate-100 last:border-0 py-2">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-4 py-2 text-xs font-bold text-slate-500 uppercase tracking-wider hover:bg-slate-50 hover:text-slate-700 transition-colors focus:outline-none"
+        className="w-full flex items-center justify-between px-4 py-2 text-xs font-bold text-slate-500 uppercase tracking-wider hover:bg-slate-50 hover:text-slate-700 transition-colors focus:outline-none hidden lg:flex"
       >
         <span>{title}</span>
         {isOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
       </button>
+      {/* Separator for Mini Mode */}
+      <div className="lg:hidden px-2 py-1 text-[10px] text-slate-300 text-center uppercase border-b border-slate-50 mb-1">
+         {title.substring(0, 3)}
+      </div>
+      
       {isOpen && (
         <nav className="flex flex-col space-y-0.5 mt-1 pb-2">
           {children}
@@ -91,7 +97,7 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate }) => {
   const { role } = useContext(UserContext);
   
-  // RBAC Logic - Module Visibility
+  // RBAC Logic - Module Visibility (Same as before)
   const canSeeSystemSetup = role === UserRole.SYSTEM_ADMIN || role === UserRole.MANAGEMENT;
   
   const canSeeSkuBlueprint = 
@@ -215,7 +221,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate }) => 
   const activeSystem = ['documentation', 'live_status', 'system_inventory', 'production_line', 'system_logs', 'system_reports'].includes(currentView);
 
   return (
-    <aside className="w-64 bg-white border-r border-industrial-border h-full flex flex-col shrink-0">
+    <aside className="w-16 lg:w-64 bg-white border-r border-industrial-border h-full flex flex-col shrink-0 transition-all duration-300">
       
       {/* Scrollable Navigation Area */}
       <div className="flex-1 overflow-y-auto custom-scrollbar">
@@ -463,7 +469,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate }) => 
       </div>
       
       {/* Footer Watermark - Unified Patch ID Source */}
-      <div className="p-4 border-t border-slate-100 text-center shrink-0 bg-white z-10">
+      <div className="p-4 border-t border-slate-100 text-center shrink-0 bg-white z-10 hidden lg:block">
         <p className="text-[10px] text-slate-400">
           {APP_NAME} {APP_VERSION} | Build {PATCH_ID}
           <br />

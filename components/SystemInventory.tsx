@@ -202,7 +202,7 @@ export const SystemInventory: React.FC = () => {
         
         <div className="flex items-center gap-4">
             {/* Track vs Trace Helper */}
-            <div className="bg-slate-50 text-slate-500 px-3 py-1.5 rounded border border-slate-200 text-xs flex items-center gap-2">
+            <div className="bg-slate-50 text-slate-500 px-3 py-1.5 rounded border border-slate-200 text-xs hidden sm:flex items-center gap-2">
                 <Info size={14} className="text-blue-500" />
                 <span>Inventory reflects <strong>Operational State (TRACK)</strong>. Trace registry remains authoritative for identity.</span>
             </div>
@@ -220,7 +220,7 @@ export const SystemInventory: React.FC = () => {
       {selectedCategoryId && selectedCategory ? (
         <div className="flex-1 flex flex-col bg-white rounded-lg shadow-sm border border-industrial-border overflow-hidden animate-in slide-in-from-right-4 duration-300">
             {/* Drill Header */}
-            <div className="p-4 border-b border-slate-200 bg-slate-50 flex justify-between items-center">
+            <div className="p-4 border-b border-slate-200 bg-slate-50 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div className="flex items-center gap-4">
                     <button 
                         onClick={handleCloseDrill}
@@ -233,7 +233,7 @@ export const SystemInventory: React.FC = () => {
                             <selectedCategory.icon className={selectedCategory.color} size={20} />
                             {selectedCategory.label}
                         </h2>
-                        <div className="flex items-center gap-3 text-xs text-slate-500">
+                        <div className="flex items-center gap-3 text-xs text-slate-500 flex-wrap">
                             <span>Total: <span className="font-bold">{selectedCategory.count.toLocaleString()}</span></span>
                             <span className="w-px h-3 bg-slate-300"></span>
                             <span className="text-green-600 font-medium">Good: {selectedCategory.statusMix.good.toLocaleString()}</span>
@@ -246,7 +246,7 @@ export const SystemInventory: React.FC = () => {
                 </div>
                 
                 {/* Search / Filter */}
-                <div className="relative w-64">
+                <div className="relative w-full md:w-64">
                     <input 
                         type="text" 
                         placeholder="Filter by ID, SKU, Batch..." 
@@ -259,8 +259,8 @@ export const SystemInventory: React.FC = () => {
             </div>
 
             {/* Drill Table */}
-            <div className="flex-1 overflow-auto p-0">
-                <table className="w-full text-sm text-left">
+            <div className="flex-1 overflow-x-auto p-0">
+                <table className="w-full text-sm text-left whitespace-nowrap">
                     <thead className="bg-slate-50 text-slate-500 border-b border-slate-200 sticky top-0 z-10">
                         <tr>
                             <th className="px-6 py-3 text-xs font-bold uppercase tracking-wider">Item ID</th>

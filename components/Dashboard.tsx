@@ -60,8 +60,8 @@ import {
 // --- Operator Components ---
 
 const ShiftFocusStrip: React.FC = () => (
-  <div className="bg-slate-800 text-white rounded-lg p-4 shadow-md border border-slate-700 flex items-center justify-between animate-in slide-in-from-top-2 duration-300">
-    <div className="flex items-center gap-6">
+  <div className="bg-slate-800 text-white rounded-lg p-4 shadow-md border border-slate-700 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 animate-in slide-in-from-top-2 duration-300">
+    <div className="flex flex-wrap items-center gap-6">
       <div className="flex flex-col">
         <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider flex items-center gap-1">
           <User size={10} /> Active Shift
@@ -71,7 +71,7 @@ const ShiftFocusStrip: React.FC = () => (
         </div>
       </div>
       
-      <div className="w-px h-8 bg-slate-600"></div>
+      <div className="hidden md:block w-px h-8 bg-slate-600"></div>
 
       <div className="flex flex-col">
         <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider flex items-center gap-1">
@@ -83,12 +83,12 @@ const ShiftFocusStrip: React.FC = () => (
       </div>
     </div>
 
-    <div className="flex items-center gap-4">
-       <div className="flex items-center gap-2 bg-slate-700/50 px-3 py-2 rounded border border-slate-600">
+    <div className="flex items-center gap-4 w-full md:w-auto">
+       <div className="flex-1 md:flex-none flex items-center gap-2 bg-slate-700/50 px-3 py-2 rounded border border-slate-600 justify-center">
           <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
           <span className="text-xs font-bold text-slate-300 uppercase">Station Active</span>
        </div>
-       <div className="flex items-center gap-2 bg-red-900/30 px-3 py-2 rounded border border-red-900/50">
+       <div className="flex-1 md:flex-none flex items-center gap-2 bg-red-900/30 px-3 py-2 rounded border border-red-900/50 justify-center">
           <AlertTriangle size={14} className="text-red-400" />
           <span className="text-xs font-bold text-red-200">2 Exceptions</span>
        </div>
@@ -103,21 +103,21 @@ const OperatorAttention: React.FC = () => (
         <h3 className="font-bold text-slate-800 text-sm uppercase tracking-wider">Attention Required</h3>
      </div>
      <div className="space-y-2">
-        <div className="flex items-center justify-between p-2 bg-amber-50 rounded border border-amber-100 text-sm">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-2 bg-amber-50 rounded border border-amber-100 text-sm gap-2">
            <div className="flex items-center gap-2">
               <span className="font-bold text-amber-800">S5 Gate Locked</span>
               <span className="text-amber-700">- Enclosure Seal Integrity Check Failed</span>
            </div>
-           <button className="text-xs bg-white border border-amber-200 text-amber-800 px-2 py-1 rounded hover:bg-amber-100 transition-colors font-medium">
+           <button className="text-xs bg-white border border-amber-200 text-amber-800 px-2 py-1 rounded hover:bg-amber-100 transition-colors font-medium w-full sm:w-auto">
               View QC Log
            </button>
         </div>
-        <div className="flex items-center justify-between p-2 bg-slate-50 rounded border border-slate-200 text-sm">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-2 bg-slate-50 rounded border border-slate-200 text-sm gap-2">
            <div className="flex items-center gap-2">
               <span className="font-bold text-slate-700">Waiting for Material</span>
               <span className="text-slate-500">- Station 04 Starved (Thermal Pads)</span>
            </div>
-           <span className="text-xs text-slate-400 font-mono">ETA: 10m</span>
+           <span className="text-xs text-slate-400 font-mono self-end sm:self-auto">ETA: 10m</span>
         </div>
      </div>
   </div>
@@ -126,7 +126,7 @@ const OperatorAttention: React.FC = () => (
 // --- Supervisor / QA Components (EXT-PP-031) ---
 
 const OversightFocusStrip: React.FC = () => (
-  <div className="grid grid-cols-4 gap-4 animate-in slide-in-from-top-2 duration-300">
+  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-in slide-in-from-top-2 duration-300">
       <div className="bg-white p-3 rounded-lg shadow-sm border border-l-4 border-l-red-500 border-industrial-border flex items-center justify-between">
           <div>
               <div className="text-[10px] text-red-600 font-bold uppercase tracking-wider">Blocked Gates</div>
@@ -167,8 +167,8 @@ const ApprovalsList: React.FC = () => (
           </div>
           <span className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded font-bold">3 Pending</span>
       </div>
-      <div className="p-0">
-          <table className="w-full text-sm text-left">
+      <div className="p-0 overflow-x-auto">
+          <table className="w-full text-sm text-left whitespace-nowrap">
               <thead className="bg-slate-50 text-slate-500 border-b border-slate-200">
                   <tr>
                       <th className="px-4 py-2 text-xs font-bold uppercase">Context</th>
@@ -212,7 +212,7 @@ const ApprovalsList: React.FC = () => (
 // --- Plant Head Components (EXT-PP-032) ---
 
 const PlantHealthStrip: React.FC = () => (
-  <div className="grid grid-cols-5 gap-4 animate-in slide-in-from-top-2 duration-300">
+  <div className="grid grid-cols-2 md:grid-cols-5 gap-4 animate-in slide-in-from-top-2 duration-300">
       <div className="bg-slate-800 text-white p-3 rounded-lg shadow-md border border-slate-600 flex flex-col justify-between h-20">
           <div className="text-[10px] text-slate-400 uppercase font-bold tracking-wider flex items-center gap-1">
              <Factory size={10} /> Active Lines
@@ -241,7 +241,7 @@ const PlantHealthStrip: React.FC = () => (
           <div className="text-[10px] text-amber-600 uppercase font-bold tracking-wider">Exceptions</div>
           <div className="text-2xl font-bold text-slate-800">5</div>
       </div>
-      <div className="bg-slate-50 p-3 rounded-lg shadow-inner border border-slate-200 flex flex-col justify-between h-20 opacity-80">
+      <div className="bg-slate-50 p-3 rounded-lg shadow-inner border border-slate-200 flex flex-col justify-between h-20 opacity-80 col-span-2 md:col-span-1">
           <div className="text-[10px] text-slate-500 uppercase font-bold tracking-wider flex items-center gap-1">
              <Zap size={10} /> OEE (Aggregated)
           </div>
@@ -252,8 +252,8 @@ const PlantHealthStrip: React.FC = () => (
 );
 
 const OEEReferencePanel: React.FC<{ onNavigate?: (view: NavView) => void }> = ({ onNavigate }) => (
-  <div className="bg-slate-50 rounded-lg p-4 border border-slate-200 flex items-center justify-between animate-in fade-in duration-300">
-      <div className="flex items-center gap-4">
+  <div className="bg-slate-50 rounded-lg p-4 border border-slate-200 flex flex-col md:flex-row items-center justify-between animate-in fade-in duration-300 gap-4">
+      <div className="flex items-center gap-4 w-full md:w-auto">
           <div className="p-2 bg-white rounded-lg border border-slate-200 text-slate-400">
              <BarChart size={20} />
           </div>
@@ -263,7 +263,7 @@ const OEEReferencePanel: React.FC<{ onNavigate?: (view: NavView) => void }> = ({
           </div>
       </div>
       
-      <div className="flex gap-6">
+      <div className="flex gap-6 w-full md:w-auto justify-around">
           <div className="text-center">
              <div className="text-[10px] text-slate-400 uppercase font-bold">Availability</div>
              <div className="font-mono font-bold text-slate-300">--- %</div>
@@ -280,7 +280,7 @@ const OEEReferencePanel: React.FC<{ onNavigate?: (view: NavView) => void }> = ({
 
       <button 
          onClick={() => onNavigate && onNavigate('production_line')}
-         className="text-xs bg-white border border-slate-300 hover:bg-slate-100 text-slate-600 px-3 py-1.5 rounded font-medium flex items-center gap-1 transition-colors"
+         className="text-xs bg-white border border-slate-300 hover:bg-slate-100 text-slate-600 px-3 py-1.5 rounded font-medium flex items-center gap-1 transition-colors w-full md:w-auto justify-center"
       >
          View Lines <ArrowRight size={12} />
       </button>
@@ -290,7 +290,7 @@ const OEEReferencePanel: React.FC<{ onNavigate?: (view: NavView) => void }> = ({
 // --- Admin Components (EXT-PP-033) ---
 
 const SystemGovernanceStrip: React.FC = () => (
-  <div className="grid grid-cols-5 gap-4 animate-in slide-in-from-top-2 duration-300">
+  <div className="grid grid-cols-2 md:grid-cols-5 gap-4 animate-in slide-in-from-top-2 duration-300">
       <div className="bg-slate-800 text-white p-3 rounded-lg shadow-md border border-slate-600 flex flex-col justify-between h-20">
           <div className="text-[10px] text-slate-400 uppercase font-bold tracking-wider flex items-center gap-1">
              <Server size={10} /> System Health
@@ -317,7 +317,7 @@ const SystemGovernanceStrip: React.FC = () => (
           <div className="text-[10px] text-blue-600 uppercase font-bold tracking-wider">Log Volume (24h)</div>
           <div className="text-2xl font-bold text-slate-800">12.4k</div>
       </div>
-      <div className="bg-slate-50 p-3 rounded-lg shadow-inner border border-slate-200 flex flex-col justify-between h-20">
+      <div className="bg-slate-50 p-3 rounded-lg shadow-inner border border-slate-200 flex flex-col justify-between h-20 col-span-2 md:col-span-1">
           <div className="text-[10px] text-slate-500 uppercase font-bold tracking-wider flex items-center gap-1">
              <Link size={10} /> Integrations
           </div>
@@ -327,7 +327,7 @@ const SystemGovernanceStrip: React.FC = () => (
 );
 
 const IntegrityReadinessPanel: React.FC = () => (
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in duration-300">
+  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-in fade-in duration-300">
       <div className="bg-white rounded-lg shadow-sm border border-industrial-border p-4">
           <div className="flex items-center gap-2 mb-3 pb-2 border-b border-slate-100">
               <Database size={16} className="text-blue-600" />
@@ -381,7 +381,7 @@ const IntegrityReadinessPanel: React.FC = () => (
 // --- Auditor / Regulator Components (EXT-PP-034) ---
 
 const AuditReadOnlyBanner: React.FC = () => (
-  <div className="bg-slate-800 text-slate-200 p-3 rounded-lg border-l-4 border-l-emerald-500 shadow-md flex items-center justify-between animate-in slide-in-from-top-2 duration-300">
+  <div className="bg-slate-800 text-slate-200 p-3 rounded-lg border-l-4 border-l-emerald-500 shadow-md flex flex-col sm:flex-row items-center justify-between animate-in slide-in-from-top-2 duration-300 gap-2">
       <div className="flex items-center gap-3">
           <Lock size={20} className="text-emerald-400" />
           <div>
@@ -389,14 +389,14 @@ const AuditReadOnlyBanner: React.FC = () => (
               <div className="text-xs text-slate-400">No operational actions available in this mode.</div>
           </div>
       </div>
-      <div className="text-[10px] text-slate-500 bg-slate-900/50 px-2 py-1 rounded border border-slate-700/50">
+      <div className="text-[10px] text-slate-500 bg-slate-900/50 px-2 py-1 rounded border border-slate-700/50 w-full sm:w-auto text-center">
           Values are demo placeholders until backend evidence integration.
       </div>
   </div>
 );
 
 const AuditSnapshotStrip: React.FC = () => (
-  <div className="grid grid-cols-4 gap-4 animate-in fade-in duration-300">
+  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 animate-in fade-in duration-300">
       <div className="bg-white p-3 rounded-lg shadow-sm border border-l-4 border-l-purple-500 border-industrial-border flex items-center justify-between">
           <div>
               <div className="text-[10px] text-purple-600 font-bold uppercase tracking-wider">Trace Coverage</div>
@@ -506,7 +506,7 @@ export const Dashboard: React.FC = () => {
       {isAuditor && <AuditReadOnlyBanner />}
 
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-slate-200 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-200 pb-4 gap-4">
         <div>
            <div className="flex items-center gap-1 text-xs text-slate-500 mb-1 font-medium uppercase tracking-wider">
               System Overview <span className="text-slate-300">/</span> {isOperator ? 'My Station' : 'Track'}
@@ -520,7 +520,7 @@ export const Dashboard: React.FC = () => {
               isAuditor ? 'Auditor / Regulator Dashboard' :
               'System Dashboard'}
            </h1>
-           <p className="text-slate-500 text-sm mt-1">
+           <p className="text-slate-500 text-sm mt-1 max-w-2xl">
              {isOperator 
                ? 'Operational focus and station readiness. Identity/Trace is handled in S9 Registry.'
                : isPlantHead 
@@ -535,32 +535,32 @@ export const Dashboard: React.FC = () => {
         </div>
         
         {isAuditor ? (
-          <div className="bg-slate-800 text-slate-200 px-4 py-1.5 rounded text-xs font-bold border border-slate-700 uppercase flex items-center gap-2 shadow-sm">
+          <div className="bg-slate-800 text-slate-200 px-4 py-1.5 rounded text-xs font-bold border border-slate-700 uppercase flex items-center gap-2 shadow-sm w-fit">
             <ShieldCheck size={14} className="text-emerald-400" />
             Auditor / Regulator Mode
           </div>
         ) : isOperator ? (
-           <div className="bg-brand-50 text-brand-700 px-3 py-1 rounded text-xs font-bold border border-brand-200 uppercase flex items-center gap-2">
+           <div className="bg-brand-50 text-brand-700 px-3 py-1 rounded text-xs font-bold border border-brand-200 uppercase flex items-center gap-2 w-fit">
              <PlayCircle size={14} />
              Execution Mode
            </div>
         ) : isSupervisor ? (
-            <div className="bg-amber-50 text-amber-800 px-3 py-1 rounded text-xs font-bold border border-amber-200 uppercase flex items-center gap-2">
+            <div className="bg-amber-50 text-amber-800 px-3 py-1 rounded text-xs font-bold border border-amber-200 uppercase flex items-center gap-2 w-fit">
              <Briefcase size={14} />
              Oversight Mode
            </div>
         ) : isPlantHead ? (
-            <div className="bg-slate-800 text-white px-3 py-1 rounded text-xs font-bold border border-slate-600 uppercase flex items-center gap-2 shadow-sm">
+            <div className="bg-slate-800 text-white px-3 py-1 rounded text-xs font-bold border border-slate-600 uppercase flex items-center gap-2 shadow-sm w-fit">
              <LayoutDashboard size={14} />
              Executive View
            </div>
         ) : isAdmin ? (
-            <div className="bg-slate-900 text-white px-3 py-1 rounded text-xs font-bold border border-slate-700 uppercase flex items-center gap-2 shadow-sm">
+            <div className="bg-slate-900 text-white px-3 py-1 rounded text-xs font-bold border border-slate-700 uppercase flex items-center gap-2 shadow-sm w-fit">
              <Server size={14} />
              Admin Console
            </div>
         ) : (
-          <div className="bg-slate-100 text-slate-600 px-3 py-1 rounded text-xs font-bold border border-slate-200 uppercase">
+          <div className="bg-slate-100 text-slate-600 px-3 py-1 rounded text-xs font-bold border border-slate-200 uppercase w-fit">
             Executive Foundation
           </div>
         )}
@@ -589,7 +589,7 @@ export const Dashboard: React.FC = () => {
         </div>
 
         {/* Row 1: Manufacturing KPIs */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="bg-white p-4 rounded-lg shadow-sm border border-industrial-border group">
                 <div className="flex items-center justify-between mb-2">
                     <span className="text-xs font-bold text-slate-500 uppercase">Planned</span>
@@ -824,7 +824,7 @@ export const Dashboard: React.FC = () => {
             {isOperator ? 'Relevant Trends' : isAuditor ? 'Operational Context (Track)' : 'Operational Trends'}
          </div>
          
-         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* WIP Trend - Critical for everyone */}
             <ChartCard title="WIP Output Trend" subtitle="Last 7 Days (Units)">
                <SimpleLineChart data={TREND_DATA} />

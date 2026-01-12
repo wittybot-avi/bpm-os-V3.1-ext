@@ -432,7 +432,7 @@ export const RunbookDetail: React.FC<RunbookDetailProps> = ({ runbookId, onNavig
         >
           <ArrowLeft size={12} /> Control Tower
         </button>
-        <div className="flex justify-between items-start">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
           <div>
              <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-3">
                <Radar className="text-brand-600" size={24} />
@@ -453,18 +453,18 @@ export const RunbookDetail: React.FC<RunbookDetailProps> = ({ runbookId, onNavig
              }`}>
                 STATUS: {runbook.status}
              </div>
-             <div className="bg-slate-800 text-slate-300 px-3 py-1 rounded text-xs font-medium border border-slate-700">
+             <div className="bg-slate-800 text-slate-300 px-3 py-1 rounded text-xs font-medium border border-slate-700 hidden sm:block">
                 Operational View — No Actions
              </div>
           </div>
         </div>
       </div>
 
-      {/* Main Content: Split View */}
-      <div className="flex-1 grid grid-cols-12 gap-8 min-h-0 overflow-hidden">
+      {/* Main Content: Split View (Responsive) */}
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 min-h-0 lg:overflow-hidden">
         
         {/* Left: Stage Spine */}
-        <div className="col-span-7 overflow-y-auto pr-4 custom-scrollbar">
+        <div className="lg:col-span-7 lg:overflow-y-auto pr-4 custom-scrollbar">
            <div className="relative pl-8 py-4">
               {/* Vertical Line */}
               <div className="absolute left-[29px] top-0 bottom-0 w-0.5 bg-slate-200 -z-10"></div>
@@ -492,12 +492,12 @@ export const RunbookDetail: React.FC<RunbookDetailProps> = ({ runbookId, onNavig
                          {stage.exception && <AlertTriangle size={12} className="text-white" />}
                       </div>
 
-                      <div className="flex-1">
-                         <div className="flex justify-between items-center mb-1">
-                            <h3 className={`font-bold ${activeStage?.id === stage.id ? 'text-brand-700' : 'text-slate-700'}`}>
+                      <div className="flex-1 min-w-0">
+                         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-1 gap-2">
+                            <h3 className={`font-bold truncate ${activeStage?.id === stage.id ? 'text-brand-700' : 'text-slate-700'}`}>
                               {stage.name}
                             </h3>
-                            <div className="flex gap-2">
+                            <div className="flex flex-wrap gap-2">
                                 {stage.isTraceHandoff && (
                                     <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-purple-50 text-purple-700 border border-purple-200 flex items-center gap-1">
                                         <Link size={10} /> Trace Handoff
@@ -518,9 +518,9 @@ export const RunbookDetail: React.FC<RunbookDetailProps> = ({ runbookId, onNavig
                                 </span>
                             </div>
                          </div>
-                         <div className="text-xs text-slate-500 flex gap-2">
+                         <div className="text-xs text-slate-500 flex flex-wrap gap-2">
                             <span>{stage.sopRef}</span>
-                            <span>•</span>
+                            <span className="hidden sm:inline">•</span>
                             <span className="flex items-center gap-1"><User size={10} /> {stage.roles.join(', ')}</span>
                          </div>
                       </div>
@@ -533,13 +533,13 @@ export const RunbookDetail: React.FC<RunbookDetailProps> = ({ runbookId, onNavig
                    {/* Gate Node (if exists) */}
                    {stage.gate && (
                       <div className="my-4 flex items-center pl-8">
-                         <div className="w-8 h-8 rotate-45 border-2 bg-white flex items-center justify-center shadow-sm z-10 relative -left-[36px] group cursor-help" title="Decision Gate">
+                         <div className="w-8 h-8 rotate-45 border-2 bg-white flex items-center justify-center shadow-sm z-10 relative -left-[36px] group cursor-help shrink-0" title="Decision Gate">
                             <div className={`w-3 h-3 rounded-full ${
                                stage.gate.status === 'Open' ? 'bg-green-500' : 
                                stage.gate.status === 'Closed' ? 'bg-slate-300' : 'bg-red-500'
                             }`}></div>
                          </div>
-                         <div className="ml-[-10px] bg-slate-50 border border-slate-200 px-3 py-2 rounded text-xs text-slate-500 flex-1 flex justify-between items-center">
+                         <div className="ml-[-10px] bg-slate-50 border border-slate-200 px-3 py-2 rounded text-xs text-slate-500 flex-1 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
                             <span className="font-mono uppercase font-bold text-[10px] text-slate-400">GATE: {stage.gate.type}</span>
                             <span className={`font-bold ${
                                 stage.gate.status === 'Open' ? 'text-green-600' :
@@ -554,7 +554,7 @@ export const RunbookDetail: React.FC<RunbookDetailProps> = ({ runbookId, onNavig
         </div>
 
         {/* Right: Context Panel */}
-        <div className="col-span-5 bg-slate-50 border-l border-slate-200 p-6 flex flex-col overflow-y-auto">
+        <div className="lg:col-span-5 bg-slate-50 border-l lg:border-l border-slate-200 p-6 flex flex-col lg:overflow-y-auto border-t lg:border-t-0">
            {activeStage ? (
              <>
                <div className="mb-6">
