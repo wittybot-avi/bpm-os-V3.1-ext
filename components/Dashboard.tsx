@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { UserContext, UserRole, NavView } from '../types';
+import { UserContext, UserRole, NavView, PATCH_ID } from '../types';
 import { 
   Activity, 
   Battery, 
@@ -31,7 +31,12 @@ import {
   TrendingUp,
   ArrowRight,
   Zap,
-  BarChart
+  BarChart,
+  Server,
+  GitBranch,
+  Database,
+  Link,
+  Terminal
 } from 'lucide-react';
 import { 
   SimpleLineChart, 
@@ -278,12 +283,110 @@ const OEEReferencePanel: React.FC<{ onNavigate?: (view: NavView) => void }> = ({
   </div>
 );
 
-// New Bottleneck Data
+// --- Admin Components (EXT-PP-033) ---
+
+const SystemGovernanceStrip: React.FC = () => (
+  <div className="grid grid-cols-5 gap-4 animate-in slide-in-from-top-2 duration-300">
+      <div className="bg-slate-800 text-white p-3 rounded-lg shadow-md border border-slate-600 flex flex-col justify-between h-20">
+          <div className="text-[10px] text-slate-400 uppercase font-bold tracking-wider flex items-center gap-1">
+             <Server size={10} /> System Health
+          </div>
+          <div className="flex items-end justify-between">
+             <div className="text-2xl font-bold text-emerald-400">99.9%</div>
+             <div className="text-[10px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30">OK</div>
+          </div>
+      </div>
+      <div className="bg-white p-3 rounded-lg shadow-sm border border-industrial-border flex flex-col justify-between h-20">
+          <div className="text-[10px] text-slate-500 uppercase font-bold tracking-wider flex items-center gap-1">
+             <GitBranch size={10} /> Build Version
+          </div>
+          <div className="flex items-end justify-between">
+             <div className="text-sm font-mono font-bold text-slate-800 truncate">{PATCH_ID}</div>
+             <div className="text-[10px] text-slate-400">Frontend V3.1</div>
+          </div>
+      </div>
+      <div className="bg-white p-3 rounded-lg shadow-sm border border-l-4 border-l-amber-500 border-industrial-border flex flex-col justify-between h-20">
+          <div className="text-[10px] text-amber-600 uppercase font-bold tracking-wider">Open Exceptions</div>
+          <div className="text-2xl font-bold text-slate-800">5</div>
+      </div>
+      <div className="bg-white p-3 rounded-lg shadow-sm border border-l-4 border-l-blue-500 border-industrial-border flex flex-col justify-between h-20">
+          <div className="text-[10px] text-blue-600 uppercase font-bold tracking-wider">Log Volume (24h)</div>
+          <div className="text-2xl font-bold text-slate-800">12.4k</div>
+      </div>
+      <div className="bg-slate-50 p-3 rounded-lg shadow-inner border border-slate-200 flex flex-col justify-between h-20">
+          <div className="text-[10px] text-slate-500 uppercase font-bold tracking-wider flex items-center gap-1">
+             <Link size={10} /> Integrations
+          </div>
+          <div className="text-lg font-bold text-slate-600">3 <span className="text-xs font-normal text-slate-400">Pending</span></div>
+      </div>
+  </div>
+);
+
+const IntegrityReadinessPanel: React.FC = () => (
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in duration-300">
+      <div className="bg-white rounded-lg shadow-sm border border-industrial-border p-4">
+          <div className="flex items-center gap-2 mb-3 pb-2 border-b border-slate-100">
+              <Database size={16} className="text-blue-600" />
+              <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider">Data Integrity Signals (Placeholder)</h3>
+          </div>
+          <div className="space-y-2">
+              <div className="flex justify-between text-sm p-2 bg-slate-50 rounded">
+                  <span className="text-slate-600">Missing Trace IDs</span>
+                  <span className="font-mono text-green-600 font-bold">0</span>
+              </div>
+              <div className="flex justify-between text-sm p-2 bg-slate-50 rounded">
+                  <span className="text-slate-600">Orphaned Inventory Items</span>
+                  <span className="font-mono text-slate-400">—</span>
+              </div>
+              <div className="flex justify-between text-sm p-2 bg-slate-50 rounded">
+                  <span className="text-slate-600">Custody Handshake Mismatches</span>
+                  <span className="font-mono text-slate-400">—</span>
+              </div>
+          </div>
+          <div className="mt-3 text-[10px] text-slate-400 italic text-center">
+              *Backend owned. Not asserted by frontend UI state.
+          </div>
+      </div>
+
+      <div className="bg-white rounded-lg shadow-sm border border-industrial-border p-4">
+          <div className="flex items-center gap-2 mb-3 pb-2 border-b border-slate-100">
+              <Terminal size={16} className="text-purple-600" />
+              <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider">Integration Readiness</h3>
+          </div>
+          <div className="space-y-2">
+              <div className="flex items-center justify-between text-sm p-2 bg-slate-50 rounded">
+                  <span className="text-slate-600">Dashboard Metrics API</span>
+                  <span className="text-[10px] bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded border border-yellow-200">PLANNED</span>
+              </div>
+              <div className="flex items-center justify-between text-sm p-2 bg-slate-50 rounded">
+                  <span className="text-slate-600">Logs Ingestion Stream</span>
+                  <span className="text-[10px] bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded border border-yellow-200">PLANNED</span>
+              </div>
+              <div className="flex items-center justify-between text-sm p-2 bg-slate-50 rounded">
+                  <span className="text-slate-600">Report Generation Service</span>
+                  <span className="text-[10px] bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded border border-yellow-200">PLANNED</span>
+              </div>
+          </div>
+          <div className="mt-3 text-[10px] text-slate-400 italic text-center">
+              Contract placeholders defined in docs/artifacts.ts
+          </div>
+      </div>
+  </div>
+);
+
+// Data
 const BOTTLENECK_DATA = [
   { label: 'Inbound', value: 12, color: '#94a3b8' },
   { label: 'Assembly', value: 45, color: '#f59e0b' }, // High accumulation
   { label: 'QA', value: 8, color: '#3b82f6' },
   { label: 'Pkg', value: 5, color: '#10b981' },
+];
+
+const EVENT_VOLUME_DATA = [
+  { label: 'Workflow', value: 450, color: '#3b82f6' },
+  { label: 'System', value: 1200, color: '#64748b' },
+  { label: 'Compliance', value: 85, color: '#8b5cf6' },
+  { label: 'Security', value: 12, color: '#ef4444' },
 ];
 
 // --- Main Dashboard Component ---
@@ -308,6 +411,7 @@ export const Dashboard: React.FC = () => {
   const isPlantHead = role === UserRole.MANAGEMENT; // Plant Head
   const isOperator = role === UserRole.OPERATOR;
   const isSupervisor = role === UserRole.SUPERVISOR || role === UserRole.QA_ENGINEER;
+  const isAdmin = role === UserRole.SYSTEM_ADMIN;
   
   return (
     <div className="space-y-6 animate-in fade-in duration-300 pb-8">
@@ -323,6 +427,7 @@ export const Dashboard: React.FC = () => {
              {isOperator ? 'Operator Dashboard' : 
               isSupervisor ? 'Supervisor Oversight' : 
               isPlantHead ? 'Plant Head Dashboard' : 
+              isAdmin ? 'System Admin Dashboard' :
               'System Dashboard'}
            </h1>
            <p className="text-slate-500 text-sm mt-1">
@@ -330,6 +435,8 @@ export const Dashboard: React.FC = () => {
                ? 'Operational focus and station readiness. Identity/Trace is handled in S9 Registry.'
                : isPlantHead 
                ? 'Operational dashboard (Track). Identity & regulatory trace evidence is governed under Trace & Identity / Compliance views.'
+               : isAdmin
+               ? 'Operational governance (Track). Trace evidence is reviewed under Trace & Identity / Compliance.'
                : 'Operational tracking and executive snapshot. (Not for Trace/Identity lookup)'
              }
            </p>
@@ -355,12 +462,20 @@ export const Dashboard: React.FC = () => {
              <LayoutDashboard size={14} />
              Executive View
            </div>
+        ) : isAdmin ? (
+            <div className="bg-slate-900 text-white px-3 py-1 rounded text-xs font-bold border border-slate-700 uppercase flex items-center gap-2 shadow-sm">
+             <Server size={14} />
+             Admin Console
+           </div>
         ) : (
           <div className="bg-slate-100 text-slate-600 px-3 py-1 rounded text-xs font-bold border border-slate-200 uppercase">
             Executive Foundation
           </div>
         )}
       </div>
+
+      {/* ADMIN: Governance Strip */}
+      {isAdmin && <SystemGovernanceStrip />}
 
       {/* PLANT HEAD: Health Strip */}
       {isPlantHead && <PlantHealthStrip />}
@@ -386,7 +501,10 @@ export const Dashboard: React.FC = () => {
                     <Clock size={16} className="text-slate-400" />
                 </div>
                 <div className="text-2xl font-bold text-slate-800">12</div>
-                <div className="text-xs text-slate-400 mt-1">Batches</div>
+                <div className="text-xs text-slate-400 mt-1">
+                    Batches
+                    {isAdmin && <span className="text-[10px] text-blue-600 ml-1 font-medium bg-blue-50 px-1 rounded">Data Sync: OK</span>}
+                </div>
             </div>
             <div className="bg-white p-4 rounded-lg shadow-sm border border-industrial-border">
                 <div className="flex items-center justify-between mb-2">
@@ -417,6 +535,7 @@ export const Dashboard: React.FC = () => {
                     Review 
                     {isSupervisor && '(High)'}
                     {isPlantHead && <span className="text-[10px] text-amber-700 ml-1 font-medium bg-amber-50 px-1 rounded">WIP pressure</span>}
+                    {isAdmin && <span className="text-[10px] text-amber-700 ml-1 font-medium bg-amber-50 px-1 rounded">Pending Integrations</span>}
                 </div>
             </div>
         </div>
@@ -517,6 +636,9 @@ export const Dashboard: React.FC = () => {
       {/* PLANT HEAD: OEE Readiness */}
       {isPlantHead && <OEEReferencePanel onNavigate={handleNav} />}
 
+      {/* ADMIN: Integrity & Readiness */}
+      {isAdmin && <IntegrityReadinessPanel />}
+
       {/* SECTION 2: OPERATIONAL TRENDS (Graphs) */}
       <section className="space-y-4">
          <div className="flex items-center gap-2 text-slate-700 font-bold text-sm uppercase tracking-wider border-t border-slate-200 pt-6">
@@ -541,6 +663,10 @@ export const Dashboard: React.FC = () => {
                     {isPlantHead ? (
                         <ChartCard title="Bottleneck by Stage" subtitle="WIP Accumulation (Units)">
                             <SimpleBarChart data={BOTTLENECK_DATA} color="#f59e0b" />
+                        </ChartCard>
+                    ) : isAdmin ? (
+                        <ChartCard title="Event Volume by Category" subtitle="Last 24 Hours">
+                            <SimpleBarChart data={EVENT_VOLUME_DATA} color="#64748b" />
                         </ChartCard>
                     ) : (
                         <ChartCard title="Line Throughput" subtitle="Plan vs Actual (Units)">
