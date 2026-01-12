@@ -24,7 +24,8 @@ import {
   Link,
   ClipboardList,
   Container,
-  Stamp
+  Stamp,
+  LifeBuoy
 } from 'lucide-react';
 
 interface RunbookDetailProps {
@@ -72,6 +73,11 @@ interface RunbookData {
     custodian: string;
     responsibilities: string[];
     since: string;
+  };
+  warrantyContext?: {
+    entity: string;
+    status: 'Active' | 'Expired' | 'Claim Raised' | 'Under Review' | 'Closed';
+    liabilities: string[];
   };
 }
 
@@ -337,54 +343,52 @@ const RUNBOOKS: Record<string, RunbookData> = {
     title: 'Warranty Lifecycle Management',
     range: 'S15 → S16',
     purpose: 'Service intake, RCA, warranty adjudication, and recovery routing.',
-    status: 'Idle',
+    status: 'Running',
+    warrantyContext: {
+        entity: 'Service Partner (Hub A)',
+        status: 'Claim Raised',
+        liabilities: ['Safety', 'Performance', 'Regulatory']
+    },
     stages: [
       {
         id: 'wty-01',
-        name: 'Service Intake (S15)',
+        name: 'Service / Warranty Event Intake (S15)',
         sopRef: 'SOP-15-01',
         navTarget: 'service_warranty',
-        status: 'Pending',
-        roles: ['Service Eng'],
+        status: 'Completed',
+        roles: ['Service Eng', 'System'],
         gate: {
           type: 'Validation',
-          condition: 'Valid Serial & Warranty Period.',
-          evidence: 'Warranty Lookup',
-          owner: 'System',
-          status: 'Locked',
+          condition: 'Warranty claim or service event registered & triaged.',
+          evidence: 'Claim Token / Incident ID',
+          owner: 'Service / QA',
+          status: 'Open',
           impact: 'Claim rejected automatically.'
         }
       },
       {
         id: 'wty-02',
-        name: 'Triage & RCA',
-        sopRef: 'SOP-15-02',
+        name: 'Resolution, Disposition & Closure (S16)',
+        sopRef: 'SOP-16-01',
         navTarget: 'service_warranty',
-        status: 'Pending',
-        roles: ['Service Eng'],
+        status: 'In Progress',
+        roles: ['QA Lead', 'Supervisor'],
+        traceActivity: {
+            header: "Lifecycle History Update",
+            description: "Warranty outcomes update lifecycle history; trace registry reflects final disposition.",
+            demoNote: "Outcome (Repair/Replace/Recycle) is ledger-backed."
+        },
         gate: {
           type: 'Approval',
-          condition: 'Root Cause Determined.',
-          evidence: 'RCA Report',
-          owner: 'Technical Lead',
+          condition: 'Resolution approved and disposition recorded (Repair / Replace / Reject / Recycle).',
+          evidence: 'Closure Report',
+          owner: 'QA / Supervisor',
           status: 'Locked',
-          impact: 'Cannot propose resolution.'
-        }
-      },
-      {
-        id: 'wty-03',
-        name: 'Recovery Routing (S16)',
-        sopRef: 'SOP-16-01',
-        navTarget: 'recycling_recovery',
-        status: 'Pending',
-        roles: ['Sustainability'],
-        gate: {
-          type: 'Validation',
-          condition: 'Safety Check for Transport.',
-          evidence: 'Hazmat Declaration',
-          owner: 'Safety Officer',
-          status: 'Locked',
-          impact: 'Cannot ship to recycler.'
+          impact: 'Cannot close ticket.'
+        },
+        exception: {
+            type: 'SLA Risk',
+            description: 'Triage time exceeded 24h limit.'
         }
       }
     ]
@@ -591,7 +595,7 @@ export const RunbookDetail: React.FC<RunbookDetailProps> = ({ runbookId, onNavig
                    </div>
                )}
 
-               {/* General Trace Activity (S14 etc) */}
+               {/* General Trace Activity (S14, S16 etc) */}
                {activeStage.traceActivity && (
                    <div className="bg-blue-50 rounded-lg border border-blue-200 p-4 mb-6 shadow-sm">
                        <div className="flex items-center gap-2 mb-2 text-blue-700">
@@ -663,6 +667,42 @@ export const RunbookDetail: React.FC<RunbookDetailProps> = ({ runbookId, onNavig
                           </div>
                           <div className="text-[10px] text-slate-400 text-right mt-1">
                              Since: {runbook.custody.since}
+                          </div>
+                      </div>
+                  </div>
+               )}
+
+               {/* Warranty Responsibility (if available) */}
+               {runbook.warrantyContext && (
+                  <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4 mb-6">
+                      <div className="flex items-center gap-2 mb-3 border-b border-slate-100 pb-2">
+                         <LifeBuoy size={16} className="text-slate-500" />
+                         <h3 className="font-bold text-sm text-slate-700">Warranty Responsibility</h3>
+                      </div>
+                      <div className="space-y-3 text-sm">
+                          <div>
+                             <div className="text-xs text-slate-400 mb-0.5">Responsible Entity</div>
+                             <div className="font-bold text-slate-800">{runbook.warrantyContext.entity}</div>
+                          </div>
+                          <div>
+                             <div className="text-xs text-slate-400 mb-0.5">Warranty Status</div>
+                             <span className={`text-xs font-bold px-2 py-0.5 rounded ${
+                                 runbook.warrantyContext.status === 'Active' ? 'bg-green-100 text-green-700' :
+                                 runbook.warrantyContext.status === 'Claim Raised' ? 'bg-amber-100 text-amber-700' :
+                                 'bg-slate-100 text-slate-600'
+                             }`}>
+                                {runbook.warrantyContext.status}
+                             </span>
+                          </div>
+                          <div>
+                             <div className="text-xs text-slate-400 mb-0.5">Liability Scope</div>
+                             <div className="flex flex-wrap gap-1">
+                                {runbook.warrantyContext.liabilities.map(lbl => (
+                                    <span key={lbl} className="px-2 py-0.5 bg-purple-50 text-purple-700 border border-purple-100 rounded text-[10px] font-bold">
+                                        {lbl}
+                                    </span>
+                                ))}
+                             </div>
                           </div>
                       </div>
                   </div>

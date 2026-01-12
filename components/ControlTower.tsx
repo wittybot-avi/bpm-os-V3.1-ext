@@ -21,7 +21,8 @@ import {
   ShieldCheck,
   Eye,
   Link,
-  Stamp
+  Stamp,
+  LifeBuoy
 } from 'lucide-react';
 import { UserContext, UserRole } from '../types';
 
@@ -414,20 +415,26 @@ export const ControlTower: React.FC<ControlTowerProps> = ({ onNavigate, onViewEx
           range="S15 → S16" 
           purpose="Service intake, RCA, warranty adjudication, and recovery routing."
           roles={['Service Eng', 'Sustainability', 'Customer']}
-          status="Idle"
+          status="Running"
           onNavigate={onNavigate}
           isEmphasized={roleConfig.highlightRunbooks.includes('warranty')}
           isDeemphasized={roleConfig.highlightRunbooks.length > 0 && !roleConfig.highlightRunbooks.includes('warranty')}
         >
            <div className="flex items-center justify-between px-4 relative">
               <div className="absolute top-1/2 left-0 w-full h-0.5 bg-slate-100 -z-0"></div>
-              <StageNode label="Intake" icon={RotateCcw} status="Pending" />
-              <GateNode status="Locked" />
-              <StageNode label="Triage" icon={Activity} status="Pending" />
-              <GateNode status="Locked" />
-              <StageNode label="Action" icon={Zap} status="Pending" />
-              <GateNode status="Locked" />
-              <StageNode label="Close" icon={CheckCircle2} status="Pending" />
+              <StageNode label="Intake" icon={RotateCcw} status="Done" />
+              <GateNode status="Open" />
+              {/* Highlight active stage */}
+              <div className="relative">
+                  <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded border border-blue-200 whitespace-nowrap z-20 shadow-sm">
+                      In Progress
+                  </div>
+                  <StageNode label="Resolution" icon={Activity} status="Active" />
+              </div>
+           </div>
+           <div className="mt-4 px-4 py-2 bg-slate-50 border border-slate-100 rounded flex justify-between items-center text-xs">
+                <div className="text-slate-500">Warranty Status: <span className="font-bold text-slate-700">Claim Raised</span></div>
+                <div className="text-slate-500">Liability: <span className="font-bold text-purple-700">Performance</span></div>
            </div>
         </RunbookCard>
 
