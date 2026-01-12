@@ -402,13 +402,13 @@ export const RunbookDetail: React.FC<RunbookDetailProps> = ({ runbookId, onNavig
   if (!runbookId || !RUNBOOKS[runbookId]) {
     return (
       <div className="flex flex-col items-center justify-center h-full text-slate-500">
-        <AlertOctagon size={48} className="mb-4 text-slate-300" />
+        <AlertOctagon size={48} className="mb-4 text-slate-300" aria-hidden="true" />
         <h2 className="text-xl font-bold">Runbook Not Found</h2>
         <button 
           onClick={() => onNavigate('control_tower')}
-          className="mt-4 text-brand-600 hover:underline flex items-center gap-2"
+          className="mt-4 text-brand-600 hover:underline flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-brand-500 rounded px-2 py-1"
         >
-          <ArrowLeft size={16} /> Return to Control Tower
+          <ArrowLeft size={16} aria-hidden="true" /> Return to Control Tower
         </button>
       </div>
     );
@@ -428,14 +428,15 @@ export const RunbookDetail: React.FC<RunbookDetailProps> = ({ runbookId, onNavig
       <div className="shrink-0 pb-4 border-b border-slate-200">
         <button 
           onClick={() => onNavigate('control_tower')}
-          className="text-xs font-medium text-slate-500 hover:text-slate-800 flex items-center gap-1 mb-2 transition-colors"
+          className="text-xs font-medium text-slate-500 hover:text-slate-800 flex items-center gap-1 mb-2 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 rounded px-2 py-1"
+          aria-label="Back to Control Tower"
         >
-          <ArrowLeft size={12} /> Control Tower
+          <ArrowLeft size={12} aria-hidden="true" /> Control Tower
         </button>
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
           <div>
              <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-3">
-               <Radar className="text-brand-600" size={24} />
+               <Radar className="text-brand-600" size={24} aria-hidden="true" />
                {runbook.title}
              </h1>
              <div className="flex items-center gap-3 mt-1 text-sm">
@@ -475,7 +476,17 @@ export const RunbookDetail: React.FC<RunbookDetailProps> = ({ runbookId, onNavig
                    {/* Stage Node */}
                    <div 
                       onClick={() => setSelectedStageId(stage.id)}
-                      className={`relative flex items-center p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            setSelectedStageId(stage.id);
+                        }
+                      }}
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`Select Stage: ${stage.name}, Status: ${stage.status}`}
+                      aria-current={activeStage?.id === stage.id ? 'step' : undefined}
+                      className={`relative flex items-center p-4 rounded-lg border-2 cursor-pointer transition-all focus:outline-none focus:ring-2 focus:ring-brand-500 ${
                         (activeStage?.id === stage.id) 
                           ? 'bg-white border-brand-500 shadow-md translate-x-1' 
                           : 'bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50'
@@ -488,8 +499,8 @@ export const RunbookDetail: React.FC<RunbookDetailProps> = ({ runbookId, onNavig
                          stage.exception ? 'bg-red-500' :
                          'bg-slate-300'
                       }`}>
-                         {stage.status === 'Completed' && <CheckCircle2 size={12} className="text-white" />}
-                         {stage.exception && <AlertTriangle size={12} className="text-white" />}
+                         {stage.status === 'Completed' && <CheckCircle2 size={12} className="text-white" aria-hidden="true" />}
+                         {stage.exception && <AlertTriangle size={12} className="text-white" aria-hidden="true" />}
                       </div>
 
                       <div className="flex-1 min-w-0">
@@ -500,12 +511,12 @@ export const RunbookDetail: React.FC<RunbookDetailProps> = ({ runbookId, onNavig
                             <div className="flex flex-wrap gap-2">
                                 {stage.isTraceHandoff && (
                                     <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-purple-50 text-purple-700 border border-purple-200 flex items-center gap-1">
-                                        <Link size={10} /> Trace Handoff
+                                        <Link size={10} aria-hidden="true" /> Trace Handoff
                                     </span>
                                 )}
                                 {stage.exception && (
                                     <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-red-100 text-red-700 border border-red-200 flex items-center gap-1">
-                                        <AlertOctagon size={10} /> Exception
+                                        <AlertOctagon size={10} aria-hidden="true" /> Exception
                                     </span>
                                 )}
                                 <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded ${
@@ -521,12 +532,12 @@ export const RunbookDetail: React.FC<RunbookDetailProps> = ({ runbookId, onNavig
                          <div className="text-xs text-slate-500 flex flex-wrap gap-2">
                             <span>{stage.sopRef}</span>
                             <span className="hidden sm:inline">•</span>
-                            <span className="flex items-center gap-1"><User size={10} /> {stage.roles.join(', ')}</span>
+                            <span className="flex items-center gap-1"><User size={10} aria-hidden="true" /> {stage.roles.join(', ')}</span>
                          </div>
                       </div>
                       
                       <div className="ml-4">
-                         <ChevronRight size={16} className="text-slate-300" />
+                         <ChevronRight size={16} className="text-slate-300" aria-hidden="true" />
                       </div>
                    </div>
 
@@ -567,16 +578,16 @@ export const RunbookDetail: React.FC<RunbookDetailProps> = ({ runbookId, onNavig
                {activeStage.exception && (
                    <div className="bg-red-50 rounded-lg border border-red-200 p-4 mb-6 shadow-sm">
                        <div className="flex items-center gap-2 mb-2 text-red-700">
-                           <AlertOctagon size={18} />
+                           <AlertOctagon size={18} aria-hidden="true" />
                            <h3 className="font-bold text-sm">Active Exception</h3>
                        </div>
                        <p className="text-sm text-red-800 font-medium mb-1">{activeStage.exception.type}</p>
                        <p className="text-xs text-red-600 mb-2">{activeStage.exception.description}</p>
                        <button 
                           onClick={() => onNavigate('exceptions_view')}
-                          className="text-xs font-bold text-red-700 hover:text-red-900 underline flex items-center gap-1"
+                          className="text-xs font-bold text-red-700 hover:text-red-900 underline flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-red-500 rounded px-1"
                        >
-                          View exception details <ArrowRight size={10} />
+                          View exception details <ArrowRight size={10} aria-hidden="true" />
                        </button>
                    </div>
                )}
@@ -585,7 +596,7 @@ export const RunbookDetail: React.FC<RunbookDetailProps> = ({ runbookId, onNavig
                {activeStage.isTraceHandoff && (
                    <div className="bg-purple-50 rounded-lg border border-purple-200 p-4 mb-6 shadow-sm">
                        <div className="flex items-center gap-2 mb-2 text-purple-700">
-                           <Link size={18} />
+                           <Link size={18} aria-hidden="true" />
                            <h3 className="font-bold text-sm">Trace Handoff Point</h3>
                        </div>
                        <p className="text-xs text-purple-800 mb-2">IDs prepared for registry binding. Immutable lineage record creation.</p>
@@ -599,7 +610,7 @@ export const RunbookDetail: React.FC<RunbookDetailProps> = ({ runbookId, onNavig
                {activeStage.traceActivity && (
                    <div className="bg-blue-50 rounded-lg border border-blue-200 p-4 mb-6 shadow-sm">
                        <div className="flex items-center gap-2 mb-2 text-blue-700">
-                           <Stamp size={18} />
+                           <Stamp size={18} aria-hidden="true" />
                            <h3 className="font-bold text-sm">{activeStage.traceActivity.header}</h3>
                        </div>
                        <p className="text-xs text-blue-800 mb-2">{activeStage.traceActivity.description}</p>
@@ -613,7 +624,7 @@ export const RunbookDetail: React.FC<RunbookDetailProps> = ({ runbookId, onNavig
                {activeStage.gate && (
                  <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4 mb-6">
                     <div className="flex items-center gap-2 mb-3 border-b border-slate-100 pb-2">
-                       <ShieldCheck size={16} className="text-brand-600" />
+                       <ShieldCheck size={16} className="text-brand-600" aria-hidden="true" />
                        <h3 className="font-bold text-sm text-slate-700">Gate Requirements</h3>
                     </div>
                     <div className="space-y-3 text-sm">
@@ -637,7 +648,7 @@ export const RunbookDetail: React.FC<RunbookDetailProps> = ({ runbookId, onNavig
                        </div>
                     </div>
                     <div className="mt-3 p-2 bg-slate-50 rounded text-[10px] text-slate-400 flex items-start gap-1">
-                       <Info size={12} className="shrink-0 mt-0.5" />
+                       <Info size={12} className="shrink-0 mt-0.5" aria-hidden="true" />
                        Gate enforcement logic is handled by the backend BPM engine. Frontend reflects state only.
                     </div>
                  </div>
@@ -647,7 +658,7 @@ export const RunbookDetail: React.FC<RunbookDetailProps> = ({ runbookId, onNavig
                {runbook.custody && (
                   <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4 mb-6">
                       <div className="flex items-center gap-2 mb-3 border-b border-slate-100 pb-2">
-                         <ClipboardList size={16} className="text-slate-500" />
+                         <ClipboardList size={16} className="text-slate-500" aria-hidden="true" />
                          <h3 className="font-bold text-sm text-slate-700">Custodian of Record</h3>
                       </div>
                       <div className="space-y-3 text-sm">
@@ -676,7 +687,7 @@ export const RunbookDetail: React.FC<RunbookDetailProps> = ({ runbookId, onNavig
                {runbook.warrantyContext && (
                   <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4 mb-6">
                       <div className="flex items-center gap-2 mb-3 border-b border-slate-100 pb-2">
-                         <LifeBuoy size={16} className="text-slate-500" />
+                         <LifeBuoy size={16} className="text-slate-500" aria-hidden="true" />
                          <h3 className="font-bold text-sm text-slate-700">Warranty Responsibility</h3>
                       </div>
                       <div className="space-y-3 text-sm">
@@ -711,13 +722,13 @@ export const RunbookDetail: React.FC<RunbookDetailProps> = ({ runbookId, onNavig
                {/* Roles Panel */}
                <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4 mb-6">
                   <div className="flex items-center gap-2 mb-3 border-b border-slate-100 pb-2">
-                     <Users size={16} className="text-slate-500" />
+                     <Users size={16} className="text-slate-500" aria-hidden="true" />
                      <h3 className="font-bold text-sm text-slate-700">Gate Owners / Stakeholders</h3>
                   </div>
                   <div className="flex flex-wrap gap-2">
                      {activeStage.roles.map(role => (
                         <span key={role} className="px-3 py-1 bg-slate-50 border border-slate-200 rounded-full text-xs font-medium text-slate-600 flex items-center gap-1">
-                           <User size={12} /> {role}
+                           <User size={12} aria-hidden="true" /> {role}
                         </span>
                      ))}
                   </div>
@@ -727,10 +738,10 @@ export const RunbookDetail: React.FC<RunbookDetailProps> = ({ runbookId, onNavig
                <div className="mt-auto">
                   <button 
                     onClick={() => onNavigate(activeStage.navTarget)}
-                    className="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white rounded-lg font-bold text-sm flex items-center justify-center gap-2 shadow-sm transition-colors"
+                    className="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white rounded-lg font-bold text-sm flex items-center justify-center gap-2 shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
                   >
                      <span>Go to Operational Screen</span>
-                     <ExternalLink size={16} />
+                     <ExternalLink size={16} aria-hidden="true" />
                   </button>
                   <p className="text-center text-xs text-slate-400 mt-2">
                      Navigates to the functional SOP screen for this stage.
@@ -739,7 +750,7 @@ export const RunbookDetail: React.FC<RunbookDetailProps> = ({ runbookId, onNavig
              </>
            ) : (
              <div className="flex flex-col items-center justify-center h-full text-slate-400">
-                <Layers size={48} className="mb-2 opacity-20" />
+                <Layers size={48} className="mb-2 opacity-20" aria-hidden="true" />
                 <p>Select a stage to view details</p>
              </div>
            )}

@@ -41,59 +41,75 @@ interface RunbookProps {
 
 const RunbookCard: React.FC<RunbookProps> = ({ 
   id, title, range, purpose, roles, status, onNavigate, children, isEmphasized, isDeemphasized 
-}) => (
-  <div 
-    onClick={() => onNavigate(id)}
-    className={`
-      bg-white rounded-lg overflow-hidden flex flex-col transition-all cursor-pointer group
-      ${isEmphasized ? 'ring-2 ring-brand-500 shadow-md scale-[1.01]' : 'border border-industrial-border shadow-sm hover:shadow-md'}
-      ${isDeemphasized ? 'opacity-60 grayscale-[0.5] hover:opacity-100 hover:grayscale-0' : ''}
-    `}
-  >
-    <div className={`p-4 border-b flex justify-between items-start ${isEmphasized ? 'bg-brand-50 border-brand-100' : 'bg-slate-50 border-slate-100'}`}>
-      <div>
-        <h3 className={`font-bold text-lg ${isEmphasized ? 'text-brand-900' : 'text-slate-800'}`}>{title}</h3>
-        <div className="flex items-center gap-2 mt-1">
-          <span className="text-xs font-mono bg-white border border-slate-200 px-2 py-0.5 rounded text-slate-500">{range}</span>
-          <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full ${
-            status === 'Healthy' || status === 'Running' ? 'bg-green-100 text-green-700' :
-            status === 'Degraded' ? 'bg-amber-100 text-amber-700' :
-            status === 'Blocked' ? 'bg-red-100 text-red-700' :
-            'bg-slate-100 text-slate-500'
-          }`}>
-            {status}
-          </span>
+}) => {
+  
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onNavigate(id);
+    }
+  };
+
+  return (
+    <div 
+      onClick={() => onNavigate(id)}
+      onKeyDown={handleKeyDown}
+      role="button"
+      tabIndex={0}
+      aria-label={`View Runbook: ${title}, Status: ${status}`}
+      className={`
+        bg-white rounded-lg overflow-hidden flex flex-col transition-all cursor-pointer group focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2
+        ${isEmphasized ? 'ring-2 ring-brand-500 shadow-md scale-[1.01]' : 'border border-industrial-border shadow-sm hover:shadow-md'}
+        ${isDeemphasized ? 'opacity-60 grayscale-[0.5] hover:opacity-100 hover:grayscale-0' : ''}
+      `}
+    >
+      <div className={`p-4 border-b flex justify-between items-start ${isEmphasized ? 'bg-brand-50 border-brand-100' : 'bg-slate-50 border-slate-100'}`}>
+        <div>
+          <h3 className={`font-bold text-lg ${isEmphasized ? 'text-brand-900' : 'text-slate-800'}`}>{title}</h3>
+          <div className="flex items-center gap-2 mt-1">
+            <span className="text-xs font-mono bg-white border border-slate-200 px-2 py-0.5 rounded text-slate-500">{range}</span>
+            <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full ${
+              status === 'Healthy' || status === 'Running' ? 'bg-green-100 text-green-700' :
+              status === 'Degraded' ? 'bg-amber-100 text-amber-700' :
+              status === 'Blocked' ? 'bg-red-100 text-red-700' :
+              'bg-slate-100 text-slate-500'
+            }`}>
+              {status}
+            </span>
+          </div>
         </div>
+        <button 
+          className={`transition-colors p-1 rounded border ${isEmphasized ? 'bg-white text-brand-600 border-brand-200' : 'text-slate-400 bg-white border-slate-200 group-hover:text-brand-600'}`}
+          title="View Runbook Detail"
+          aria-hidden="true" // Hidden because the card itself handles the click
+          tabIndex={-1}
+        >
+          <ArrowRight size={20} />
+        </button>
       </div>
-      <button 
-        className={`transition-colors p-1 rounded border ${isEmphasized ? 'bg-white text-brand-600 border-brand-200' : 'text-slate-400 bg-white border-slate-200 group-hover:text-brand-600'}`}
-        title="View Runbook Detail"
-      >
-        <ArrowRight size={20} />
-      </button>
-    </div>
-    
-    <div className="p-4 bg-white border-b border-slate-50">
-      <p className="text-xs text-slate-500">{purpose}</p>
-    </div>
+      
+      <div className="p-4 bg-white border-b border-slate-50">
+        <p className="text-xs text-slate-500">{purpose}</p>
+      </div>
 
-    {/* Density Adjustment: p-6 -> p-5, Added overflow-x-auto for tablet responsiveness */}
-    <div className="flex-1 p-5 flex flex-col justify-center overflow-x-auto custom-scrollbar">
-        {/* Visualization Spine */}
-        <div className="min-w-[400px]">
-           {children}
-        </div>
-    </div>
+      {/* Density Adjustment: p-6 -> p-5, Added overflow-x-auto for tablet responsiveness */}
+      <div className="flex-1 p-5 flex flex-col justify-center overflow-x-auto custom-scrollbar">
+          {/* Visualization Spine */}
+          <div className="min-w-[400px]">
+             {children}
+          </div>
+      </div>
 
-    <div className="p-3 bg-slate-50 border-t border-slate-100 flex flex-wrap gap-2">
-      {roles.map((role, idx) => (
-        <span key={idx} className="flex items-center gap-1 text-[10px] text-slate-500 bg-white border border-slate-200 px-2 py-1 rounded-full">
-          <User size={10} /> {role}
-        </span>
-      ))}
+      <div className="p-3 bg-slate-50 border-t border-slate-100 flex flex-wrap gap-2">
+        {roles.map((role, idx) => (
+          <span key={idx} className="flex items-center gap-1 text-[10px] text-slate-500 bg-white border border-slate-200 px-2 py-1 rounded-full">
+            <User size={10} aria-hidden="true" /> {role}
+          </span>
+        ))}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const StageNode: React.FC<{ label: string; icon: React.ElementType; status: 'Done' | 'Active' | 'Pending' | 'Hold' }> = ({ label, icon: Icon, status }) => (
   <div className="flex flex-col items-center gap-2 z-10 w-24 shrink-0">
@@ -103,7 +119,7 @@ const StageNode: React.FC<{ label: string; icon: React.ElementType; status: 'Don
       status === 'Hold' ? 'bg-red-50 border-red-500 text-red-600' :
       'bg-slate-50 border-slate-300 text-slate-300'
     }`}>
-      <Icon size={18} />
+      <Icon size={18} aria-hidden="true" />
     </div>
     <span className={`text-[10px] font-bold text-center leading-tight ${
       status === 'Pending' ? 'text-slate-400' : 'text-slate-700'
@@ -204,7 +220,7 @@ export const ControlTower: React.FC<ControlTowerProps> = ({ onNavigate, onViewEx
               Govern <span className="text-slate-300">/</span> Orchestration
            </div>
            <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
-             <Radar className="text-brand-600" size={24} />
+             <Radar className="text-brand-600" size={24} aria-hidden="true" />
              Control Tower
            </h1>
            <p className="text-slate-500 text-sm mt-1">Operational visibility and orchestration across plant workflows.</p>
@@ -231,7 +247,7 @@ export const ControlTower: React.FC<ControlTowerProps> = ({ onNavigate, onViewEx
           roleConfig.auditMode ? 'bg-slate-100 border-slate-300 text-slate-600' : 'bg-brand-50 border-brand-100 text-brand-800'
       }`}>
           <div className="flex items-center gap-2 font-medium">
-              <Activity size={16} className={roleConfig.auditMode ? 'text-slate-500' : 'text-brand-600'} />
+              <Activity size={16} className={roleConfig.auditMode ? 'text-slate-500' : 'text-brand-600'} aria-hidden="true" />
               {roleConfig.message}
           </div>
           <span className="text-xs opacity-75">Visibility adjusted by role — no actions enabled</span>
@@ -243,7 +259,15 @@ export const ControlTower: React.FC<ControlTowerProps> = ({ onNavigate, onViewEx
         {/* Blocked Gates - Critical */}
         <div 
           onClick={onViewExceptions}
-          className={`p-3 rounded-lg border-l-4 border-y border-r shadow-sm flex items-center justify-between cursor-pointer hover:bg-slate-50 transition-colors group ${
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onViewExceptions && onViewExceptions();
+            }
+          }}
+          role="button"
+          tabIndex={0}
+          className={`p-3 rounded-lg border-l-4 border-y border-r shadow-sm flex items-center justify-between cursor-pointer hover:bg-slate-50 transition-colors group focus:outline-none focus:ring-2 focus:ring-red-500 ${
               roleConfig.highlightMetrics.includes('blocked') 
               ? 'border-l-red-500 border-slate-300 ring-2 ring-red-100' 
               : 'bg-white border-l-red-500 border-slate-200'
@@ -257,14 +281,22 @@ export const ControlTower: React.FC<ControlTowerProps> = ({ onNavigate, onViewEx
               <div className="text-2xl font-bold text-slate-800">2</div>
            </div>
            <div className="p-2 bg-red-50 rounded-full text-red-500">
-              <AlertOctagon size={24} />
+              <AlertOctagon size={24} aria-hidden="true" />
            </div>
         </div>
 
         {/* Exceptions - Warning */}
         <div 
           onClick={onViewExceptions}
-          className={`p-3 rounded-lg border-l-4 border-y border-r shadow-sm flex items-center justify-between cursor-pointer hover:bg-slate-50 transition-colors group ${
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onViewExceptions && onViewExceptions();
+            }
+          }}
+          role="button"
+          tabIndex={0}
+          className={`p-3 rounded-lg border-l-4 border-y border-r shadow-sm flex items-center justify-between cursor-pointer hover:bg-slate-50 transition-colors group focus:outline-none focus:ring-2 focus:ring-amber-500 ${
               roleConfig.highlightMetrics.includes('exceptions') 
               ? 'border-l-amber-500 border-slate-300 ring-2 ring-amber-100' 
               : 'bg-white border-l-amber-500 border-slate-200'
@@ -278,7 +310,7 @@ export const ControlTower: React.FC<ControlTowerProps> = ({ onNavigate, onViewEx
               <div className="text-2xl font-bold text-slate-800">5</div>
            </div>
            <div className="p-2 bg-amber-50 rounded-full text-amber-500">
-              <AlertTriangle size={24} />
+              <AlertTriangle size={24} aria-hidden="true" />
            </div>
         </div>
 
@@ -293,7 +325,7 @@ export const ControlTower: React.FC<ControlTowerProps> = ({ onNavigate, onViewEx
               <div className="text-2xl font-bold text-slate-800">1</div>
            </div>
            <div className="p-2 bg-blue-50 rounded-full text-blue-500">
-              <TrendingUp size={24} />
+              <TrendingUp size={24} aria-hidden="true" />
            </div>
         </div>
 
@@ -308,7 +340,7 @@ export const ControlTower: React.FC<ControlTowerProps> = ({ onNavigate, onViewEx
               <div className="text-2xl font-bold text-slate-800">98%</div>
            </div>
            <div className="p-2 bg-purple-50 rounded-full text-purple-500">
-              <BarChart size={24} />
+              <BarChart size={24} aria-hidden="true" />
            </div>
         </div>
       </div>

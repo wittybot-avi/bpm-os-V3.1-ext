@@ -110,6 +110,8 @@ export const SystemHUD: React.FC<SystemHUDProps> = ({ onNavigate }) => {
       ref={hudRef}
       style={containerStyle}
       className={`z-50 flex flex-col items-end transition-shadow shadow-2xl rounded-lg ${isDragging ? 'cursor-grabbing' : ''}`}
+      role="region"
+      aria-label="System Head-Up Display"
     >
        {/* Expanded State */}
        {isExpanded && (
@@ -119,18 +121,19 @@ export const SystemHUD: React.FC<SystemHUDProps> = ({ onNavigate }) => {
             <div 
               onMouseDown={startDrag}
               className="bg-slate-800 border-b border-slate-700 p-2 flex justify-between items-center cursor-grab active:cursor-grabbing select-none"
-              title="Drag to move"
+              title="Drag to move (Mouse/Touch Only)"
             >
                 <div className="flex items-center gap-2">
-                   <GripHorizontal size={14} className="text-slate-500" />
+                   <GripHorizontal size={14} className="text-slate-500" aria-hidden="true" />
                    <span className="font-bold text-xs text-slate-300">SYSTEM METADATA</span>
                 </div>
                 <button 
                   onClick={() => setIsExpanded(false)}
-                  className="text-slate-400 hover:text-white transition-colors p-1 rounded hover:bg-slate-700"
+                  className="text-slate-400 hover:text-white transition-colors p-1 rounded hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-500"
                   title="Collapse HUD"
+                  aria-label="Collapse System HUD"
                 >
-                   <Minimize2 size={14} />
+                   <Minimize2 size={14} aria-hidden="true" />
                 </button>
             </div>
             
@@ -167,14 +170,14 @@ export const SystemHUD: React.FC<SystemHUDProps> = ({ onNavigate }) => {
               {/* Quick Nav */}
               {onNavigate && (
                 <div className="pt-3 flex justify-between gap-2 border-t border-slate-700">
-                   <button onClick={() => handleNav('documentation')} className="flex-1 bg-slate-800 hover:bg-slate-700 p-1.5 rounded text-[10px] text-center text-slate-300 flex flex-col items-center gap-1 transition-colors" title="Documentation">
-                      <FileText size={12} /> Docs
+                   <button onClick={() => handleNav('documentation')} className="flex-1 bg-slate-800 hover:bg-slate-700 p-1.5 rounded text-[10px] text-center text-slate-300 flex flex-col items-center gap-1 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-500" title="Documentation" aria-label="Go to Documentation">
+                      <FileText size={12} aria-hidden="true" /> Docs
                    </button>
-                   <button onClick={() => handleNav('system_logs')} className="flex-1 bg-slate-800 hover:bg-slate-700 p-1.5 rounded text-[10px] text-center text-slate-300 flex flex-col items-center gap-1 transition-colors" title="Logs">
-                      <ClipboardList size={12} /> Logs
+                   <button onClick={() => handleNav('system_logs')} className="flex-1 bg-slate-800 hover:bg-slate-700 p-1.5 rounded text-[10px] text-center text-slate-300 flex flex-col items-center gap-1 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-500" title="Logs" aria-label="Go to Logs">
+                      <ClipboardList size={12} aria-hidden="true" /> Logs
                    </button>
-                   <button onClick={() => handleNav('documentation')} className="flex-1 bg-slate-800 hover:bg-slate-700 p-1.5 rounded text-[10px] text-center text-slate-300 flex flex-col items-center gap-1 transition-colors" title="Rulebook">
-                      <ShieldCheck size={12} /> Rules
+                   <button onClick={() => handleNav('documentation')} className="flex-1 bg-slate-800 hover:bg-slate-700 p-1.5 rounded text-[10px] text-center text-slate-300 flex flex-col items-center gap-1 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-500" title="Rulebook" aria-label="View Rulebook">
+                      <ShieldCheck size={12} aria-hidden="true" /> Rules
                    </button>
                 </div>
               )}
@@ -183,7 +186,7 @@ export const SystemHUD: React.FC<SystemHUDProps> = ({ onNavigate }) => {
               <div className="mt-2 pt-2 border-t border-slate-700">
                  <div className="bg-blue-950/50 text-blue-200 p-2 rounded text-[10px] text-center border border-blue-900/50 flex flex-col items-center gap-1">
                     <div className="flex items-center gap-1 font-bold text-blue-300">
-                        <Lock size={10} />
+                        <Lock size={10} aria-hidden="true" />
                         DESIGN FROZEN
                     </div>
                     <span className="opacity-60">Visual Baseline Established</span>
@@ -202,18 +205,20 @@ export const SystemHUD: React.FC<SystemHUDProps> = ({ onNavigate }) => {
             <div 
               onMouseDown={startDrag}
               className="pl-3 py-3 pr-2 cursor-grab active:cursor-grabbing border-r border-slate-700 flex items-center"
+              title="Drag to move"
             >
-               <Activity size={16} className="text-emerald-400" />
+               <Activity size={16} className="text-emerald-400" aria-hidden="true" />
             </div>
 
             {/* Expand Action */}
             <button
               onClick={() => setIsExpanded(true)}
-              className="flex items-center gap-2 px-3 py-2 text-xs font-mono font-bold text-slate-300 hover:text-white"
+              className="flex items-center gap-2 px-3 py-2 text-xs font-mono font-bold text-slate-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-emerald-500"
               title="Expand HUD"
+              aria-label="Expand System HUD"
             >
               <span>{PATCH_ID}</span>
-              <Maximize2 size={12} className="opacity-50 group-hover:opacity-100" />
+              <Maximize2 size={12} className="opacity-50 group-hover:opacity-100" aria-hidden="true" />
             </button>
          </div>
        )}

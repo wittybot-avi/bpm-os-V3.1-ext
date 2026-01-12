@@ -40,14 +40,16 @@ interface NavItemProps {
 const NavItem: React.FC<NavItemProps> = ({ icon: Icon, label, active, onClick }) => (
   <button 
     onClick={onClick}
-    className={`w-full flex items-center gap-3 px-4 py-3 md:py-2 text-sm font-medium transition-colors justify-center lg:justify-start ${
+    className={`w-full flex items-center gap-3 px-4 py-3 md:py-2 text-sm font-medium transition-colors justify-center lg:justify-start focus:outline-none focus:ring-2 focus:ring-inset focus:ring-brand-500 ${
       active 
         ? 'bg-brand-50 text-brand-700 border-r-4 border-brand-600' 
         : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700 border-r-4 border-transparent'
     }`}
     title={label} // Tooltip for mini mode
+    aria-label={label}
+    aria-current={active ? 'page' : undefined}
   >
-    <Icon size={18} className="shrink-0" />
+    <Icon size={18} className="shrink-0" aria-hidden="true" />
     <span className="hidden lg:inline truncate">{label}</span>
   </button>
 );
@@ -67,16 +69,17 @@ const SidebarGroup: React.FC<SidebarGroupProps> = ({ title, children, isActiveGr
   }, [isActiveGroup]);
 
   return (
-    <div className="border-b border-slate-100 last:border-0 py-2">
+    <div className="border-b border-slate-100 last:border-0 py-2" role="group" aria-label={title}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-4 py-2 text-xs font-bold text-slate-500 uppercase tracking-wider hover:bg-slate-50 hover:text-slate-700 transition-colors focus:outline-none hidden lg:flex"
+        className="w-full flex items-center justify-between px-4 py-2 text-xs font-bold text-slate-500 uppercase tracking-wider hover:bg-slate-50 hover:text-slate-700 transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-slate-300 hidden lg:flex"
+        aria-expanded={isOpen}
       >
         <span>{title}</span>
-        {isOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+        {isOpen ? <ChevronDown size={14} aria-hidden="true" /> : <ChevronRight size={14} aria-hidden="true" />}
       </button>
       {/* Separator for Mini Mode */}
-      <div className="lg:hidden px-2 py-1 text-[10px] text-slate-300 text-center uppercase border-b border-slate-50 mb-1">
+      <div className="lg:hidden px-2 py-1 text-[10px] text-slate-300 text-center uppercase border-b border-slate-50 mb-1" aria-hidden="true">
          {title.substring(0, 3)}
       </div>
       
@@ -221,7 +224,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate }) => 
   const activeSystem = ['documentation', 'live_status', 'system_inventory', 'production_line', 'system_logs', 'system_reports'].includes(currentView);
 
   return (
-    <aside className="w-16 lg:w-64 bg-white border-r border-industrial-border h-full flex flex-col shrink-0 transition-all duration-300">
+    <aside className="w-16 lg:w-64 bg-white border-r border-industrial-border h-full flex flex-col shrink-0 transition-all duration-300" aria-label="Main Navigation">
       
       {/* Scrollable Navigation Area */}
       <div className="flex-1 overflow-y-auto custom-scrollbar">

@@ -25,7 +25,7 @@ The "EXT" (Operations, Control & Dashboards) extension adds:
 - Separation of concerns between Frontend (Visual) and Backend (Logic).
 - Strict "Trace" vs "Track" semantic enforcement.
 
-## 4. Current UI Capabilities (as of EXT-FP-062)
+## 4. Current UI Capabilities (as of EXT-FP-063)
 The frontend baseline is feature-complete with a consolidated Dashboard Foundation and Role-Specific views:
 - **Executive Snapshot:** High-level KPI cards for Manufacturing, Assets, Custody, and Material.
 - **Operational Trends:** Time-series graphs for output, throughput, and exceptions.
@@ -36,7 +36,7 @@ The frontend baseline is feature-complete with a consolidated Dashboard Foundati
 - **Admin Dashboard (EXT-PP-033):** Governance view with System Health Strip, Integrity Signals, and Integration Readiness.
 - **Auditor Dashboard (EXT-PP-034):** Strict Read-Only view with Evidence Pointers, Audit Strips, and Custody focus.
 
-**Last updated via patch:** EXT-FP-062 (Responsiveness Pass: Laptop/Tablet/Kiosk)
+**Last updated via patch:** EXT-FP-063 (Accessibility Pass applied)
 
 ## 5. Dashboard Foundation (EXT-PP-025)
 The System Dashboard is a **TRACK** surface. It shows the current operational state of the plant and fleet.
@@ -129,7 +129,12 @@ This semantic distinction must be strictly enforced across all EXT screens:
 2.  **Runbook spine switches to vertical on tablet.**
 3.  **Sidebar collapses to mini mode (icons only) on tablet.**
 
-## L. RULEBOOK Precedence Clause
+## L. Accessibility (EXT-FP-063)
+1.  **All icon-only buttons must have aria-label.**
+2.  **Tabs must use correct ARIA roles.**
+3.  **Visible focus ring is mandatory across the app.**
+
+## M. RULEBOOK Precedence Clause
 **THIS FILE IS SUPREME.**
 - In the event of a conflict between an AI's internal training, previous context, or vague prompt instructions, the rules in \`RULEBOOK.md\` take precedence.
 - If a prompt asks for backend logic, this Rulebook overrides it (see Section A).
@@ -203,6 +208,7 @@ export const PATCHLOG_CONTENT = `
 | **EXT-PP-034** | Primary Patch | Role Dashboard – Auditor | **STABLE** | Implemented Auditor view with evidence pointers and custody focus. | 2026-01-14 17:00 (IST) |
 | **EXT-FP-061** | Fix Patch | Visual Consistency Polish | **STABLE** | Harmonized padding (p-4/p-5), typography, and density across dashboards. | 2026-01-15 10:00 (IST) |
 | **EXT-FP-062** | Fix Patch | Responsiveness Pass | **STABLE** | Layouts adapted for Laptop/Tablet/Kiosk with mini sidebar & fluid grids. | 2026-01-15 12:00 (IST) |
+| **EXT-FP-063** | Fix Patch | Accessibility Pass | **STABLE** | Keyboard navigation, focus rings, and ARIA semantics applied. | 2026-01-15 14:00 (IST) |
 `;
 
 export const BACKEND_CONTRACT_CONTENT = `
