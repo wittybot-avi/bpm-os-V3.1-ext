@@ -25,7 +25,7 @@ The "EXT" (Operations, Control & Dashboards) extension adds:
 - Separation of concerns between Frontend (Visual) and Backend (Logic).
 - Strict "Trace" vs "Track" semantic enforcement.
 
-## 4. Current UI Capabilities (as of EXT-FP-064)
+## 4. Current UI Capabilities (as of EXT-FP-065)
 The frontend baseline is feature-complete with a consolidated Dashboard Foundation and Role-Specific views:
 - **Executive Snapshot:** High-level KPI cards for Manufacturing, Assets, Custody, and Material.
 - **Operational Trends:** Time-series graphs for output, throughput, and exceptions.
@@ -36,7 +36,7 @@ The frontend baseline is feature-complete with a consolidated Dashboard Foundati
 - **Admin Dashboard (EXT-PP-033):** Governance view with System Health Strip, Integrity Signals, and Integration Readiness.
 - **Auditor Dashboard (EXT-PP-034):** Strict Read-Only view with Evidence Pointers, Audit Strips, and Custody focus.
 
-**Last updated via patch:** EXT-FP-064 (Performance optimizations applied: virtualization/lazy-load/memoization)
+**Last updated via patch:** EXT-FP-065 (Demo clarity and tooltip refinement applied)
 
 ## 5. Dashboard Foundation (EXT-PP-025)
 The System Dashboard is a **TRACK** surface. It shows the current operational state of the plant and fleet.
@@ -138,7 +138,12 @@ This semantic distinction must be strictly enforced across all EXT screens:
 1.  **Long lists must be virtualized or paginated.**
 2.  **Heavy panels render on-demand.**
 
-## N. RULEBOOK Precedence Clause
+## N. Demo Clarity (EXT-FP-065)
+1.  **All placeholders must declare backend ownership.**
+2.  **Track vs Trace helper text must be consistent.**
+3.  **Auditor screens must avoid action language.**
+
+## O. RULEBOOK Precedence Clause
 **THIS FILE IS SUPREME.**
 - In the event of a conflict between an AI's internal training, previous context, or vague prompt instructions, the rules in \`RULEBOOK.md\` take precedence.
 - If a prompt asks for backend logic, this Rulebook overrides it (see Section A).
@@ -214,6 +219,7 @@ export const PATCHLOG_CONTENT = `
 | **EXT-FP-062** | Fix Patch | Responsiveness Pass | **STABLE** | Layouts adapted for Laptop/Tablet/Kiosk with mini sidebar & fluid grids. | 2026-01-15 12:00 (IST) |
 | **EXT-FP-063** | Fix Patch | Accessibility Pass | **STABLE** | Keyboard navigation, focus rings, and ARIA semantics applied. | 2026-01-15 14:00 (IST) |
 | **EXT-FP-064** | Fix Patch | Performance Pass | **STABLE** | Virtualization-ready structures, memoization, and lazy-rendering applied. | 2026-01-15 16:00 (IST) |
+| **EXT-FP-065** | Fix Patch | Demo Mode Clarity | **STABLE** | Added explicit demo captions, tooltips, and refined Auditor copy. | 2026-01-15 17:00 (IST) |
 `;
 
 export const BACKEND_CONTRACT_CONTENT = `

@@ -68,12 +68,15 @@ const RunbookCard: React.FC<RunbookProps> = ({
           <h3 className={`font-bold text-lg ${isEmphasized ? 'text-brand-900' : 'text-slate-800'}`}>{title}</h3>
           <div className="flex items-center gap-2 mt-1">
             <span className="text-xs font-mono bg-white border border-slate-200 px-2 py-0.5 rounded text-slate-500">{range}</span>
-            <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full ${
-              status === 'Healthy' || status === 'Running' ? 'bg-green-100 text-green-700' :
-              status === 'Degraded' ? 'bg-amber-100 text-amber-700' :
-              status === 'Blocked' ? 'bg-red-100 text-red-700' :
-              'bg-slate-100 text-slate-500'
-            }`}>
+            <span 
+              className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full ${
+                status === 'Healthy' || status === 'Running' ? 'bg-green-100 text-green-700' :
+                status === 'Degraded' ? 'bg-amber-100 text-amber-700' :
+                status === 'Blocked' ? 'bg-red-100 text-red-700' :
+                'bg-slate-100 text-slate-500'
+              }`}
+              title={`Runbook Status: ${status}`}
+            >
               {status}
             </span>
           </div>
@@ -112,7 +115,7 @@ const RunbookCard: React.FC<RunbookProps> = ({
 };
 
 const StageNode: React.FC<{ label: string; icon: React.ElementType; status: 'Done' | 'Active' | 'Pending' | 'Hold' }> = ({ label, icon: Icon, status }) => (
-  <div className="flex flex-col items-center gap-2 z-10 w-24 shrink-0">
+  <div className="flex flex-col items-center gap-2 z-10 w-24 shrink-0" title={`Stage: ${label} (${status})`}>
     <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 shadow-sm ${
       status === 'Done' ? 'bg-green-50 border-green-500 text-green-600' :
       status === 'Active' ? 'bg-blue-50 border-blue-500 text-blue-600' :
@@ -130,7 +133,7 @@ const StageNode: React.FC<{ label: string; icon: React.ElementType; status: 'Don
 );
 
 const GateNode: React.FC<{ status: 'Open' | 'Closed' | 'Locked' }> = ({ status }) => (
-  <div className="flex items-center justify-center w-8 -mx-2 z-0 shrink-0">
+  <div className="flex items-center justify-center w-8 -mx-2 z-0 shrink-0" title={`Validation Gate: ${status}`}>
     <div className={`h-0.5 w-full ${status === 'Locked' ? 'bg-slate-200' : 'bg-slate-300'}`}></div>
     <div className={`absolute w-5 h-5 rotate-45 border-2 flex items-center justify-center bg-white ${
       status === 'Open' ? 'border-green-500' : 

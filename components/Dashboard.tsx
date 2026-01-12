@@ -57,6 +57,13 @@ import {
   CUSTODY_DATA 
 } from '../data/dashboardMetrics';
 
+// --- Helper for Demo Caption ---
+const DemoCaption: React.FC = () => (
+  <span className="text-[10px] text-slate-400 font-normal normal-case bg-slate-100 px-2 py-0.5 rounded ml-2 border border-slate-200 cursor-help" title="Data is mocked for frontend demonstration. In production, this is driven by the backend.">
+    Demo Data — Backend Driven
+  </span>
+);
+
 // --- Operator Components ---
 
 const ShiftFocusStrip: React.FC = () => (
@@ -440,28 +447,28 @@ const EvidencePointers: React.FC<{ onNavigate: (view: NavView) => void }> = ({ o
             className="flex flex-col items-center gap-2 p-3 bg-white border border-slate-200 rounded hover:bg-slate-100 hover:border-slate-300 transition-colors text-slate-600 focus:outline-none focus:ring-2 focus:ring-brand-500"
           >
               <ClipboardList size={20} className="text-blue-500" aria-hidden="true" />
-              <span className="text-xs font-bold">View Logs (Audit Trail)</span>
+              <span className="text-xs font-bold">Inspect Logs (Audit Trail)</span>
           </button>
           <button 
             onClick={() => onNavigate('system_reports')}
             className="flex flex-col items-center gap-2 p-3 bg-white border border-slate-200 rounded hover:bg-slate-100 hover:border-slate-300 transition-colors text-slate-600 focus:outline-none focus:ring-2 focus:ring-brand-500"
           >
               <FileText size={20} className="text-purple-500" aria-hidden="true" />
-              <span className="text-xs font-bold">View Reports (Snapshots)</span>
+              <span className="text-xs font-bold">Inspect Reports (Snapshots)</span>
           </button>
           <button 
             onClick={() => onNavigate('control_tower')}
             className="flex flex-col items-center gap-2 p-3 bg-white border border-slate-200 rounded hover:bg-slate-100 hover:border-slate-300 transition-colors text-slate-600 focus:outline-none focus:ring-2 focus:ring-brand-500"
           >
               <Radar size={20} className="text-brand-500" aria-hidden="true" />
-              <span className="text-xs font-bold">View Runbooks (Process)</span>
+              <span className="text-xs font-bold">Reference Runbooks (Process)</span>
           </button>
           <button 
             onClick={() => onNavigate('documentation')}
             className="flex flex-col items-center gap-2 p-3 bg-white border border-slate-200 rounded hover:bg-slate-100 hover:border-slate-300 transition-colors text-slate-600 focus:outline-none focus:ring-2 focus:ring-brand-500"
           >
               <ShieldCheck size={20} className="text-green-500" aria-hidden="true" />
-              <span className="text-xs font-bold">View Rules & Contracts</span>
+              <span className="text-xs font-bold">Reference Rules & Contracts</span>
           </button>
       </div>
   </div>
@@ -586,6 +593,7 @@ export const Dashboard: React.FC = () => {
         <div className="flex items-center gap-2 text-slate-700 font-bold text-sm uppercase tracking-wider">
             <Layers size={16} aria-hidden="true" />
             {isOperator ? 'Shift Context (Snapshot)' : 'Executive Snapshot (Real-time Track)'}
+            <DemoCaption />
         </div>
 
         {/* Row 1: Manufacturing KPIs */}
@@ -682,7 +690,7 @@ export const Dashboard: React.FC = () => {
                               <Users size={18} className="text-brand-600" aria-hidden="true" />
                               Custody Status
                           </h3>
-                          <p className="text-xs text-slate-400">Legal Possession</p>
+                          <p className="text-xs text-slate-400">Legal Possession <span className="text-[10px] text-slate-400 bg-slate-100 px-1 rounded ml-1 cursor-help" title="Custodian of record impacts compliance liability.">Track</span></p>
                       </div>
                   </div>
                   <div className="space-y-3">
@@ -701,7 +709,7 @@ export const Dashboard: React.FC = () => {
                   </div>
                   {isAuditor && (
                       <div className="mt-3 text-[10px] text-right text-blue-600 font-medium cursor-pointer hover:underline" onClick={() => handleNav('dispatch_execution')}>
-                          See Dispatch & Custody Runbook →
+                          Reference Dispatch & Custody Runbook →
                       </div>
                   )}
               </div>
@@ -761,6 +769,7 @@ export const Dashboard: React.FC = () => {
               <div className="flex items-center gap-2 text-slate-700 font-bold text-sm uppercase tracking-wider border-t border-slate-200 pt-6">
                   <PieChart size={16} aria-hidden="true" />
                   Lifecycle & Custody Distribution
+                  <DemoCaption />
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -778,6 +787,7 @@ export const Dashboard: React.FC = () => {
             <div className="flex items-center gap-2 text-slate-700 font-bold text-sm uppercase tracking-wider border-t border-slate-200 pt-6">
                 <ShieldCheck size={16} aria-hidden="true" />
                 Compliance & Risk Signals
+                <DemoCaption />
             </div>
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -822,6 +832,7 @@ export const Dashboard: React.FC = () => {
          <div className="flex items-center gap-2 text-slate-700 font-bold text-sm uppercase tracking-wider border-t border-slate-200 pt-6">
             <BarChart3 size={16} aria-hidden="true" />
             {isOperator ? 'Relevant Trends' : isAuditor ? 'Operational Context (Track)' : 'Operational Trends'}
+            <DemoCaption />
          </div>
          
          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -911,6 +922,7 @@ export const Dashboard: React.FC = () => {
               <div className="flex items-center gap-2 text-slate-700 font-bold text-sm uppercase tracking-wider border-t border-slate-200 pt-6">
                   <PieChart size={16} aria-hidden="true" />
                   Lifecycle & Custody Distribution
+                  <DemoCaption />
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -928,6 +940,7 @@ export const Dashboard: React.FC = () => {
             <div className="flex items-center gap-2 text-slate-700 font-bold text-sm uppercase tracking-wider border-t border-slate-200 pt-6">
                 <ShieldCheck size={16} aria-hidden="true" />
                 Compliance & Risk Signals
+                <DemoCaption />
             </div>
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

@@ -191,6 +191,9 @@ export const SystemHUD: React.FC<SystemHUDProps> = ({ onNavigate }) => {
                     </div>
                     <span className="opacity-60">Visual Baseline Established</span>
                  </div>
+                 <div className="text-center text-[9px] text-slate-500 mt-2">
+                    Demo UI — No backend actions
+                 </div>
               </div>
             </div>
          </div>
