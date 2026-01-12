@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { NavView } from '../types';
 import { 
   ArrowLeft, 
+  ArrowRight,
   Radar, 
   ChevronRight, 
   CheckCircle2, 
@@ -18,7 +19,8 @@ import {
   User,
   Info,
   ExternalLink,
-  AlertTriangle
+  AlertTriangle,
+  Users
 } from 'lucide-react';
 
 interface RunbookDetailProps {
@@ -41,7 +43,7 @@ interface StageDefinition {
 }
 
 interface GateDefinition {
-  type: 'Approval' | 'Validation' | 'Interlock';
+  type: 'Approval' | 'Validation' | 'Interlock' | 'Authorization' | 'Handoff';
   condition: string;
   evidence: string;
   owner: string;
@@ -140,7 +142,7 @@ const RUNBOOKS: Record<string, RunbookData> = {
   'manufacturing': {
     id: 'manufacturing',
     title: 'Manufacturing Execution Run',
-    range: 'S4 → S8',
+    range: 'S4 → S9',
     purpose: 'Batch planning, assembly execution, QA validation, and release.',
     status: 'Blocked',
     stages: [
@@ -150,14 +152,14 @@ const RUNBOOKS: Record<string, RunbookData> = {
         sopRef: 'SOP-04-01',
         navTarget: 'batch_planning',
         status: 'Completed',
-        roles: ['Planner'],
+        roles: ['Planner', 'Supervisor'],
         gate: {
-          type: 'Interlock',
-          condition: 'Material Availability Check > 100%.',
-          evidence: 'Inventory Lock',
-          owner: 'System',
+          type: 'Authorization',
+          condition: 'Batch authorized for execution.',
+          evidence: 'Production Schedule Lock',
+          owner: 'Supervisor',
           status: 'Open',
-          impact: 'Batch cannot be released to floor.'
+          impact: 'Production cannot start.'
         }
       },
       {
@@ -166,18 +168,18 @@ const RUNBOOKS: Record<string, RunbookData> = {
         sopRef: 'SOP-05-01',
         navTarget: 'module_assembly',
         status: 'Hold',
-        roles: ['Operator', 'Supervisor'],
+        roles: ['Operator'],
         gate: {
           type: 'Validation',
-          condition: 'All Station Checks OK.',
-          evidence: 'Station Cycle Logs',
-          owner: 'Supervisor',
+          condition: 'Assembly completion recorded.',
+          evidence: 'Station Cycle Log',
+          owner: 'Operator',
           status: 'Locked',
-          impact: 'Modules blocked from QA.'
+          impact: 'Cannot proceed to QA.'
         },
         exception: {
           type: 'Gate Block',
-          description: 'Enclosure Seal Check Failed (Interlock)'
+          description: 'Enclosure Seal Integrity Check Failed'
         }
       },
       {
@@ -189,11 +191,11 @@ const RUNBOOKS: Record<string, RunbookData> = {
         roles: ['QC Engineer'],
         gate: {
           type: 'Approval',
-          condition: 'Electrical & Visual Specs Met.',
-          evidence: 'QA Pass Report',
-          owner: 'Quality Lead',
+          condition: 'QA pass or hold decision.',
+          evidence: 'Inspection Report',
+          owner: 'QA Engineer',
           status: 'Locked',
-          impact: 'Cannot proceed to Pack Assembly.'
+          impact: 'Module quarantined.'
         }
       },
       {
@@ -205,11 +207,11 @@ const RUNBOOKS: Record<string, RunbookData> = {
         roles: ['Operator'],
         gate: {
           type: 'Validation',
-          condition: 'Enclosure Seal Integrity Pass.',
-          evidence: 'Leak Test Data',
-          owner: 'Supervisor',
+          condition: 'Pack assembly completion recorded.',
+          evidence: 'Line End Signal',
+          owner: 'Operator',
           status: 'Locked',
-          impact: 'Pack cannot enter Final Review.'
+          impact: 'Cannot enter review.'
         }
       },
       {
@@ -218,14 +220,30 @@ const RUNBOOKS: Record<string, RunbookData> = {
         sopRef: 'SOP-08-01',
         navTarget: 'pack_review',
         status: 'Pending',
-        roles: ['Quality Lead'],
+        roles: ['Quality Lead', 'Supervisor'],
         gate: {
           type: 'Approval',
-          condition: 'EOL Tests (Hi-Pot) Passed.',
+          condition: 'Release approval for downstream.',
           evidence: 'Digital Passport Seal',
-          owner: 'Quality Manager',
+          owner: 'Supervisor',
           status: 'Locked',
-          impact: 'Goods cannot enter finished stock.'
+          impact: 'Goods held in WIP.'
+        }
+      },
+      {
+        id: 'mfg-06',
+        name: 'Registry Entry (S9)',
+        sopRef: 'SOP-09-01',
+        navTarget: 'battery_registry',
+        status: 'Pending',
+        roles: ['System', 'Admin'],
+        gate: {
+          type: 'Handoff',
+          condition: 'Registry entry prepared (Trace).',
+          evidence: 'UID Generation Log',
+          owner: 'System Admin',
+          status: 'Locked',
+          impact: 'Digital Twin not created.'
         }
       }
     ]
@@ -496,7 +514,7 @@ export const RunbookDetail: React.FC<RunbookDetailProps> = ({ runbookId, onNavig
                       </div>
                    </div>
 
-                   {/* Gate Node (if exists and not last) */}
+                   {/* Gate Node (if exists) */}
                    {stage.gate && (
                       <div className="my-4 flex items-center pl-8">
                          <div className="w-8 h-8 rotate-45 border-2 bg-white flex items-center justify-center shadow-sm z-10 relative -left-[36px] group cursor-help" title="Decision Gate">
@@ -537,7 +555,13 @@ export const RunbookDetail: React.FC<RunbookDetailProps> = ({ runbookId, onNavig
                            <h3 className="font-bold text-sm">Active Exception</h3>
                        </div>
                        <p className="text-sm text-red-800 font-medium mb-1">{activeStage.exception.type}</p>
-                       <p className="text-xs text-red-600">{activeStage.exception.description}</p>
+                       <p className="text-xs text-red-600 mb-2">{activeStage.exception.description}</p>
+                       <button 
+                          onClick={() => onNavigate('exceptions_view')}
+                          className="text-xs font-bold text-red-700 hover:text-red-900 underline flex items-center gap-1"
+                       >
+                          View exception details <ArrowRight size={10} />
+                       </button>
                    </div>
                )}
 
@@ -575,12 +599,15 @@ export const RunbookDetail: React.FC<RunbookDetailProps> = ({ runbookId, onNavig
                  </div>
                )}
 
-               {/* Roles */}
-               <div className="mb-6">
-                  <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Roles Involved</h3>
+               {/* Roles Panel */}
+               <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4 mb-6">
+                  <div className="flex items-center gap-2 mb-3 border-b border-slate-100 pb-2">
+                     <Users size={16} className="text-slate-500" />
+                     <h3 className="font-bold text-sm text-slate-700">Gate Owners / Stakeholders</h3>
+                  </div>
                   <div className="flex flex-wrap gap-2">
                      {activeStage.roles.map(role => (
-                        <span key={role} className="px-3 py-1 bg-white border border-slate-200 rounded-full text-xs font-medium text-slate-600 flex items-center gap-1">
+                        <span key={role} className="px-3 py-1 bg-slate-50 border border-slate-200 rounded-full text-xs font-medium text-slate-600 flex items-center gap-1">
                            <User size={12} /> {role}
                         </span>
                      ))}

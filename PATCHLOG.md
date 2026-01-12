@@ -47,3 +47,4 @@
 | **EXT-BP-006** | Bridge Patch | OEE Visual Contract | **STABLE** | Added OEE zones, station readiness, and visual contracts for line performance. | 2026-01-12 02:35 (IST) |
 | **EXT-PP-010** | Primary Patch | Role-Contextual Control Tower | **STABLE** | Added role-based visual emphasis, adaptive ordering, and auditor modes. | 2026-01-13 09:30 (IST) |
 | **EXT-PP-020** | Primary Patch | Live Status Wallboard | **STABLE** | Transformed Live Status into a role-aware plant-wide snapshot. | 2026-01-13 09:45 (IST) |
+| **EXT-PP-011** | Primary Patch | Manufacturing Runbook Logic | **STABLE** | Defined S4-S9 gate semantics, blocked state visuals, and role ownership. | 2026-01-13 10:05 (IST) |

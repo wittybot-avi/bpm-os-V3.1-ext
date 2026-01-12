@@ -338,7 +338,7 @@ export const ControlTower: React.FC<ControlTowerProps> = ({ onNavigate, onViewEx
         <RunbookCard 
           id="manufacturing"
           title="Manufacturing Execution Run" 
-          range="S4 → S8" 
+          range="S4 → S9" 
           purpose="Batch planning, assembly execution, QA validation, and release."
           roles={['Planner', 'Operator', 'QA Lead']}
           status="Blocked"
@@ -350,11 +350,22 @@ export const ControlTower: React.FC<ControlTowerProps> = ({ onNavigate, onViewEx
               <div className="absolute top-1/2 left-0 w-full h-0.5 bg-slate-100 -z-0"></div>
               <StageNode label="Plan" icon={Layers} status="Done" />
               <GateNode status="Open" />
-              <StageNode label="Assembly" icon={Zap} status="Hold" />
+              {/* Highlight the blocked stage */}
+              <div className="relative">
+                  <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-red-100 text-red-700 text-[10px] font-bold px-2 py-0.5 rounded border border-red-200 whitespace-nowrap z-20 shadow-sm">
+                      Blocked: Seal Check
+                  </div>
+                  <StageNode label="Assembly" icon={Zap} status="Hold" />
+              </div>
               <GateNode status="Locked" />
               <StageNode label="QA" icon={Activity} status="Pending" />
               <GateNode status="Locked" />
               <StageNode label="Release" icon={CheckCircle2} status="Pending" />
+           </div>
+           {/* Summary Enrichment */}
+           <div className="mt-4 px-4 py-2 bg-slate-50 border border-slate-100 rounded flex justify-between items-center text-xs">
+                <div className="text-slate-500">Current Stage: <span className="font-bold text-slate-700">S5 Module Assembly</span></div>
+                <div className="text-slate-500">Gate Owner: <span className="font-bold text-slate-700">Supervisor</span></div>
            </div>
         </RunbookCard>
 
