@@ -25,7 +25,7 @@ The "EXT" (Operations, Control & Dashboards) extension adds:
 - Separation of concerns between Frontend (Visual) and Backend (Logic).
 - Strict "Trace" vs "Track" semantic enforcement.
 
-## 4. Current UI Capabilities (as of EXT-PP-033)
+## 4. Current UI Capabilities (as of EXT-PP-034)
 The frontend baseline is feature-complete with a consolidated Dashboard Foundation and Role-Specific views:
 - **Executive Snapshot:** High-level KPI cards for Manufacturing, Assets, Custody, and Material.
 - **Operational Trends:** Time-series graphs for output, throughput, and exceptions.
@@ -34,8 +34,9 @@ The frontend baseline is feature-complete with a consolidated Dashboard Foundati
 - **Supervisor/QA Dashboard (EXT-PP-031):** Oversight view with focus on blocks, holds, approvals, and quality risks.
 - **Plant Head Dashboard (EXT-PP-032):** Executive view with Plant Health Strip, Bottleneck Analysis, and OEE Reference.
 - **Admin Dashboard (EXT-PP-033):** Governance view with System Health Strip, Integrity Signals, and Integration Readiness.
+- **Auditor Dashboard (EXT-PP-034):** Strict Read-Only view with Evidence Pointers, Audit Strips, and Custody focus.
 
-**Last updated via patch:** EXT-PP-033
+**Last updated via patch:** EXT-PP-034
 
 ## 5. Dashboard Foundation (EXT-PP-025)
 The System Dashboard is a **TRACK** surface. It shows the current operational state of the plant and fleet.
@@ -116,6 +117,7 @@ This semantic distinction must be strictly enforced across all EXT screens:
 4.  **No Forking:** Role dashboards change emphasis only; they must never introduce action controls.
 5.  **OEE Logic:** Plant dashboards may reference OEE but must never compute OEE in frontend.
 6.  **Admin Logic:** Admin dashboards may show integrity signals but must remain non-assertive (demo placeholders).
+7.  **Auditor Logic:** Auditor dashboards must show read-only banner and avoid action language.
 
 ## J. RULEBOOK Precedence Clause
 **THIS FILE IS SUPREME.**
@@ -188,6 +190,7 @@ export const PATCHLOG_CONTENT = `
 | **EXT-PP-031** | Primary Patch | Role Dashboard – Supervisor | **STABLE** | Implemented Supervisor view reusing foundation with oversight focus strip. | 2026-01-14 11:30 (IST) |
 | **EXT-PP-032** | Primary Patch | Role Dashboard – Plant Head | **STABLE** | Implemented Plant Head view with OEE readiness and bottleneck analysis. | 2026-01-14 14:00 (IST) |
 | **EXT-PP-033** | Primary Patch | Role Dashboard – Admin | **STABLE** | Implemented Admin view with System Governance and Integrity Panels. | 2026-01-14 16:30 (IST) |
+| **EXT-PP-034** | Primary Patch | Role Dashboard – Auditor | **STABLE** | Implemented Auditor view with evidence pointers and custody focus. | 2026-01-14 17:00 (IST) |
 `;
 
 export const BACKEND_CONTRACT_CONTENT = `
@@ -263,6 +266,9 @@ This section defines the backend requirements for the EXT (Operations & Control)
     *   **GET /dashboard/admin/health (EXT-PP-033):** System heartbeat and component health status.
     *   **GET /dashboard/admin/integrity (EXT-PP-033):** Data consistency check results (orphan records, missing IDs).
     *   **GET /dashboard/admin/eventVolume (EXT-PP-033):** Event log volume by category.
+    *   **GET /dashboard/audit/summary (EXT-PP-034):** Aggregated trace coverage and compliance status.
+    *   **GET /dashboard/audit/evidenceCoverage (EXT-PP-034):** % of units with complete digital passports.
+    *   **GET /dashboard/audit/custodyVisibility (EXT-PP-034):** Chain of custody completeness score.
 *   **Operational Runbooks:** (Requirements TBD)
 *   **Advanced Control Systems:** (Requirements TBD)
 *   **System Intelligence (EXT-PP-024):**

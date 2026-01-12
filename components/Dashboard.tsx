@@ -36,7 +36,11 @@ import {
   GitBranch,
   Database,
   Link,
-  Terminal
+  Terminal,
+  FileText,
+  ClipboardList,
+  Radar,
+  Lock
 } from 'lucide-react';
 import { 
   SimpleLineChart, 
@@ -374,6 +378,95 @@ const IntegrityReadinessPanel: React.FC = () => (
   </div>
 );
 
+// --- Auditor / Regulator Components (EXT-PP-034) ---
+
+const AuditReadOnlyBanner: React.FC = () => (
+  <div className="bg-slate-800 text-slate-200 p-3 rounded-lg border-l-4 border-l-emerald-500 shadow-md flex items-center justify-between animate-in slide-in-from-top-2 duration-300">
+      <div className="flex items-center gap-3">
+          <Lock size={20} className="text-emerald-400" />
+          <div>
+              <div className="text-sm font-bold text-white uppercase tracking-wide">Read-only Audit View</div>
+              <div className="text-xs text-slate-400">No operational actions available in this mode.</div>
+          </div>
+      </div>
+      <div className="text-[10px] text-slate-500 bg-slate-900/50 px-2 py-1 rounded border border-slate-700/50">
+          Values are demo placeholders until backend evidence integration.
+      </div>
+  </div>
+);
+
+const AuditSnapshotStrip: React.FC = () => (
+  <div className="grid grid-cols-4 gap-4 animate-in fade-in duration-300">
+      <div className="bg-white p-3 rounded-lg shadow-sm border border-l-4 border-l-purple-500 border-industrial-border flex items-center justify-between">
+          <div>
+              <div className="text-[10px] text-purple-600 font-bold uppercase tracking-wider">Trace Coverage</div>
+              <div className="text-2xl font-bold text-slate-800">100%</div>
+          </div>
+          <FileBadge size={24} className="text-purple-200" />
+      </div>
+      <div className="bg-white p-3 rounded-lg shadow-sm border border-l-4 border-l-blue-500 border-industrial-border flex items-center justify-between">
+          <div>
+              <div className="text-[10px] text-blue-600 font-bold uppercase tracking-wider">Custody Visibility</div>
+              <div className="text-2xl font-bold text-slate-800">High</div>
+          </div>
+          <Users size={24} className="text-blue-200" />
+      </div>
+      <div className="bg-white p-3 rounded-lg shadow-sm border border-l-4 border-l-amber-500 border-industrial-border flex items-center justify-between">
+          <div>
+              <div className="text-[10px] text-amber-600 font-bold uppercase tracking-wider">Compliance Flags</div>
+              <div className="text-2xl font-bold text-slate-800">3</div>
+          </div>
+          <ShieldCheck size={24} className="text-amber-200" />
+      </div>
+      <div className="bg-white p-3 rounded-lg shadow-sm border border-l-4 border-l-slate-500 border-industrial-border flex items-center justify-between">
+          <div>
+              <div className="text-[10px] text-slate-600 font-bold uppercase tracking-wider">Last Evidence Sync</div>
+              <div className="text-lg font-mono font-bold text-slate-800">14:00 IST</div>
+          </div>
+          <Clock size={24} className="text-slate-200" />
+      </div>
+  </div>
+);
+
+const EvidencePointers: React.FC<{ onNavigate: (view: NavView) => void }> = ({ onNavigate }) => (
+  <div className="bg-slate-50 rounded-lg p-4 border border-slate-200 animate-in fade-in duration-300">
+      <div className="flex items-center gap-2 mb-3 pb-2 border-b border-slate-200">
+          <Link size={16} className="text-slate-500" />
+          <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider">Evidence Pointers & References</h3>
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <button 
+            onClick={() => onNavigate('system_logs')}
+            className="flex flex-col items-center gap-2 p-3 bg-white border border-slate-200 rounded hover:bg-slate-100 hover:border-slate-300 transition-colors text-slate-600"
+          >
+              <ClipboardList size={20} className="text-blue-500" />
+              <span className="text-xs font-bold">View Logs (Audit Trail)</span>
+          </button>
+          <button 
+            onClick={() => onNavigate('system_reports')}
+            className="flex flex-col items-center gap-2 p-3 bg-white border border-slate-200 rounded hover:bg-slate-100 hover:border-slate-300 transition-colors text-slate-600"
+          >
+              <FileText size={20} className="text-purple-500" />
+              <span className="text-xs font-bold">View Reports (Snapshots)</span>
+          </button>
+          <button 
+            onClick={() => onNavigate('control_tower')}
+            className="flex flex-col items-center gap-2 p-3 bg-white border border-slate-200 rounded hover:bg-slate-100 hover:border-slate-300 transition-colors text-slate-600"
+          >
+              <Radar size={20} className="text-brand-500" />
+              <span className="text-xs font-bold">View Runbooks (Process)</span>
+          </button>
+          <button 
+            onClick={() => onNavigate('documentation')}
+            className="flex flex-col items-center gap-2 p-3 bg-white border border-slate-200 rounded hover:bg-slate-100 hover:border-slate-300 transition-colors text-slate-600"
+          >
+              <ShieldCheck size={20} className="text-green-500" />
+              <span className="text-xs font-bold">View Rules & Contracts</span>
+          </button>
+      </div>
+  </div>
+);
+
 // Data
 const BOTTLENECK_DATA = [
   { label: 'Inbound', value: 12, color: '#94a3b8' },
@@ -416,6 +509,9 @@ export const Dashboard: React.FC = () => {
   return (
     <div className="space-y-6 animate-in fade-in duration-300 pb-8">
       
+      {/* AUDITOR: Read-Only Banner */}
+      {isAuditor && <AuditReadOnlyBanner />}
+
       {/* Header */}
       <div className="flex items-center justify-between border-b border-slate-200 pb-4">
         <div>
@@ -428,6 +524,7 @@ export const Dashboard: React.FC = () => {
               isSupervisor ? 'Supervisor Oversight' : 
               isPlantHead ? 'Plant Head Dashboard' : 
               isAdmin ? 'System Admin Dashboard' :
+              isAuditor ? 'Auditor / Regulator Dashboard' :
               'System Dashboard'}
            </h1>
            <p className="text-slate-500 text-sm mt-1">
@@ -437,15 +534,17 @@ export const Dashboard: React.FC = () => {
                ? 'Operational dashboard (Track). Identity & regulatory trace evidence is governed under Trace & Identity / Compliance views.'
                : isAdmin
                ? 'Operational governance (Track). Trace evidence is reviewed under Trace & Identity / Compliance.'
+               : isAuditor
+               ? 'Regulatory oversight view. Operational state (Track) vs Evidence lineage (Trace) is highlighted.'
                : 'Operational tracking and executive snapshot. (Not for Trace/Identity lookup)'
              }
            </p>
         </div>
         
         {isAuditor ? (
-          <div className="bg-slate-100 text-slate-700 px-4 py-1.5 rounded text-xs font-bold border border-slate-300 uppercase flex items-center gap-2">
-            <ShieldCheck size={14} />
-            Auditor / Regulator – Read-Only View
+          <div className="bg-slate-800 text-slate-200 px-4 py-1.5 rounded text-xs font-bold border border-slate-700 uppercase flex items-center gap-2 shadow-sm">
+            <ShieldCheck size={14} className="text-emerald-400" />
+            Auditor / Regulator Mode
           </div>
         ) : isOperator ? (
            <div className="bg-brand-50 text-brand-700 px-3 py-1 rounded text-xs font-bold border border-brand-200 uppercase flex items-center gap-2">
@@ -474,6 +573,9 @@ export const Dashboard: React.FC = () => {
         )}
       </div>
 
+      {/* AUDITOR: Audit Snapshot Strip */}
+      {isAuditor && <AuditSnapshotStrip />}
+
       {/* ADMIN: Governance Strip */}
       {isAdmin && <SystemGovernanceStrip />}
 
@@ -495,7 +597,7 @@ export const Dashboard: React.FC = () => {
 
         {/* Row 1: Manufacturing KPIs */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-white p-4 rounded-lg shadow-sm border border-industrial-border">
+            <div className="bg-white p-4 rounded-lg shadow-sm border border-industrial-border group">
                 <div className="flex items-center justify-between mb-2">
                     <span className="text-xs font-bold text-slate-500 uppercase">Planned</span>
                     <Clock size={16} className="text-slate-400" />
@@ -504,9 +606,10 @@ export const Dashboard: React.FC = () => {
                 <div className="text-xs text-slate-400 mt-1">
                     Batches
                     {isAdmin && <span className="text-[10px] text-blue-600 ml-1 font-medium bg-blue-50 px-1 rounded">Data Sync: OK</span>}
+                    {isAuditor && <span className="text-[10px] text-slate-400 ml-1 opacity-0 group-hover:opacity-100 transition-opacity">Operational Metric</span>}
                 </div>
             </div>
-            <div className="bg-white p-4 rounded-lg shadow-sm border border-industrial-border">
+            <div className="bg-white p-4 rounded-lg shadow-sm border border-industrial-border group">
                 <div className="flex items-center justify-between mb-2">
                     <span className="text-xs font-bold text-slate-500 uppercase">Built</span>
                     <Factory size={16} className="text-blue-500" />
@@ -515,17 +618,21 @@ export const Dashboard: React.FC = () => {
                 <div className="text-xs text-slate-400 mt-1">
                     Packs 
                     {isPlantHead && <span className="text-[10px] text-green-600 ml-1 font-medium bg-green-50 px-1 rounded">+ Release velocity</span>}
+                    {isAuditor && <span className="text-[10px] text-slate-400 ml-1 opacity-0 group-hover:opacity-100 transition-opacity">Track Only</span>}
                 </div>
             </div>
-            <div className="bg-white p-4 rounded-lg shadow-sm border border-industrial-border">
+            <div className="bg-white p-4 rounded-lg shadow-sm border border-industrial-border group">
                 <div className="flex items-center justify-between mb-2">
                     <span className="text-xs font-bold text-slate-500 uppercase">Yield</span>
                     <CheckCircle2 size={16} className="text-green-500" />
                 </div>
                 <div className="text-2xl font-bold text-slate-800">95.1%</div>
-                <div className="text-xs text-green-600 mt-1">1,180 OK</div>
+                <div className="text-xs text-green-600 mt-1">
+                    1,180 OK
+                    {isAuditor && <span className="text-[10px] text-slate-400 ml-1 opacity-0 group-hover:opacity-100 transition-opacity text-black">Quality Context</span>}
+                </div>
             </div>
-            <div className={`bg-white p-4 rounded-lg shadow-sm border border-industrial-border ${isSupervisor ? 'border-amber-300 bg-amber-50/30' : ''}`}>
+            <div className={`bg-white p-4 rounded-lg shadow-sm border border-industrial-border ${isSupervisor ? 'border-amber-300 bg-amber-50/30' : ''} group`}>
                 <div className="flex items-center justify-between mb-2">
                     <span className="text-xs font-bold text-slate-500 uppercase">Hold</span>
                     <AlertTriangle size={16} className="text-amber-500" />
@@ -536,9 +643,13 @@ export const Dashboard: React.FC = () => {
                     {isSupervisor && '(High)'}
                     {isPlantHead && <span className="text-[10px] text-amber-700 ml-1 font-medium bg-amber-50 px-1 rounded">WIP pressure</span>}
                     {isAdmin && <span className="text-[10px] text-amber-700 ml-1 font-medium bg-amber-50 px-1 rounded">Pending Integrations</span>}
+                    {isAuditor && <span className="text-[10px] text-amber-700 ml-1 font-medium bg-amber-50 px-1 rounded">Risk Indicator</span>}
                 </div>
             </div>
         </div>
+
+        {/* AUDITOR: Evidence Pointers */}
+        {isAuditor && <EvidencePointers onNavigate={handleNav} />}
 
         {/* Row 2: Consolidated Summary - Simplified/Collapsed for Operator */}
         {!isOperator && (
@@ -595,6 +706,11 @@ export const Dashboard: React.FC = () => {
                           <span className="font-mono font-bold">790</span>
                       </div>
                   </div>
+                  {isAuditor && (
+                      <div className="mt-3 text-[10px] text-right text-blue-600 font-medium cursor-pointer hover:underline" onClick={() => handleNav('dispatch_execution')}>
+                          See Dispatch & Custody Runbook →
+                      </div>
+                  )}
               </div>
 
               <div className="bg-white p-5 rounded-lg shadow-sm border border-industrial-border flex flex-col justify-between">
@@ -639,11 +755,80 @@ export const Dashboard: React.FC = () => {
       {/* ADMIN: Integrity & Readiness */}
       {isAdmin && <IntegrityReadinessPanel />}
 
+      {/* 
+         AUDITOR REORDERING LOGIC:
+         If Auditor, show Lifecycle/Custody (Section 3/4) BEFORE Operational Trends (Section 2).
+         Otherwise, show in standard order.
+      */}
+
+      {/* SECTION 3 & 4 (Lifecycle & Risk) - Rendered EARLY for Auditor */}
+      {isAuditor && (
+        <>
+          <section className="space-y-4">
+              <div className="flex items-center gap-2 text-slate-700 font-bold text-sm uppercase tracking-wider border-t border-slate-200 pt-6">
+                  <PieChart size={16} />
+                  Lifecycle & Custody Distribution
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <ChartCard title="Asset Lifecycle Phase" subtitle="Volume by Stage">
+                      <SimpleBarChart data={STAGE_DISTRIBUTION} color="#818cf8" />
+                  </ChartCard>
+
+                  <ChartCard title="Custody Distribution" subtitle="Ownership Split">
+                      <SimpleDonutChart data={CUSTODY_DATA} height={180} />
+                  </ChartCard>
+              </div>
+          </section>
+
+          <section className="space-y-4">
+            <div className="flex items-center gap-2 text-slate-700 font-bold text-sm uppercase tracking-wider border-t border-slate-200 pt-6">
+                <ShieldCheck size={16} />
+                Compliance & Risk Signals
+            </div>
+            
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="bg-red-50 border border-red-200 p-3 rounded flex items-center justify-between">
+                    <div>
+                        <div className="text-xs font-bold text-red-800 uppercase">Open Exceptions</div>
+                        <div className="text-xl font-bold text-red-900">5</div>
+                    </div>
+                    <AlertOctagon size={24} className="text-red-300" />
+                </div>
+
+                <div className="bg-amber-50 border border-amber-200 p-3 rounded flex items-center justify-between">
+                    <div>
+                        <div className="text-xs font-bold text-amber-800 uppercase">Warranty Claims</div>
+                        <div className="text-xl font-bold text-amber-900">3</div>
+                    </div>
+                    <AlertTriangle size={24} className="text-amber-300" />
+                </div>
+
+                <div className="bg-blue-50 border border-blue-200 p-3 rounded flex items-center justify-between">
+                    <div>
+                        <div className="text-xs font-bold text-blue-800 uppercase">EU Passports</div>
+                        <div className="text-xl font-bold text-blue-900">45</div>
+                    </div>
+                    <FileBadge size={24} className="text-blue-300" />
+                </div>
+
+                <div className="bg-green-50 border border-green-200 p-3 rounded flex items-center justify-between">
+                    <div>
+                        <div className="text-xs font-bold text-green-800 uppercase">Regulatory Audit</div>
+                        <div className="text-sm font-bold text-green-900">Passed</div>
+                    </div>
+                    <CheckCircle2 size={24} className="text-green-300" />
+                </div>
+            </div>
+          </section>
+        </>
+      )}
+
       {/* SECTION 2: OPERATIONAL TRENDS (Graphs) */}
       <section className="space-y-4">
          <div className="flex items-center gap-2 text-slate-700 font-bold text-sm uppercase tracking-wider border-t border-slate-200 pt-6">
             <BarChart3 size={16} />
-            {isOperator ? 'Relevant Trends' : 'Operational Trends'}
+            {isOperator ? 'Relevant Trends' : isAuditor ? 'Operational Context (Track)' : 'Operational Trends'}
          </div>
          
          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -725,8 +910,8 @@ export const Dashboard: React.FC = () => {
         </div>
       )}
 
-      {/* SECTION 3 & 4: Full Analytics & Risk (Non-Operators) */}
-      {!isOperator && (
+      {/* SECTION 3 & 4 (Lifecycle & Risk) - Standard Order for Non-Auditors */}
+      {!isOperator && !isAuditor && (
         <>
           <section className="space-y-4">
               <div className="flex items-center gap-2 text-slate-700 font-bold text-sm uppercase tracking-wider border-t border-slate-200 pt-6">
