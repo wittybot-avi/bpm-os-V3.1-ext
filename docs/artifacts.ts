@@ -1,3 +1,4 @@
+
 export const SYSTEM_CONTEXT_CONTENT = `
 # BPM-OS System Context (V3.1-EXT)
 
@@ -20,6 +21,7 @@ The system follows a strict linear sequence defined by the SOP:
 The "EXT" (Operations, Control & Dashboards) extension adds:
 - Enhanced sidebar navigation for scalability.
 - Consolidated system-level views (Inventory, Logs, Status).
+- **Dashboard Graph Framework** (Added in EXT-PP-023) for management analytics.
 - Separation of concerns between Frontend (Visual) and Backend (Logic).
 - Strict "Trace" vs "Track" semantic enforcement.
 
@@ -79,7 +81,12 @@ This semantic distinction must be strictly enforced across all EXT screens:
 3.  **Action Feedback:** Disabled actions (due to missing backend) must visually indicate their status (e.g., "Demo Mode", "Read Only") or provide a tooltip explaining why.
 4.  **Refresh Resilience:** The app must handle browser refreshes without losing critical access context (defaulting to safe fallbacks if needed).
 
-## G. RULEBOOK Precedence Clause
+## G. Chart & Visualization Rules (EXT-PP-023)
+1.  **Deterministic Data:** All charts must use consistent mock data that reconciles with other Dashboard KPIs. No random number generation.
+2.  **Zero-Dependency:** Charts must be implemented using lightweight SVG components to avoid heavy external libraries.
+3.  **Preservation:** Adding charts must never remove existing KPI cards or summary sections.
+
+## H. RULEBOOK Precedence Clause
 **THIS FILE IS SUPREME.**
 - In the event of a conflict between an AI's internal training, previous context, or vague prompt instructions, the rules in \`RULEBOOK.md\` take precedence.
 - If a prompt asks for backend logic, this Rulebook overrides it (see Section A).
@@ -137,6 +144,13 @@ export const PATCHLOG_CONTENT = `
 | **EXT-PP-020** | Primary Patch | Live Status Wallboard | **STABLE** | Transformed Live Status into a role-aware plant-wide snapshot. | 2026-01-13 09:45 (IST) |
 | **EXT-PP-011** | Primary Patch | Manufacturing Runbook Logic | **STABLE** | Defined S4-S9 gate semantics, blocked state visuals, and role ownership. | 2026-01-13 10:05 (IST) |
 | **EXT-FP-001** | Fix Patch | Documentation Sync | **STABLE** | Implemented artifacts registry for doc tabs. | 2026-01-13 10:20 (IST) |
+| **EXT-PP-012** | Primary Patch | Material Runbook Logic | **STABLE** | Defined S2-S4 gate semantics, Trace Handoff at S4, and custody panels. | 2026-01-13 10:35 (IST) |
+| **EXT-PP-013** | Primary Patch | Dispatch Runbook Logic | **STABLE** | Defined S11-S14 custody semantics, gate logic, and trace context. | 2026-01-13 10:55 (IST) |
+| **EXT-PP-014** | Primary Patch | Warranty Runbook Logic | **STABLE** | Defined S15-S16 warranty responsibility, gate logic, and liability tracking. | 2026-01-13 11:10 (IST) |
+| **EXT-PP-021** | Primary Patch | System Inventory Dashboard | **STABLE** | Added Inventory Abstraction Cards, Drill-Down Panel, and RBAC filtering. | 2026-01-13 11:25 (IST) |
+| **EXT-PP-022** | Primary Patch | Production Line Master-Detail | **STABLE** | Added Master-Detail line view, OEE visual contracts, and station readiness map. | 2026-01-13 11:40 (IST) |
+| **EXT-FP-002** | Fix Patch | System HUD UX Enhancement | **STABLE** | Made HUD draggable, collapsible, and persistent. | 2026-01-13 12:00 (IST) |
+| **EXT-PP-023** | Primary Patch | Dashboard Graph Framework | **STABLE** | Added SVG Chart Framework and Management Analytics section. | 2026-01-13 12:30 (IST) |
 `;
 
 export const BACKEND_CONTRACT_CONTENT = `
@@ -198,7 +212,10 @@ The current UI operates under the following conditions which must be replaced by
 This section defines the backend requirements for the EXT (Operations & Control) Phase.
 
 ## 1. EXT MODULES (Planned)
-*   **Dashboarding & Analytics:** (Requirements TBD)
+*   **Dashboarding & Analytics:**
+    *   **GET /dashboard/summary:** Aggregated KPI counts (Manufactured, Approved, Hold).
+    *   **GET /dashboard/metrics:** Time-series data for Production Trend, Stage Distribution, and Exceptions.
+    *   *Note: Frontend uses deterministic mock data (EXT-PP-023) until these endpoints are live.*
 *   **Operational Runbooks:** (Requirements TBD)
 *   **Advanced Control Systems:** (Requirements TBD)
 

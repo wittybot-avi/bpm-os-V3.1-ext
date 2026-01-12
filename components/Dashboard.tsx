@@ -13,12 +13,31 @@ import {
   CheckCircle2,
   Clock,
   Layers,
-  ShieldCheck
+  ShieldCheck,
+  BarChart3
 } from 'lucide-react';
+import { 
+  SimpleLineChart, 
+  SimpleBarChart, 
+  SimpleDonutChart, 
+  GroupedBarChart, 
+  ChartCard 
+} from './charts/SimpleCharts';
+import { 
+  TREND_DATA, 
+  STAGE_DISTRIBUTION, 
+  EXCEPTION_DATA, 
+  THROUGHPUT_DATA, 
+  CUSTODY_DATA 
+} from '../data/dashboardMetrics';
 
 export const Dashboard: React.FC = () => {
   const { role } = useContext(UserContext);
-  const isAuditor = role === UserRole.MANAGEMENT;
+  const isAuditor = role === UserRole.MANAGEMENT || role === UserRole.COMPLIANCE;
+  const isOperator = role === UserRole.OPERATOR;
+  
+  // Logic to show simplified view for operators
+  const showFullAnalytics = !isOperator;
 
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
@@ -48,7 +67,7 @@ export const Dashboard: React.FC = () => {
         )}
       </div>
 
-      {/* A1: Manufacturing Overview */}
+      {/* A1: Manufacturing Overview (KPI Cards) */}
       <div className="grid grid-cols-4 gap-4">
         <div className="bg-white p-4 rounded-lg shadow-sm border border-industrial-border">
             <div className="flex items-center justify-between mb-2">
@@ -84,12 +103,48 @@ export const Dashboard: React.FC = () => {
         </div>
       </div>
 
+      {/* NEW: Management Analytics Section (Graphs) */}
+      <section>
+         <div className="flex items-center gap-2 mb-4 text-slate-700 font-bold text-sm uppercase tracking-wider border-b border-slate-200 pb-2">
+            <BarChart3 size={16} />
+            Management Analytics
+         </div>
+         
+         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            
+            {/* Chart A: Trend */}
+            <ChartCard title="WIP Output Trend" subtitle="Last 7 Days (Units)">
+               <SimpleLineChart data={TREND_DATA} />
+            </ChartCard>
+
+            {/* Chart C: Exceptions (Available to all) */}
+            <ChartCard title="Exception Severity" subtitle="Open Issues Count">
+               <SimpleBarChart data={EXCEPTION_DATA} />
+            </ChartCard>
+
+            {/* Extended Analytics (Hidden for Operators) */}
+            {showFullAnalytics && (
+               <>
+                  {/* Chart B: Distribution */}
+                  <ChartCard title="Stage Distribution" subtitle="Volume by Lifecycle Phase">
+                     <SimpleBarChart data={STAGE_DISTRIBUTION} />
+                  </ChartCard>
+
+                  {/* Chart D: Throughput */}
+                  <ChartCard title="Line Throughput" subtitle="Plan vs Actual (Units)">
+                     <GroupedBarChart data={THROUGHPUT_DATA} />
+                  </ChartCard>
+               </>
+            )}
+         </div>
+      </section>
+
       {/* A2 & A3 Container */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         
         {/* A2: Asset Trackability Snapshot */}
         <div className="bg-white rounded-lg shadow-sm border border-industrial-border flex flex-col">
-            <div className="p-4 border-b border-slate-100 bg-slate-50">
+            <div className="p-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
                 <h3 className="font-bold text-slate-700 flex items-center gap-2">
                     <Battery size={18} className="text-brand-600" />
                     Asset Trackability
@@ -101,20 +156,27 @@ export const Dashboard: React.FC = () => {
                     <div className="text-3xl font-bold text-slate-900">1,500</div>
                     <div className="text-xs text-slate-400 mt-1">Unique Digital IDs</div>
                 </div>
-                <div className="space-y-3">
-                    <div className="flex justify-between items-center text-sm">
-                        <span className="text-slate-600 flex items-center gap-2"><Factory size={14} /> Manufacturing</span>
-                        <span className="font-mono font-bold">125</span>
-                    </div>
-                    <div className="flex justify-between items-center text-sm">
-                        <span className="text-slate-600 flex items-center gap-2"><Truck size={14} /> Field Deployed</span>
-                        <span className="font-mono font-bold">850</span>
-                    </div>
-                    <div className="flex justify-between items-center text-sm">
-                        <span className="text-slate-600 flex items-center gap-2"><Recycle size={14} /> End-of-Life</span>
-                        <span className="font-mono font-bold">15</span>
-                    </div>
-                </div>
+                {/* Optional Chart E: Custody Distribution (Visible for non-operators) */}
+                {showFullAnalytics ? (
+                   <div className="h-32">
+                      <SimpleDonutChart data={CUSTODY_DATA} height={120} />
+                   </div>
+                ) : (
+                   <div className="space-y-3">
+                      <div className="flex justify-between items-center text-sm">
+                          <span className="text-slate-600 flex items-center gap-2"><Factory size={14} /> Manufacturing</span>
+                          <span className="font-mono font-bold">125</span>
+                      </div>
+                      <div className="flex justify-between items-center text-sm">
+                          <span className="text-slate-600 flex items-center gap-2"><Truck size={14} /> Field Deployed</span>
+                          <span className="font-mono font-bold">850</span>
+                      </div>
+                      <div className="flex justify-between items-center text-sm">
+                          <span className="text-slate-600 flex items-center gap-2"><Recycle size={14} /> End-of-Life</span>
+                          <span className="font-mono font-bold">15</span>
+                      </div>
+                   </div>
+                )}
             </div>
         </div>
 
