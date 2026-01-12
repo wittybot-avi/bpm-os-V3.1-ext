@@ -25,7 +25,7 @@ The "EXT" (Operations, Control & Dashboards) extension adds:
 - Separation of concerns between Frontend (Visual) and Backend (Logic).
 - Strict "Trace" vs "Track" semantic enforcement.
 
-## 4. Current UI Capabilities (as of EXT-FP-065)
+## 4. Current UI Capabilities (as of EXT-HO-091)
 The frontend baseline is feature-complete with a consolidated Dashboard Foundation and Role-Specific views:
 - **Executive Snapshot:** High-level KPI cards for Manufacturing, Assets, Custody, and Material.
 - **Operational Trends:** Time-series graphs for output, throughput, and exceptions.
@@ -36,7 +36,7 @@ The frontend baseline is feature-complete with a consolidated Dashboard Foundati
 - **Admin Dashboard (EXT-PP-033):** Governance view with System Health Strip, Integrity Signals, and Integration Readiness.
 - **Auditor Dashboard (EXT-PP-034):** Strict Read-Only view with Evidence Pointers, Audit Strips, and Custody focus.
 
-**Last updated via patch:** EXT-FP-065 (Demo clarity and tooltip refinement applied)
+**Last updated via patch:** EXT-HO-091 (Handover Inventory Added)
 
 ## 5. Dashboard Foundation (EXT-PP-025)
 The System Dashboard is a **TRACK** surface. It shows the current operational state of the plant and fleet.
@@ -53,6 +53,76 @@ It contains NO business logic for:
 - Hardware integration (CAN/Modbus)
 
 All such logic must be implemented in the backend microservices.
+
+---
+
+# HANDOVER APPENDIX (EXT-HO-091)
+
+## A. Screen Index
+A comprehensive inventory of all frontend screens delivered in V3.1-EXT.
+
+| Module | Screen Name | Route ID (Internal) | Primary Persona | Nature | Notes |
+|:---|:---|:---|:---|:---|:---|
+| **Dashboards** | System Dashboard | \`dashboard\` | All Roles (Contextual) | Read-Only | Landing page. Adapts content based on Role Context. |
+| **Govern** | Control Tower | \`control_tower\` | Supervisor / Admin | Read-Only | Orchestration view. Navigates to Runbooks. |
+| **Govern** | Runbook Detail | \`runbook_detail\` | Operator / QA | Read-Only | Stage/Gate visualization spine. |
+| **Govern** | Exceptions View | \`exceptions_view\` | Supervisor / QA | Read-Only | Global list of blocks and deviations. |
+| **Setup (S0)** | System Setup | \`system_setup\` | Admin | Read-Only | Plant configuration overview. |
+| **Setup (S1)** | SKU Blueprint | \`sku_blueprint\` | Engineering | Read-Only | Product definition master. |
+| **Procure (S2)** | Procurement | \`procurement\` | Commercial | Read-Only | Supplier and PO status. |
+| **Procure (S3)** | Inbound Receipt | \`inbound_receipt\` | Stores | Read-Only | Material intake and serialization. |
+| **Mfg (S4)** | Batch Planning | \`batch_planning\` | Planner | Read-Only | Production scheduling. |
+| **Mfg (S5)** | Module Assembly | \`module_assembly\` | Operator | Read-Only | Assembly workstation interface. |
+| **Mfg (S6)** | Module QA | \`module_qa\` | QA Engineer | Read-Only | Inspection and disposition. |
+| **Mfg (S7)** | Pack Assembly | \`pack_assembly\` | Operator | Read-Only | Pack integration workstation. |
+| **Mfg (S8)** | Pack Review | \`pack_review\` | Supervisor | Read-Only | EOL validation gate. |
+| **Trace (S9)** | Battery Registry | \`battery_registry\` | Admin / Auditor | Read-Only | Digital Twin / Passport view. |
+| **Trace (S10)** | BMS Provisioning | \`bms_provisioning\` | Engineering | Read-Only | Firmware and identity binding. |
+| **Logistics (S11)** | Finished Goods | \`finished_goods\` | Stores | Read-Only | Warehouse inventory. |
+| **Logistics (S12)** | Packaging | \`packaging_aggregation\` | Logistics | Read-Only | Aggregation workstation. |
+| **Logistics (S13)** | Dispatch Auth | \`dispatch_authorization\` | Supervisor | Read-Only | Gate pass issuance. |
+| **Logistics (S14)** | Dispatch Exec | \`dispatch_execution\` | Logistics | Read-Only | Custody handover execution. |
+| **Track (S15)** | Service Warranty | \`service_warranty\` | Service | Read-Only | Fleet telemetry and claims. |
+| **Track (S16)** | Recycling | \`recycling_recovery\` | Sustainability | Read-Only | EOL intake and sorting. |
+| **Audit (S17)** | Compliance | \`compliance_audit\` | Auditor | Read-Only | Regulatory oversight dashboard. |
+| **System** | Live Status | \`live_status\` | Plant Head | Read-Only | Real-time plant heartbeat. |
+| **System** | Inventory | \`system_inventory\` | All Roles | Read-Only | Aggregated stock view. |
+| **System** | Production Line | \`production_line\` | Supervisor | Read-Only | OEE and station status. |
+| **System** | Logs | \`system_logs\` | Admin / Auditor | Read-Only | Immutable event audit trail. |
+| **System** | Reports | \`system_reports\` | Management | Read-Only | PDF report generation stub. |
+| **System** | Documentation | \`documentation\` | All Roles | Read-Only | System manuals and contracts. |
+
+## B. Route Map
+Visual hierarchy of the application structure.
+
+*   **Root (/)** -> Redirects to Dashboard
+*   **Dashboard Group**
+    *   /dashboard (Landing)
+*   **Operational Groups (Sidebar)**
+    *   **System Setup** -> /system_setup, /sku_blueprint
+    *   **Procurement** -> /procurement, /inbound_receipt
+    *   **Production** -> /batch_planning, /module_assembly, /module_qa, /pack_assembly, /pack_review
+    *   **Trace & Identity** -> /battery_registry, /bms_provisioning
+    *   **Logistics** -> /finished_goods, /packaging_aggregation, /dispatch_authorization, /dispatch_execution
+    *   **Track & Lifecycle** -> /service_warranty, /recycling_recovery
+    *   **Govern** -> /control_tower, /compliance_audit
+    *   **System** -> /live_status, /system_inventory, /production_line, /system_logs, /system_reports, /documentation
+*   **Deep Links (Hidden from Sidebar)**
+    *   /runbook_detail (Accessed via Control Tower)
+    *   /exceptions_view (Accessed via Dashboard/Control Tower)
+
+## C. RBAC Matrix (Frontend Visibility)
+Defines how the frontend adapts based on the user context. Note: **All actions are currently Read-Only (Demo Mode).**
+
+| Role | Dashboard View | Control Tower | Runbooks | System Pages | Trace/Registry |
+|:---|:---|:---|:---|:---|:---|
+| **Operator** | Shift Focus | Limited | Execution Only | Limited | Hidden |
+| **Supervisor** | Oversight Focus | Full Access | Management | Full Access | Read-Only |
+| **Plant Head** | Executive View | Read-Only | Overview | Full Access | Read-Only |
+| **Admin** | Governance View | Full Access | Full Access | Full Access | Full Access |
+| **Auditor** | **READ-ONLY** | **READ-ONLY** | **READ-ONLY** | **READ-ONLY** | **READ-ONLY** |
+
+*Note: "Read-Only" for Auditor implies explicit UI banners and disabled interaction points, regardless of backend capability.*
 `;
 
 export const RULEBOOK_CONTENT = `
@@ -143,7 +213,15 @@ This semantic distinction must be strictly enforced across all EXT screens:
 2.  **Track vs Trace helper text must be consistent.**
 3.  **Auditor screens must avoid action language.**
 
-## O. RULEBOOK Precedence Clause
+## O. Backend Semantics (EXT-HO-090)
+1.  **Backend must match UI semantics; UI must not be reinterpreted.**
+2.  **No backend logic shall be inferred from mock values; only structure.**
+
+## P. Handover Authority (EXT-HO-091)
+1.  **SCREEN_INDEX.md, ROUTE_MAP.md, RBAC_MATRIX.md are handover-authoritative.**
+2.  **Any future UI changes must update these documents.**
+
+## Q. RULEBOOK Precedence Clause
 **THIS FILE IS SUPREME.**
 - In the event of a conflict between an AI's internal training, previous context, or vague prompt instructions, the rules in \`RULEBOOK.md\` take precedence.
 - If a prompt asks for backend logic, this Rulebook overrides it (see Section A).
@@ -220,97 +298,209 @@ export const PATCHLOG_CONTENT = `
 | **EXT-FP-063** | Fix Patch | Accessibility Pass | **STABLE** | Keyboard navigation, focus rings, and ARIA semantics applied. | 2026-01-15 14:00 (IST) |
 | **EXT-FP-064** | Fix Patch | Performance Pass | **STABLE** | Virtualization-ready structures, memoization, and lazy-rendering applied. | 2026-01-15 16:00 (IST) |
 | **EXT-FP-065** | Fix Patch | Demo Mode Clarity | **STABLE** | Added explicit demo captions, tooltips, and refined Auditor copy. | 2026-01-15 17:00 (IST) |
+| **EXT-HO-090** | Handover Patch | Backend Contract & Intent Finalization | **STABLE** | Finalized intent-level API contract for System & Runbook pages. | 2026-01-15 18:00 (IST) |
+| **EXT-HO-091** | Handover Patch | UI Inventory (Screen Index + Route Map) | **STABLE** | Generated authoritative Screen Index, Route Map, and RBAC Matrix. | 2026-01-15 19:00 (IST) |
 `;
 
 export const BACKEND_CONTRACT_CONTENT = `
-# BPM-OS V3.1 — BACKEND HANDOVER CONTRACT
+# BPM-OS V3.1-EXT — BACKEND HANDOVER CONTRACT
 
-**Patch ID:** PP-094
+**Patch ID:** EXT-HO-090
 **Status:** FROZEN
-**Date:** 2026-01-12 01:25 (IST)
+**Date:** 2026-01-15 18:00 (IST)
+**Context:** V3.1-EXT (Operations, Control & Dashboards)
 
 ---
 
-## 1. PREAMBLE
-This document certifies that the Frontend Vibe-Coding Phase for BPM-OS V3.1 is complete. 
-The interface is now locked. All subsequent development must focus on backend implementation, API integration, and data persistence.
+## 1. PREAMBLE & SCOPE
+This document serves as the authoritative interface contract between the **Frontend Vibe-Code** and the **Backend Implementation**.
+The UI has been "Vibe Coded" to a stable state (EXT-FP-065). The Backend team must implement APIs that satisfy these data shapes and semantics without altering the frontend behavior.
 
-## 2. FRONTEND ASSUMPTIONS
-The current UI operates under the following conditions which must be replaced by live logic:
-
-*   **Deterministic UI:** Screens transition based on local React state only.
-*   **Mocked Data:** All tables, metrics, and details are populated by hardcoded constants/JSON.
-*   **Ephemeral State:** No data persists across browser refreshes (session storage only).
-*   **No Backend Logic:** Complexity such as inventory allocation, serial number generation, and validation is simulated visually.
-
-## 3. BACKEND RESPONSIBILITIES (By Domain)
-
-### A. Trace & Identity (S1, S9, S10)
-**Backend must provide:**
-*   **Immutable Ledger:** A write-once database for Battery Passports and Digital Twins.
-*   **Event Sourcing:** Every status change (Mfg -> Warehouse -> Dispatch) must be a recorded event.
-*   **Unique Identity Resolution:** APIs to fetch Asset details by UUID, Barcode, or RFID tag.
-*   **Provisioning:** Integration with physical BMS hardware via CAN/UART protocols (over WebSocket or local gateway).
-
-### B. Track & Lifecycle (S11–S16)
-**Backend must provide:**
-*   **Custody Chain:** Strict ownership tracking (Manufacturer vs. Logistics vs. Customer).
-*   **State Machine Enforcement:** Prevent illegal transitions (e.g., Shipping a pack that failed QA).
-*   **Telemetry Ingestion:** Real-time (or periodic) storage of SoH, SoC, and Temperature data from deployed units.
-*   **Inventory Management:** Real-time stock levels, location mapping, and reservation logic.
-
-### C. Governance (S17)
-**Backend must provide:**
-*   **Audit Logging:** Comprehensive logs of WHO did WHAT and WHEN for every critical action.
-*   **Compliance Aggregation:** Automatic calculation of EPR masses and recycling quotas.
-*   **RBAC Enforcement:** Server-side validation of permissions (UI hiding is insufficient for security).
-
-## 4. INTEGRATION GUIDELINES
-*   **API Pattern:** RESTful or GraphQL is recommended.
-*   **Auth:** JWT-based authentication flow expected.
-*   **Error Handling:** Backend should return standard HTTP error codes which the existing Error Boundaries can handle gracefully (via interceptors).
+### Guiding Principles
+1.  **Frontend-First Truth:** The UI structure determines the API payload structure. Do not "optimize" payloads in ways that require frontend refactoring.
+2.  **Semantic Fidelity:** Statuses like 'Blocked', 'Open', 'Hold' must be treated as enum contracts.
+3.  **No Business Logic in UI:** Calculations (OEE, Yield, Risk Scores) must be performed by the backend.
 
 ---
 
-# V3.1-EXT EXTENSION CONTRACT (SCAFFOLD)
+## 2. ENTITY GLOSSARY (INTENT)
 
-**Patch ID:** EXT-BP-000
-**Status:** INITIALIZING
-**Date:** 2026-01-12 01:35 (IST)
-
-This section defines the backend requirements for the EXT (Operations & Control) Phase.
-
-## 1. EXT MODULES (Planned)
-*   **Dashboarding & Analytics (EXT-PP-025):**
-    *   **GET /dashboard/summary:** Aggregated KPI counts (Manufactured, Approved, Hold).
-    *   **GET /dashboard/trends:** Time-series data for Production Trend, Stage Distribution, and Exceptions.
-    *   **GET /dashboard/distributions:** Composition data for Assets and Custody.
-    *   **GET /dashboard/operator/summary (EXT-PP-030):** Shift specific focus metrics.
-    *   **GET /dashboard/operator/attention (EXT-PP-030):** List of blocked tasks/stages for current user.
-    *   **GET /dashboard/supervisor/summary (EXT-PP-031):** Aggregated metrics for blocked gates and holds.
-    *   **GET /dashboard/supervisor/approvals (EXT-PP-031):** List of pending approvals and gates.
-    *   **GET /dashboard/plant/summary (EXT-PP-032):** Aggregated plant health metrics (lines, throughput).
-    *   **GET /dashboard/plant/bottlenecks (EXT-PP-032):** WIP accumulation by stage group.
-    *   **GET /dashboard/plant/oee (EXT-PP-032):** Real-time OEE components (Avail/Perf/Qual).
-    *   **GET /dashboard/admin/health (EXT-PP-033):** System heartbeat and component health status.
-    *   **GET /dashboard/admin/integrity (EXT-PP-033):** Data consistency check results (orphan records, missing IDs).
-    *   **GET /dashboard/admin/eventVolume (EXT-PP-033):** Event log volume by category.
-    *   **GET /dashboard/audit/summary (EXT-PP-034):** Aggregated trace coverage and compliance status.
-    *   **GET /dashboard/audit/evidenceCoverage (EXT-PP-034):** % of units with complete digital passports.
-    *   **GET /dashboard/audit/custodyVisibility (EXT-PP-034):** Chain of custody completeness score.
-*   **Operational Runbooks:** (Requirements TBD)
-*   **Advanced Control Systems:** (Requirements TBD)
-*   **System Intelligence (EXT-PP-024):**
-    *   **GET /logs:** Filterable system event stream (Source, Category, Severity).
-    *   **GET /reports:** Registry of available report templates and their metadata.
-    *   **GET /reports/:id/preview:** Snapshot data for report previews.
-
-## 2. DATA REQUIREMENTS
-*   [ ] Real-time aggregated metrics endpoint
-*   [ ] Historical trend analysis API
-*   [ ] WebSocket stream for live alerts
-*   [ ] Structured Logging (JSON) for Audit Trail
+| Entity | Definition |
+|:---|:---|
+| **Runbook** | A predefined operational workflow (e.g., "Manufacturing", "Dispatch") composed of sequential Stages. |
+| **Stage** | A distinct phase in a runbook (e.g., S5 Module Assembly). Contains Gates and Steps. |
+| **Gate** | A validation checkpoint (interlock) that must be cleared to proceed. |
+| **Exception** | A system event (blocker, deviation) that halts flow or flags risk. |
+| **Line** | A physical production line (e.g., "Line A") containing Stations. |
+| **Station** | A discrete physical workspace where tasks occur. |
+| **Metric** | An aggregated KPI (e.g., Yield, Throughput) computed over a time window. |
+| **LogEvent** | An immutable audit record of a system or user action. |
 
 ---
-**END OF EXT CONTRACT**
+
+## 3. ENDPOINT INDEX
+
+### GROUP I: DASHBOARDS
+*Powering the Role-Specific Dashboards (Operator, Supervisor, Plant Head, Admin, Auditor)*
+
+- **GET /dashboard/summary**
+    - Returns aggregated KPIs (Planned, Built, Yield, Hold).
+- **GET /dashboard/trends**
+    - Returns time-series data for sparklines and trend charts.
+- **GET /dashboard/distributions**
+    - Returns breakdown data (Stage Mix, Custody Mix).
+- **GET /dashboard/{role}/summary**
+    - Returns role-specific KPI cards (e.g., Operator Shift Info, Auditor Compliance Score).
+- **GET /dashboard/{role}/attention**
+    - Returns list of items requiring immediate user action (Blocks, Approvals).
+
+### GROUP II: CONTROL TOWER & RUNBOOKS
+*Powering ControlTower.tsx and RunbookDetail.tsx*
+
+- **GET /control-tower/runbooks**
+    - Returns high-level status of all active runbooks (Health, Stage, Progress).
+- **GET /runbooks/{runbookId}**
+    - Returns full details, including current custody and warranty context.
+- **GET /runbooks/{runbookId}/stages**
+    - Returns ordered list of stages with their status and gate states.
+- **GET /runbooks/{runbookId}/exceptions**
+    - Returns active exceptions linked to this runbook.
+
+### GROUP III: LIVE STATUS
+*Powering LiveStatus.tsx*
+
+- **GET /live-status/summary**
+    - Returns system-wide health metrics (Health %, Active Lines).
+- **GET /live-status/operations**
+    - Returns snapshot of running operations vs blocked operations.
+- **GET /live-status/lines**
+    - Returns real-time status of all physical lines and stations.
+
+### GROUP IV: INVENTORY
+*Powering SystemInventory.tsx*
+
+- **GET /inventory/categories**
+    - Returns summary counts for Cells, Modules, Packs, FG, etc.
+- **GET /inventory/items**
+    - *Query Params:* \`category\`, \`search\`, \`status\`
+    - Returns paginated list of inventory items.
+
+### GROUP V: PRODUCTION LINES
+*Powering ProductionLine.tsx*
+
+- **GET /lines**
+    - Returns list of lines with summary health status.
+- **GET /lines/{lineId}**
+    - Returns detailed line state, including runbook association.
+- **GET /lines/{lineId}/stations**
+    - Returns status of individual stations (Ready/Running/Blocked/Idle).
+- **GET /lines/{lineId}/oee**
+    - Returns backend-computed Availability, Performance, and Quality scores.
+
+### GROUP VI: EXCEPTIONS
+*Powering ExceptionsView.tsx*
+
+- **GET /exceptions**
+    - Returns global exception list.
+- **GET /exceptions/{id}**
+    - Returns detailed resolution context and escalation path.
+
+### GROUP VII: LOGS
+*Powering SystemLogs.tsx*
+
+- **GET /logs**
+    - *Query Params:* \`category\`, \`severity\`, \`from\`, \`to\`, \`search\`
+    - Returns immutable event stream.
+
+### GROUP VIII: REPORTS
+*Powering SystemReports.tsx*
+
+- **GET /reports**
+    - Returns registry of available report templates.
+- **GET /reports/{reportId}/preview**
+    - Returns mock/sample data for the report preview panel.
+
+---
+
+## 4. PAYLOAD SHAPES (EXAMPLES)
+
+### A. Runbook Summary
+\`\`\`json
+{
+  "id": "manufacturing",
+  "title": "Manufacturing Execution",
+  "status": "Blocked", // Enum: Healthy, Degraded, Blocked, Idle, Running
+  "currentStage": "S5 Module Assembly",
+  "blockReason": "Gate Interlock: Seal Check Failed",
+  "roles": ["Planner", "Operator"],
+  "lastUpdate": "2026-01-15T10:30:00Z"
+}
+\`\`\`
+
+### B. Stage Detail
+\`\`\`json
+{
+  "id": "mfg-02",
+  "name": "Module Assembly (S5)",
+  "status": "Hold", // Enum: Completed, In Progress, Pending, Hold
+  "gate": {
+    "status": "Locked", // Enum: Open, Closed, Locked
+    "type": "Validation",
+    "condition": "Seal Integrity Check"
+  },
+  "exception": {
+    "id": "EX-001",
+    "type": "Quality Failure",
+    "severity": "Critical"
+  }
+}
+\`\`\`
+
+### C. Line Status
+\`\`\`json
+{
+  "id": "line-a",
+  "name": "Line A (Modules)",
+  "mode": "Running", // Enum: Running, Idle, Blocked, Maintenance
+  "health": "OK",
+  "stations": [
+    { "id": "st-01", "name": "Cell Load", "state": "Running" },
+    { "id": "st-02", "name": "Weld", "state": "Blocked", "reason": "Safety Curtain" }
+  ]
+}
+\`\`\`
+
+### D. Inventory Item
+\`\`\`json
+{
+  "id": "CELL-2026-1001",
+  "sku": "CELL-LFP-21700",
+  "location": "Zone A - Rack 2",
+  "status": "Good", // Enum: Good, Hold, Blocked
+  "batchRef": "BATCH-INB-102",
+  "age": "2 days"
+}
+\`\`\`
+
+---
+
+## 5. UI MAPPING NOTES
+
+### Track vs Trace Semantics
+*   **Track (Operational):** Endpoints under \`/dashboard\`, \`/live-status\`, \`/lines\`, \`/inventory\` refer to the **current state** and physical location.
+*   **Trace (Historical/Identity):** Endpoints under \`/registry\` (S9), \`/reports\`, and \`/logs\` refer to **immutable history** and digital lineage.
+*   *Constraint:* Do not mix these contexts. An inventory API should not return the full warranty history payload.
+
+### Backend Computations
+*   **OEE:** The frontend displays OEE as a percentage. The backend must ingest machine telemetry, apply the OEE formula, and return the final numbers.
+*   **Bottleneck Detection:** The Plant Head dashboard shows "Bottleneck by Stage". The backend must analyze WIP accumulation to determine these values.
+*   **Compliance Score:** The Admin/Auditor dashboard shows "Aadhaar Ready %". This is a backend aggregate of how many records satisfy the schema validation.
+
+### Demo / Mock Handling
+*   The frontend uses \`isDemo\` flags.
+*   In production, these flags will be false. The backend must return real data conforming to the shapes above.
+*   If a backend service is unavailable, it should return a standardized error object or empty state, not a 404/500 that breaks the UI shell.
+
+---
+**END OF CONTRACT**
 `;
